@@ -1,0 +1,30 @@
+{
+    "ControlLawParameters_UserNotes": "Lambda was 0.01 before 02/24/23 at 01:26am. LQR and PID gains are so different because of pitch angle in radians (LQR) vs degrees (PID).",
+    "ControlType_StartingValue": "KeyboardControl",
+    "ControlType_AcceptableValues": ["GUIsliderOnly","KeyboardControl", "JoystickControl"],
+    "SelfBalancingRobot1_MainThread_TimeToSleepEachLoop": 0.008,
+
+    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 1,
+    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
+    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.90,
+
+    "LQR_ParametersToBeLoaded_Directions": "LQR Parameters.",
+    "LQR_PitchControl_GainVectorElement_Ktheta_0": -15.0,
+    "LQR_PitchControl_GainVectorElement_Ktheta_1": 0,
+    "LQR_PitchControl_GainVectorElement_Ktheta_2": -180.6574,
+    "LQR_PitchControl_GainVectorElement_Ktheta_3": -1.93449,
+    "LQR_YawControl_GainVectorElement_Kdelta_0": 0.0,
+    "LQR_YawControl_GainVectorElement_Kdelta_1": 0.0,
+    "Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION": 1.0,
+
+    "Pitch_ParametersToBeLoaded_Directions": "Pitch -User sets ... (-11111 = Derived).",
+    "Pitch_PosControl_PID_gain_Kp": -10.0,
+    "Pitch_PosControl_PID_gain_Ki": -0.0,
+    "Pitch_PosControl_PID_gain_Kd": -2.10,
+    "Pitch_PosControl_PID_ErrorSum_Max": 1.0,
+
+    "SINUSOIDAL_MOTION_INPUT_ROMtestTimeToPeakAngle": 2.0,
+    "SINUSOIDAL_MOTION_INPUT_MinValue": -20.0,
+    "SINUSOIDAL_MOTION_INPUT_MaxValue": 20.0
+}
+

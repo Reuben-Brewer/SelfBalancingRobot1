@@ -1,0 +1,43 @@
+{
+    "Keyboard_Directions": "Keyboard_IntegerIDdesired = -1 means that we don't care about the IntegerID.",
+    "Keyboard_KeysToTeleopControlsMapping_DictOfDicts":
+    {
+            "Xincrement":
+
+                {"KeyName":"x",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_IncrementURtoolTipInX_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_IncrementURtoolTipInX_STOP",
+                "IncrementSize": 0.020},
+
+            "Xdecrement":
+                {"KeyName":"s",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_DecrementURtoolTipInX_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_DecrementURtoolTipInX_STOP",
+                "IncrementSize": -0.020},
+
+            "Zincrement":
+                {"KeyName":"d",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_IncrementURtoolTipInZ_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_IncrementURtoolTipInZ_STOP",
+                "IncrementSize": 0.020},
+
+            "Zdecrement":
+                {"KeyName":"c",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_DecrementURtoolTipInZ_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_DecrementURtoolTipInZ_STOP",
+                "IncrementSize": -0.020},
+
+            "KeyPressResponse_RecordNewWaypoint_JointSpace":
+                {"KeyName":"w",
+                "OnPressCallbackFunctionNameString": "",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_RecordNewWaypoint_JointSpace",
+                "IncrementSize": -11111.0},
+
+            "KeyPressResponse_RecordNewWaypoint_CartesianSpace":
+                {"KeyName":"l",
+                "OnPressCallbackFunctionNameString": "",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_RecordNewWaypoint_CartesianSpace",
+                "IncrementSize": -11111.0}
+
+        }
+}
