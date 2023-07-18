@@ -1,0 +1,11 @@
+{
+    "DC30AmpCurrentSensor_Directions": "default",
+    "DC30AmpCurrentSensor_VINT_DesiredSerialNumber": -1,
+    "DC30AmpCurrentSensor_VINT_DesiredPortNumber": 0,
+    "DC30AmpCurrentSensor_DesiredDeviceID": 105,
+    "DC30AmpCurrentSensor_WaitForAttached_TimeoutDuration_Milliseconds": 5000,
+    "DC30AmpCurrentSensor_NameToDisplay_UserSet": "VCP1100 Current Sensor",
+    "DC30AmpCurrentSensor_UsePhidgetsLoggingInternalToThisClassObjectFlag": 1,
+    "DC30AmpCurrentSensor_DataCallbackUpdateDeltaT_ms": 20,
+    "DC30AmpCurrentSensor_CurrentSensorList_Current_Amps_ExponentialFilterLambda": [0.5]
+}

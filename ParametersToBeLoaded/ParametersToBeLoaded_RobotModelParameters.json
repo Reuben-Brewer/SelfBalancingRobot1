@@ -1,0 +1,10 @@
+{
+    "RobotModelParameters_UserNotes": "MRL = MRR = Mr",
+    "RobotModelParameters_Mp_MassOfChassisBodyInKG": 9.88832,
+    "RobotModelParameters_Mr_MassOfRotatingMassesConnecetedToLeftAndRightWheelsInKG": 2.37590,
+    "RobotModelParameters_L_DistanceBetweenAxisAndCGofChassisOrHeightOfCGaboveWheelAxisInMeters": 0.01075,
+    "RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters": 0.6823,
+    "RobotModelParameters_R_RadiusOfWheelInMeters": 0.141825,
+    "RobotModelParameters_g_GravityInMetersPerSecondSquared": 9.81
+}
+

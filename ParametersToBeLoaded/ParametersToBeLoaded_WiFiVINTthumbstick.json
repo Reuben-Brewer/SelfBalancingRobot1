@@ -1,0 +1,20 @@
+{
+    "WiFiVINTthumbstick_Directions": "default",
+    "WiFiVINTthumbstick_VINT_DesiredSerialNumber": -1,
+    "WiFiVINTthumbstick_VINT_DesiredPortNumber": 4,
+    "WiFiVINTthumbstick_DesiredDeviceID": 63,
+    "WiFiVINTthumbstick_WaitForAttached_TimeoutDuration_Milliseconds": 10000,
+    "WiFiVINTthumbstick_NameToDisplay_UserSet": "WiFiVINTthumbstick",
+    "WiFiVINTthumbstick_UsePhidgetsLoggingInternalToThisClassObjectFlag": 1,
+    "WiFiVINTthumbstick_MainThread_TimeToSleepEachLoop": 0.010,
+    "WiFiVINTthumbstick_UpdateDeltaT_ms": 20,
+    "WiFiVINTthumbstick_WirelessVINThub_ServerName_Str": "Phidgets_HUB5000_2AE182",
+    "WiFiVINTthumbstick_WirelessVINThub_Address_Str": "192.168.100.1",
+    "WiFiVINTthumbstick_WirelessVINThub_Port_Int": 5661,
+    "WiFiVINTthumbstick_WirelessVINThub_ServerNotWiFiAccessPointNetworkPassword_Str": "AardvarkBadgerHedgehog",
+    "WiFiVINTthumbstick_WirelessVINThub_Flags_Int": 0,
+    "WiFiVINTthumbstick_VoltageRatioInput0Object_SteadyStateOffset": 0.147,
+    "WiFiVINTthumbstick_VoltageRatioInput1Object_SteadyStateOffset": 0.018,
+    "WiFiVINTthumbstick_VoltageRatioInput0Object_LowPassFilter_Lambda": 0.95,
+    "WiFiVINTthumbstick_VoltageRatioInput1Object_LowPassFilter_Lambda": 0.95
+}

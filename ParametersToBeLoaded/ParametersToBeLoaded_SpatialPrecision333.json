@@ -1,0 +1,21 @@
+{
+    "SpatialPrecision333_Directions": "CRITICAL: CHECK THAT QUEUE ISN'T BUILDING UP (DECREASED SLEEP TIME IF IT IS). For lambda: new_filtered_value = lambda * raw_sensor_value + (1 - lambda) * old_filtered_value",
+    "SpatialPrecision333_DesiredSerialNumber": -1,
+    "SpatialPrecision333_WaitForAttached_TimeoutDuration_Milliseconds": 5000,
+    "SpatialPrecision333_NameToDisplay_UserSet": "SpatialPrecision333",
+    "SpatialPrecision333_UsePhidgetsLoggingInternalToThisClassObjectFlag": 1,
+    "SpatialPrecision333_SpatialAlgorithm": "IMU",
+    "SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag": 1,
+    "SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag": 1,
+    "SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda": 0.98,
+    "SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag": 1,
+    "SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag": 1,
+    "SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda": 0.98,
+    "SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag": 1,
+    "SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag": 1,
+    "SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda": 0.98,
+    "SpatialPrecision333_Spatial_CallbackUpdateDeltaTmilliseconds": 4,
+    "SpatialPrecision333_DataCollectionDurationInSecondsForSnapshottingAndZeroing": 2.0,
+    "SpatialPrecision333_MainThread_TimeToSleepEachLoop": 0.001,
+    "SpatialPrecision333_HeatingEnabledToStabilizeSensorTemperature": true
+}
