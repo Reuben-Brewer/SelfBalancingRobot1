@@ -13,7 +13,7 @@ www.reubotics.com
 
 Apache 2 License
 
-Software Revision G, 07/18/2023
+Software Revision H, 09/24/2023
 
 SelfBalancingRobot1.py verified working on:
 
