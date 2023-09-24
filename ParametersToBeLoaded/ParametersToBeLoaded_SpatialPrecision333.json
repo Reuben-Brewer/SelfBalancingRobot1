@@ -17,5 +17,8 @@
     "SpatialPrecision333_Spatial_CallbackUpdateDeltaTmilliseconds": 4,
     "SpatialPrecision333_DataCollectionDurationInSecondsForSnapshottingAndZeroing": 2.0,
     "SpatialPrecision333_MainThread_TimeToSleepEachLoop": 0.001,
-    "SpatialPrecision333_HeatingEnabledToStabilizeSensorTemperature": true
+    "SpatialPrecision333_HeatingEnabledToStabilizeSensorTemperature": true,
+    "SpatialPrecision333_ZeroGyrosAtStartOfProgramFlag": 0,
+    "SpatialPrecision333_ZeroAlgorithmAtStartOfProgramFlag": 0,
+    "SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset": 0.0
 }

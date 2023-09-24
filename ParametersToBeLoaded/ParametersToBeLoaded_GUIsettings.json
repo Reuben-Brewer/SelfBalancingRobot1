@@ -6,6 +6,7 @@
     "SHOW_IN_GUI_WiFiVINTthumbstick_FLAG":1,
     "SHOW_IN_GUI_SpatialPrecision333_FLAG": 1,
     "SHOW_IN_GUI_DC30AmpCurrentSensor_FLAG":1,
+    "SHOW_IN_GUI_EntryListWithBlinking_FLAG": 1,
     "SHOW_IN_GUI_Keyboard_FLAG":0,
     "SHOW_IN_GUI_MyPrint_FLAG":0,
     "SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG":1,
@@ -56,6 +57,13 @@
     "GUI_PADY_DC30AmpCurrentSensor": 1,
     "GUI_ROWSPAN_DC30AmpCurrentSensor": 1,
     "GUI_COLUMNSPAN_DC30AmpCurrentSensor": 1,
+    
+    "GUI_ROW_EntryListWithBlinking": 3,
+    "GUI_COLUMN_EntryListWithBlinking": 0,
+    "GUI_PADX_EntryListWithBlinking": 1,
+    "GUI_PADY_EntryListWithBlinking": 1,
+    "GUI_ROWSPAN_EntryListWithBlinking": 1,
+    "GUI_COLUMNSPAN_EntryListWithBlinking": 1,
 
     "GUI_ROW_MyPrint": 0,
     "GUI_COLUMN_MyPrint": 0,

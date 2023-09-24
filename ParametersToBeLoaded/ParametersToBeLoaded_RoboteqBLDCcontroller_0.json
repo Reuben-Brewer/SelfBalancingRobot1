@@ -30,5 +30,6 @@
     "RoboteqBLDCcontroller_PID_Ki_0": 1000000.0,
     "RoboteqBLDCcontroller_PID_Kd_0": 0.0,
     "RoboteqBLDCcontroller_PID_IntegratorCap1to100percent_0": 100.0,
-    "RoboteqBLDCcontroller_SetBrushlessCounterTo0atStartOfProgramFlag_0": 1
+    "RoboteqBLDCcontroller_SetBrushlessCounterTo0atStartOfProgramFlag_0": 0,
+    "RoboteqBLDCcontroller_SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag_0": 1
 }

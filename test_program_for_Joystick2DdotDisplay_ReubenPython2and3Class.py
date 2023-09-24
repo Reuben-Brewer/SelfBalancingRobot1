@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision G, 05/10/2023
+Software Revision H, 09/22/2023
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit, Ubuntu 20.04, and Raspberry Pi Buster (no Mac testing yet).
 '''
@@ -197,7 +197,9 @@ def GUI_Thread():
                                     ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_Joystick2DdotDisplay)])
 
     global Joystick2DdotDisplay_ReubenPython2and3ClassObject_setup_dict
-    Joystick2DdotDisplay_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", Joystick2DdotDisplay_ReubenPython2and3ClassObject_GUIparametersDict)])
+    Joystick2DdotDisplay_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", Joystick2DdotDisplay_ReubenPython2and3ClassObject_GUIparametersDict),
+                                                                         ("JoystickXYboxCanvas_HeightAndWidth", 300),
+                                                                         ("DisplayZeroCrosshairsFlag", 1)])
 
     try:
         Joystick2DdotDisplay_ReubenPython2and3ClassObject = Joystick2DdotDisplay_ReubenPython2and3Class(Joystick2DdotDisplay_ReubenPython2and3ClassObject_setup_dict)

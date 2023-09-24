@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision F, 07/18/2023
+Software Revision G, 09/24/2023
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
 '''
@@ -151,8 +151,11 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         #########################################################
         #########################################################
 
-        self.HomeOrBrushlessCounter_NeedsToBeChangedFlag = 0
-        self.HomeOrBrushlessCounter_ToBeSet = 0
+        self.HomeOrBrushlessCounterOnDevice_NeedsToBeChangedFlag = 0
+        self.HomeOrBrushlessCounterOnDevice_ToBeSet = 0
+        
+        self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet = 0.0
+        self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_NeedsToBeChangedFlag = 0
 
         self.EnabledState_ToBeSet = 1
         self.EnabledState_NeedsToBeChangedFlag = 0
@@ -777,12 +780,23 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
         #########################################################
         #########################################################
-        if "SetBrushlessCounterTo0atStartOfProgramFlag" in setup_dict:
-            self.SetBrushlessCounterTo0atStartOfProgramFlag = self.PassThrough0and1values_ExitProgramOtherwise("SetBrushlessCounterTo0atStartOfProgramFlag", setup_dict["SetBrushlessCounterTo0atStartOfProgramFlag"])
+        if "SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag" in setup_dict:
+            self.SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag = self.PassThrough0and1values_ExitProgramOtherwise("SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag", setup_dict["SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag"])
         else:
-            self.SetBrushlessCounterTo0atStartOfProgramFlag = 1
+            self.SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag = 0
 
-        print("RoboteqBLDCcontroller_ReubenPython2and3Class __init__: SetBrushlessCounterTo0atStartOfProgramFlag: " + str(self.SetBrushlessCounterTo0atStartOfProgramFlag))
+        print("RoboteqBLDCcontroller_ReubenPython2and3Class __init__: SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag: " + str(self.SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag" in setup_dict:
+            self.SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag = self.PassThrough0and1values_ExitProgramOtherwise("SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag", setup_dict["SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag"])
+        else:
+            self.SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag = 1
+
+        print("RoboteqBLDCcontroller_ReubenPython2and3Class __init__: SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag: " + str(self.SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag))
         #########################################################
         #########################################################
 
@@ -953,9 +967,16 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         self.Motor_Target_NeedsToBeChangedFlag = 1
         self.Motor_Target_GUIscale_NeedsToBeChangedFlag = 0
 
-        if self.SetBrushlessCounterTo0atStartOfProgramFlag == 1:
-            self.SetCurrentPositionAsHome()
+        #########################################################
+        if self.SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag == 1:
+            self.SetCurrentPositionAsHomeOnDevice()
+        #########################################################
 
+        #########################################################
+        if self.SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag == 1:
+            self.SetCurrentPositionAsHomeSoftwareOffsetOnly()
+        #########################################################
+        
         self.SetControlMode(self.ControlMode_Starting)
         time.sleep(self.TimeToSleepBetweenConfigurationCommands)
 
@@ -1811,7 +1832,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetHomeOrBrushlessCounter(self, BrushlessCounterToBeSetAsHome_Input):
+    def SetHomeOrBrushlessCounterOnDevice(self, BrushlessCounterToBeSetAsHomeOnDevice_Input):
 
         '''
         From page 178 of the user manual:
@@ -1839,9 +1860,9 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         if self.SerialConnectedFlag == 1:
             try:
 
-                BrushlessCounterToBeSetAsHome_Input = self.LimitNumber_FloatOutputOnly(self.Position_Target_Min_UserSet, self.Position_Target_Max_UserSet, BrushlessCounterToBeSetAsHome_Input)
+                BrushlessCounterToBeSetAsHomeOnDevice_Input = self.LimitNumber_FloatOutputOnly(self.Position_Target_Min_UserSet, self.Position_Target_Max_UserSet, BrushlessCounterToBeSetAsHomeOnDevice_Input)
 
-                StringToTx = "!CB 1 " + str(BrushlessCounterToBeSetAsHome_Input) + "\r"
+                StringToTx = "!CB 1 " + str(BrushlessCounterToBeSetAsHomeOnDevice_Input) + "\r"
 
                 self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
 
@@ -1849,10 +1870,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
             except:
                 exceptions = sys.exc_info()[0]
-                print("SetHomeOrBrushlessCounter, exceptions: %s" % exceptions)
+                print("SetHomeOrBrushlessCounterOnDevice, exceptions: %s" % exceptions)
 
         else:
-            print("SetHomeOrBrushlessCounter: Error, SerialConnectedFlag = 0, cannot issue command.")
+            print("SetHomeOrBrushlessCounterOnDevice: Error, SerialConnectedFlag = 0, cannot issue command.")
             return 0
     ##########################################################################################################
     ##########################################################################################################
@@ -2371,6 +2392,8 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 #self.EmergencyStopState = EmergencyStopState_Input
 
+                print("@@@@@ SetEmergencyStopState event fired! @@@@@")
+
                 return 1
 
             except:
@@ -2476,10 +2499,19 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetCurrentPositionAsHome(self):
+    def SetCurrentPositionAsHomeOnDevice(self):
 
-        self.HomeOrBrushlessCounter_ToBeSet = 0
-        self.HomeOrBrushlessCounter_NeedsToBeChangedFlag = 1
+        self.HomeOrBrushlessCounterOnDevice_ToBeSet = 0
+        self.HomeOrBrushlessCounterOnDevice_NeedsToBeChangedFlag = 1
+
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def SetCurrentPositionAsHomeSoftwareOffsetOnly(self):
+
+        self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_NeedsToBeChangedFlag = 1
 
     ##########################################################################################################
     ##########################################################################################################
@@ -2542,7 +2574,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
             ##########################################################################################################
             if self.EnabledState_NeedsToBeChangedFlag == 1:
-                self.EmergencyStopState_ToBeSet = self.EnabledState_ToBeSet
+                self.EmergencyStopState_ToBeSet = int(not self.EnabledState_ToBeSet) #WHY DOES THE EnabledState_NeedsToBeChangedFlag fire EmergencyStop?
                 self.EmergencyStopState_NeedsToBeChangedFlag = 1
                 self.EnabledState_NeedsToBeChangedFlag = 0
             ##########################################################################################################
@@ -2560,9 +2592,9 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
             ##########################################################################################################
 
             ##########################################################################################################
-            if self.HomeOrBrushlessCounter_NeedsToBeChangedFlag == 1:
-                self.SetHomeOrBrushlessCounter(self.HomeOrBrushlessCounter_ToBeSet)
-                self.HomeOrBrushlessCounter_NeedsToBeChangedFlag = 0
+            if self.HomeOrBrushlessCounterOnDevice_NeedsToBeChangedFlag == 1:
+                self.SetHomeOrBrushlessCounterOnDevice(self.HomeOrBrushlessCounterOnDevice_ToBeSet)
+                self.HomeOrBrushlessCounterOnDevice_NeedsToBeChangedFlag = 0
             ##########################################################################################################
 
             ##########################################################################################################
@@ -2760,6 +2792,14 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             self.UpdateFrequencyCalculation_DedicatedRxThread_Filtered()
                             ##########################################
 
+                            ########################################################################################################## unicorn
+                            if self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_NeedsToBeChangedFlag == 1:
+                                if "AbsoluteBrushlessCounter" in self.MostRecentDataDict:
+                                    self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet = self.MostRecentDataDict["AbsoluteBrushlessCounter"]
+                                    print("self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet: " + str(self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet))
+                                    self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_NeedsToBeChangedFlag = 0
+                            ##########################################################################################################
+
                             ##########################################
                             self.MostRecentDataDict["Time"] = self.CurrentTime_CalculatedFromDedicatedRxThread
                             self.MostRecentDataDict["DataStreamingFrequency_CalculatedFromDedicatedRxThread"] = self.DataStreamingFrequency_CalculatedFromDedicatedRxThread
@@ -2772,7 +2812,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             self.MostRecentDataDict["ControlMode_EnglishString"] = self.ControlMode_EnlishString
 
                             #print("self.MostRecentDataDict: " + str(self.MostRecentDataDict))
-                            self.MostRecentDataDict["Position_Rev"] = self.MostRecentDataDict["AbsoluteBrushlessCounter"]/(self.NumberOfMagnetsInMotor*3.0)
+                            self.MostRecentDataDict["Position_Rev"] = (self.MostRecentDataDict["AbsoluteBrushlessCounter"] - self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet)/(self.NumberOfMagnetsInMotor*3.0)
                             self.MostRecentDataDict["Position_Radians"] = self.MostRecentDataDict["Position_Rev"]*2.0*math.pi
                             self.MostRecentDataDict["Position_Degrees"] = self.MostRecentDataDict["Position_Rev"]*360.0
 
@@ -2938,29 +2978,36 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
         #################################################
         #################################################
-        self.SetCurrentPositionAsHome_Button = Button(self.ButtonsFrame, text="Home Encoder", state="normal", width=15, command=lambda: self.SetCurrentPositionAsHome_Button_Response())
-        self.SetCurrentPositionAsHome_Button.grid(row=0, column=0, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.SetCurrentPositionAsHomeOnDevice_Button = Button(self.ButtonsFrame, text="OnDevice Home", state="normal", width=15, command=lambda: self.SetCurrentPositionAsHomeOnDevice_Button_Response())
+        self.SetCurrentPositionAsHomeOnDevice_Button.grid(row=0, column=0, padx=10, pady=10, columnspan=1, rowspan=1)
+        #################################################
+        #################################################
+
+        #################################################
+        #################################################
+        self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button = Button(self.ButtonsFrame, text="Soft Home", state="normal", width=15, command=lambda: self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button_Response())
+        self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button.grid(row=0, column=1, padx=10, pady=10, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
         self.EnabledState_Button = Button(self.ButtonsFrame, text="Enabled", state="normal", width=20, command=lambda: self.EnabledState_Button_Response())
-        self.EnabledState_Button.grid(row=0, column=1, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.EnabledState_Button.grid(row=0, column=2, padx=10, pady=10, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
         self.StopInAllModes_Button = Button(self.ButtonsFrame, text="Stop", state="normal", width=20, command=lambda: self.StopInAllModes_Button_Response())
-        self.StopInAllModes_Button.grid(row=0, column=2, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.StopInAllModes_Button.grid(row=0, column=3, padx=10, pady=10, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
         self.EmergencyStopState_Button = Button(self.ButtonsFrame, text="EmergencyStop", state="normal", width=20, command=lambda: self.EmergencyStopState_Button_Response())
-        self.EmergencyStopState_Button.grid(row=0, column=3, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.EmergencyStopState_Button.grid(row=0, column=4, padx=10, pady=10, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
@@ -3007,10 +3054,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
         #Roboteq Controllers User Manual v2.0, page 310 for values.
         #nn = Integral Gain *1,000,000, Example: ^KI 1 1500000: Set motor channel 1 Integral Gain to 1.5.
-        self.EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "Kp"),("Type", "float"), ("StartingVal", self.PID_Kp), ("MinVal", self.PID_Kp_Min), ("MaxVal", self.PID_Kp_Max), ("PIDgains_EntryWidth", self.PIDgains_EntryWidth),("PIDgains_LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
-                                                       dict([("Name", "Ki"),("Type", "float"), ("StartingVal", self.PID_Ki), ("MinVal", self.PID_Ki_Min), ("MaxVal", self.PID_Ki_Max),("PIDgains_EntryWidth", self.PIDgains_EntryWidth),("PIDgains_LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
-                                                       dict([("Name", "Kd"),("Type", "float"), ("StartingVal", self.PID_Kd), ("MinVal", self.PID_Kd_Min), ("MaxVal", self.PID_Kd_Max),("PIDgains_EntryWidth", self.PIDgains_EntryWidth),("PIDgains_LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
-                                                       dict([("Name", "IntegratorCap1to100percent"),("Type", "float"), ("StartingVal", self.PID_IntegratorCap1to100percent), ("MinVal", self.PID_IntegratorCap1to100percent_Min), ("MaxVal", self.PID_IntegratorCap1to100percent_Max),("PIDgains_EntryWidth", self.PIDgains_EntryWidth),("PIDgains_LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)])]
+        self.EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "Kp"),("Type", "float"), ("StartingVal", self.PID_Kp), ("MinVal", self.PID_Kp_Min), ("MaxVal", self.PID_Kp_Max), ("EntryWidth", self.PIDgains_EntryWidth),("LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
+                                                       dict([("Name", "Ki"),("Type", "float"), ("StartingVal", self.PID_Ki), ("MinVal", self.PID_Ki_Min), ("MaxVal", self.PID_Ki_Max),("EntryWidth", self.PIDgains_EntryWidth),("LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
+                                                       dict([("Name", "Kd"),("Type", "float"), ("StartingVal", self.PID_Kd), ("MinVal", self.PID_Kd_Min), ("MaxVal", self.PID_Kd_Max),("EntryWidth", self.PIDgains_EntryWidth),("LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
+                                                       dict([("Name", "IntegratorCap1to100percent"),("Type", "float"), ("StartingVal", self.PID_IntegratorCap1to100percent), ("MinVal", self.PID_IntegratorCap1to100percent_Min), ("MaxVal", self.PID_IntegratorCap1to100percent_Max),("EntryWidth", self.PIDgains_EntryWidth),("LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)])]
 
         self.EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", self.EntryListWithBlinking_ReubenPython2and3ClassObject_GUIparametersDict),
                                                                               ("EntryListWithBlinking_Variables_ListOfDicts", self.EntryListWithBlinking_Variables_ListOfDicts),
@@ -3050,13 +3097,28 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
     def EnabledState_Button_Response(self):
 
         if self.EnabledState_ToBeSet == 1:
-            self.EnabledState_ToBeSet = 0
+            self.EnableMotorsFromExternalProgram(0)
         else:
-            self.EnabledState_ToBeSet = 1
+            self.EnableMotorsFromExternalProgram(1)
 
-        self.EnabledState_NeedsToBeChangedFlag = 1
+        #self.MyPrint_WithoutLogFile("EnabledState_Button_Response: Event fired!")
 
-        self.MyPrint_WithoutLogFile("EnabledState_Button_Response: Event fired!")
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def EnableMotorsFromExternalProgram(self, EnabledStateInput):
+
+        EnabledStateInput = int(EnabledStateInput)
+
+        if EnabledStateInput in [0, 1]:
+            self.EnabledState_ToBeSet = EnabledStateInput
+            self.EnabledState_NeedsToBeChangedFlag = 1
+    
+            #self.MyPrint_WithoutLogFile("EnableMotorsFromExternalProgram: Event fired!")
+        else:
+            self.MyPrint_WithoutLogFile("EnableMotorsFromExternalProgram: Error, input value must be 0 or 1.")
 
     ##########################################################################################################
     ##########################################################################################################
@@ -3066,13 +3128,28 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
     def EmergencyStopState_Button_Response(self):
 
         if self.EmergencyStopState_ToBeSet == 1:
-            self.EmergencyStopState_ToBeSet = 0
+            self.EmergencyStopFromExternalProgram(0)
         else:
-            self.EmergencyStopState_ToBeSet = 1
+            self.EmergencyStopFromExternalProgram(1)
 
-        self.EmergencyStopState_NeedsToBeChangedFlag = 1
+        #self.MyPrint_WithoutLogFile("EmergencyStopState_Button_Response: Event fired!")
 
-        self.MyPrint_WithoutLogFile("EmergencyStopState_Button_Response: Event fired!")
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def EmergencyStopFromExternalProgram(self, EmergencyStopStateInput):
+
+        EmergencyStopStateInput = int(EmergencyStopStateInput)
+
+        if EmergencyStopStateInput in [0, 1]:
+            self.EmergencyStopState_ToBeSet = EmergencyStopStateInput
+            self.EmergencyStopState_NeedsToBeChangedFlag = 1
+    
+            #self.MyPrint_WithoutLogFile("EmergencyStopFromExternalProgram: Event fired!")
+        else:
+            self.MyPrint_WithoutLogFile("EmergencyStopFromExternalProgram: Error, input value must be 0 or 1.")
 
     ##########################################################################################################
     ##########################################################################################################
@@ -3090,11 +3167,22 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetCurrentPositionAsHome_Button_Response(self):
+    def SetCurrentPositionAsHomeOnDevice_Button_Response(self):
 
-        self.SetCurrentPositionAsHome()
+        self.SetCurrentPositionAsHomeOnDevice()
 
-        #self.MyPrint_WithoutLogFile("SetCurrentPositionAsHome_Button_Response: Event fired!")
+        #self.MyPrint_WithoutLogFile("SetCurrentPositionAsHomeOnDevice_Button_Response: Event fired!")
+
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def SetCurrentPositionAsHomeSoftwareOffsetOnly_Button_Response(self):
+
+        self.SetCurrentPositionAsHomeSoftwareOffsetOnly()
+
+        #self.MyPrint_WithoutLogFile("SetCurrentPositionAsHomeSoftwareOffsetOnly_Button_Response: Event fired!")
 
     ##########################################################################################################
     ##########################################################################################################
@@ -3179,7 +3267,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def LimitTextEntryInput(self, min_val, max_val, test_val, TextEntryObject, NumberOfDecimalPlaces = 3):
+    def LimitTextEntryInput(self, min_val, max_val, test_val, TextEntryObject):
 
         try:
             test_val = float(test_val)  # MUST HAVE THIS LINE TO CATCH STRINGS PASSED INTO THE FUNCTION
@@ -3191,17 +3279,19 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
             else:
                 test_val = test_val
 
+        except:
+            pass
+
+        try:
             if TextEntryObject != "":
                 if isinstance(TextEntryObject, list) == 1:  # Check if the input 'TextEntryObject' is a list or not
-                    TextEntryObject[0].set(self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(test_val, 0, NumberOfDecimalPlaces))  # Reset the text, overwriting the bad value that was entered.
+                    TextEntryObject[0].set(str(test_val))  # Reset the text, overwriting the bad value that was entered.
                 else:
-                    TextEntryObject.set(self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(test_val, 0, NumberOfDecimalPlaces))  # Reset the text, overwriting the bad value that was entered.
-
-            return test_val
-
+                    TextEntryObject.set(str(test_val))  # Reset the text, overwriting the bad value that was entered.
         except:
-            exceptions = sys.exc_info()[0]
-            print("LimitTextEntryInput: Exceptions: %s" % exceptions)
+            pass
+
+        return test_val
     ##########################################################################################################
     ##########################################################################################################
 
@@ -3411,12 +3501,12 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
             ##########################################################################################################
             if isinstance(DictToPrint[Key], dict): #RECURSION
                 ProperlyFormattedStringForPrinting = ProperlyFormattedStringForPrinting + \
-                                                     Key + ":\n" + \
+                                                     str(Key) + ":\n" + \
                                                      self.ConvertDictToProperlyFormattedStringForPrinting(DictToPrint[Key], NumberOfDecimalsPlaceToUse, NumberOfEntriesPerLine, NumberOfTabsBetweenItems)
 
             else:
                 ProperlyFormattedStringForPrinting = ProperlyFormattedStringForPrinting + \
-                                                     Key + ": " + \
+                                                     str(Key) + ": " + \
                                                      self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(DictToPrint[Key], 0, NumberOfDecimalsPlaceToUse)
             ##########################################################################################################
 

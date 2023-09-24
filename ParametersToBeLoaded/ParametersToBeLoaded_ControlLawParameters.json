@@ -15,22 +15,26 @@
 
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 1,
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
-    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.98,
+    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.9,
 
     "Velocity_V_RMC_MetersPerSec_Commanded_DeadbandThreshold": 0.050,
-    "Velocity_V_RMC_MetersPerSec_Commanded_JoystickToMetersPerSecGain": 0.900,
+    "Velocity_V_RMC_MetersPerSec_Commanded_JoystickToMetersPerSecGain": 1.000,
+
+    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 1,
+    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
+    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.9,
 
     "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_DeadbandThreshold": 0.050,
-    "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_JoystickToRadiansPerSecGain": 0.900,
+    "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_JoystickToRadiansPerSecGain": 0.400,
 
     "LQR_ParametersToBeLoaded_Directions": "LQR Parameters.",
-    "LQR_PitchControl_GainVectorElement_Ktheta_0": -20.0,
-    "LQR_PitchControl_GainVectorElement_Ktheta_1": -75.0,
-    "LQR_PitchControl_GainVectorElement_Ktheta_2": -600,
+    "LQR_PitchControl_GainVectorElement_Ktheta_0": -50.0,
+    "LQR_PitchControl_GainVectorElement_Ktheta_1": -50.0,
+    "LQR_PitchControl_GainVectorElement_Ktheta_2": -1500,
     "LQR_PitchControl_GainVectorElement_Ktheta_3": -100,
     "LQR_YawControl_GainVectorElement_Kdelta_0": 0.0,
     "LQR_YawControl_GainVectorElement_Kdelta_1": -50.0,
-    "Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION": 0.25,
+    "Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION": 10.25,
     "YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION": 0.05,
 
     "Pitch_ParametersToBeLoaded_Directions": "Pitch -User sets ... (-11111 = Derived).",
@@ -39,8 +43,11 @@
     "Pitch_PosControl_PID_gain_Kd": -40.0,
     "Pitch_PosControl_PID_ErrorSum_Max": 0.017,
 
+    "MaxCommandFromControlLaw_Motor0": 250.0,
+    "MaxCommandFromControlLaw_Motor1": 250.0,
+
     "SINUSOIDAL_MOTION_INPUT_ROMtestTimeToPeakAngle": 2.0,
-    "SINUSOIDAL_MOTION_INPUT_MinValue": -20.0,
-    "SINUSOIDAL_MOTION_INPUT_MaxValue": 20.0
+    "SINUSOIDAL_MOTION_INPUT_MinValue": -50.0,
+    "SINUSOIDAL_MOTION_INPUT_MaxValue": 50.0
 }
 
