@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision K, 05/10/2023
+Software Revision M, 07/31/2024
 
 Verified working on: Python 3.8 for Windows 8.1, 10 64-bit, Ubuntu 20.04, and Raspberry Pi Buster (no Mac testing yet).
 THE SEPARATE-PROCESS-SPAWNING COMPONENT OF THIS CLASS IS NOT AVAILABLE IN PYTHON 2 DUE TO LIMITATION OF
@@ -66,8 +66,10 @@ def getPreciseSecondsTimeStampString():
 def TestButtonResponse():
     global MyPrint_ReubenPython2and3ClassObject
     global USE_MYPRINT_FLAG
+    global TestButton_EventNeedsToBeHandledFlag
 
     if USE_MYPRINT_FLAG == 1:
+        TestButton_EventNeedsToBeHandledFlag = 1
         MyPrint_ReubenPython2and3ClassObject.my_print("Test Button was Pressed!")
     else:
         print("Test Button was Pressed!")
@@ -267,10 +269,13 @@ if __name__ == '__main__':
     SINUSOIDAL_MOTION_INPUT_ROMtestTimeToPeakAngle = 2.0
 
     global SINUSOIDAL_MOTION_INPUT_MinValue
-    SINUSOIDAL_MOTION_INPUT_MinValue = -50
+    SINUSOIDAL_MOTION_INPUT_MinValue = -4.5
 
     global SINUSOIDAL_MOTION_INPUT_MaxValue
-    SINUSOIDAL_MOTION_INPUT_MaxValue = 50
+    SINUSOIDAL_MOTION_INPUT_MaxValue = 4.5
+
+    global TestButton_EventNeedsToBeHandledFlag
+    TestButton_EventNeedsToBeHandledFlag = 0
     #################################################
     #################################################
     
@@ -309,7 +314,7 @@ if __name__ == '__main__':
     global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict
     MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_GUIparametersDict),
                                                                                         ("ParentPID", os.getpid()),
-                                                                                        ("WatchdogTimerDurationSeconds_ExpirationWillEndStandAlonePlottingProcess", 5.0),
+                                                                                        ("WatchdogTimerDurationSeconds_ExpirationWillEndStandAlonePlottingProcess", 10.0),
                                                                                         ("MarkerSize", 3),
                                                                                         ("CurvesToPlotNamesAndColorsDictOfLists", dict([("NameList", ["PlotCurve0", "PlotCurve1", "PlotCurve2"]),("ColorList", ["Red", "Green", "Blue"])])),
                                                                                         ("NumberOfDataPointToPlot", 25),
@@ -318,7 +323,7 @@ if __name__ == '__main__':
                                                                                         ("XaxisNumberOfDecimalPlacesForLabels", 3),
                                                                                         ("YaxisNumberOfDecimalPlacesForLabels", 3),
                                                                                         ("XaxisAutoscaleFlag", 1),
-                                                                                        ("YaxisAutoscaleFlag", 1),
+                                                                                        ("YaxisAutoscaleFlag", 0),
                                                                                         ("X_min", 0.0),
                                                                                         ("X_max", 5.0),
                                                                                         ("Y_min", -5.0),
@@ -336,7 +341,7 @@ if __name__ == '__main__':
         except:
             exceptions = sys.exc_info()[0]
             print("MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject, exceptions: %s" % exceptions)
-            traceback.print_exc()
+            #traceback.print_exc()
     #################################################
     #################################################
 
@@ -368,7 +373,7 @@ if __name__ == '__main__':
         except:
             exceptions = sys.exc_info()[0]
             print("MyPrint_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions)
-            traceback.print_exc()
+            #traceback.print_exc()
     #################################################
     #################################################
 
@@ -430,6 +435,22 @@ if __name__ == '__main__':
                     #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot("PlotCurve2", CurrentTime_MainLoopThread, DesiredAngleDeg_3)
 
                 time.sleep(0.050)
+            #################################################
+
+            #################################################
+            #################################################
+            if TestButton_EventNeedsToBeHandledFlag == 1:
+
+                #################################################
+                if MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict["YaxisAutoscaleFlag"] == 0:
+                    MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict["YaxisAutoscaleFlag"] = 1
+                else:
+                    MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict["YaxisAutoscaleFlag"] = 0
+                #################################################
+
+                MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalUpdateSetupDict(MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict)
+                TestButton_EventNeedsToBeHandledFlag = 0
+            #################################################
             #################################################
 
         ##################################################

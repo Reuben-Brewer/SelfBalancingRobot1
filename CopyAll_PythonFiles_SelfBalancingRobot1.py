@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision H, 09/24/2023
+Software Revision I, 08/31/2024
 
 Verified working on: Python 3.9 for Windows 10 64-bit and Raspberry Pi Bullseye.
 '''
@@ -89,6 +89,9 @@ try:
     CopyEntireDirectoryWithContents("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\HelperBashAndPythonScripts", FileDirectoryToCreate + "\\HelperBashAndPythonScripts") #Copies the entire directory
     CopyEntireDirectoryWithContents("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\IconDesktopAndRClocalFiles", FileDirectoryToCreate + "\\IconDesktopAndRClocalFiles") #Copies the entire directory
     CreateNewDirectoryIfItDoesntExist(FileDirectoryToCreate + "\\LogFiles")
+
+    shutil.copy("G:\\My Drive\\CodeReuben\\BarGraphDisplay_ReubenPython3Class\\BarGraphDisplay_ReubenPython3Class.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\BarGraphDisplay_ReubenPython3Class\\test_program_for_BarGraphDisplay_ReubenPython3Class.py", FileDirectoryToCreate)
 
     shutil.copy("G:\\My Drive\\CodeReuben\\EntryListWithBlinking_ReubenPython2and3Class\\EntryListWithBlinking_ReubenPython2and3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\EntryListWithBlinking_ReubenPython2and3Class\\test_program_for_EntryListWithBlinking_ReubenPython2and3Class.py", FileDirectoryToCreate)

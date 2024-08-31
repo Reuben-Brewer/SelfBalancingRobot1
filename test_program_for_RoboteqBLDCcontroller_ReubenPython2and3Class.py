@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision G, 09/24/2023
+Software Revision H, 08/31/2024
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
 '''
@@ -215,8 +215,8 @@ if __name__ == '__main__':
     global USE_RoboteqBLDCcontroller_FLAG
     USE_RoboteqBLDCcontroller_FLAG = 1
 
-    global USE_MYPRINT_FLAG
-    USE_MYPRINT_FLAG = 1
+    global USE_MyPrint_FLAG
+    USE_MyPrint_FLAG = 1
 
     global USE_PLOTTER_FLAG
     USE_PLOTTER_FLAG = 1
@@ -508,14 +508,14 @@ if __name__ == '__main__':
 
         except:
             exceptions = sys.exc_info()[0]
-            print("RoboteqBLDCcontroller_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions, 0)
+            print("RoboteqBLDCcontroller_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions)
             traceback.print_exc()
     #################################################
     #################################################
 
     #################################################
     #################################################
-    if USE_MYPRINT_FLAG == 1:
+    if USE_MyPrint_FLAG == 1:
 
         MyPrint_ReubenPython2and3ClassObject_GUIparametersDict = dict([("USE_GUI_FLAG", USE_GUI_FLAG and SHOW_IN_GUI_MYPRINT_FLAG),
                                                                         ("root", Tab_MyPrint),
@@ -600,7 +600,7 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    if USE_MYPRINT_FLAG == 1 and MYPRINT_OPEN_FLAG != 1:
+    if USE_MyPrint_FLAG == 1 and MYPRINT_OPEN_FLAG != 1:
         print("Failed to open MyPrint_ReubenPython2and3ClassObject.")
         ExitProgram_Callback()
     #################################################
@@ -616,7 +616,7 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    print("Starting main loop 'test_program_for_RoboteqBLDCcontroller_ReubenPython2and3Class.")
+    print("Starting main loop 'test_program_for_RoboteqBLDCcontroller_ReubenPython2and3Class.py'")
     StartingTime_MainLoopThread = getPreciseSecondsTimeStampString()
 
     while(EXIT_PROGRAM_FLAG == 0):

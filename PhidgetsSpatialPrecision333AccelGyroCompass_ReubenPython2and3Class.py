@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision H, 09/24/2023
+Software Revision J, 08/31/2024
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (does not work on Mac).
 '''
@@ -170,6 +170,8 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
         self.RollPitchYaw_AbtXYZ_Dict = dict() #What's getting returned in self.MostRecentDataDict
         self.RollPitchYaw_Rate_AbtXYZ_Dict = dict() #What's getting returned in self.MostRecentDataDict
 
+        self.setAHRSParameters_NeedsToBeFiredFlag = 1
+
         self.MostRecentDataDict = dict()
         #########################################################
         #########################################################
@@ -184,7 +186,26 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
         print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: self.DictPN_IndividualParametersDict: " + str(self.DictPN_IndividualParametersDict))
         #########################################################
         #########################################################
-        
+
+        #########################################################
+        #########################################################
+        self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object = LowPassFilter_ReubenPython2and3Class(dict([
+                    ("UseMedianFilterFlag", 0),
+                    ("UseExponentialSmoothingFilterFlag", 0),
+                    ("ExponentialSmoothingFilterLambda", 1.0)]))
+
+        self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object = LowPassFilter_ReubenPython2and3Class(dict([
+                    ("UseMedianFilterFlag", 0),
+                    ("UseExponentialSmoothingFilterFlag", 0),
+                    ("ExponentialSmoothingFilterLambda", 1.0)]))
+
+        self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object = LowPassFilter_ReubenPython2and3Class(dict([
+                    ("UseMedianFilterFlag", 0),
+                    ("UseExponentialSmoothingFilterFlag", 0),
+                    ("ExponentialSmoothingFilterLambda", 1.0)]))
+        #########################################################
+        #########################################################
+
         #########################################################
         #########################################################
         if platform.system() == "Linux":
@@ -403,108 +424,6 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
 
         #########################################################
         #########################################################
-        if "RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag" in setup_dict:
-            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", setup_dict["RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag"])
-        else:
-            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = 1
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag" in setup_dict:
-            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", setup_dict["RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag"])
-        else:
-            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = 1
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda" in setup_dict:
-            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", setup_dict["RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda"], 0.0, 1.0)
-
-        else:
-            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = 0.5 #Default to no filtering, new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag" in setup_dict:
-            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", setup_dict["PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag"])
-        else:
-            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = 1
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag" in setup_dict:
-            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", setup_dict["PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag"])
-        else:
-            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = 1
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda" in setup_dict:
-            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", setup_dict["PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda"], 0.0, 1.0)
-
-        else:
-            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = 0.5 #Default to no filtering, new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag" in setup_dict:
-            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", setup_dict["YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag"])
-        else:
-            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = 1
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag" in setup_dict:
-            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", setup_dict["YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag"])
-        else:
-            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = 1
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        if "YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda" in setup_dict:
-            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", setup_dict["YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda"], 0.0, 1.0)
-
-        else:
-            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = 0.5 #Default to no filtering, new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
-
-        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda))
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
         if "AlgorithmMagnetometerGain" in setup_dict:
             self.AlgorithmMagnetometerGain = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("AlgorithmMagnetometerGain", setup_dict["AlgorithmMagnetometerGain"], 0.0, 1.0)
 
@@ -563,6 +482,84 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
 
         #########################################################
         #########################################################
+        self.UpdateDifferentiatedAngularVelocityFilterParameters(setup_dict)
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "AHRS_Parameters_angularVelocityThreshold" in setup_dict:
+            self.AHRS_Parameters_angularVelocityThreshold = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("AHRS_Parameters_angularVelocityThreshold", setup_dict["AHRS_Parameters_angularVelocityThreshold"], 0.0, 1000000000.0)
+
+        else:
+            self.AHRS_Parameters_angularVelocityThreshold = 0.0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: AHRS_Parameters_angularVelocityThreshold: " + str(self.AHRS_Parameters_angularVelocityThreshold))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "AHRS_Parameters_angularVelocityDeltaThreshold" in setup_dict:
+            self.AHRS_Parameters_angularVelocityDeltaThreshold = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("AHRS_Parameters_angularVelocityDeltaThreshold", setup_dict["AHRS_Parameters_angularVelocityDeltaThreshold"], 0.0, 1000000000.0)
+
+        else:
+            self.AHRS_Parameters_angularVelocityDeltaThreshold = 0.0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: AHRS_Parameters_angularVelocityDeltaThreshold: " + str(self.AHRS_Parameters_angularVelocityDeltaThreshold))
+        #########################################################
+        #########################################################
+        
+        #########################################################
+        #########################################################
+        if "AHRS_Parameters_accelerationThreshold" in setup_dict:
+            self.AHRS_Parameters_accelerationThreshold = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("AHRS_Parameters_accelerationThreshold", setup_dict["AHRS_Parameters_accelerationThreshold"], 0.0, 1000000000.0)
+
+        else:
+            self.AHRS_Parameters_accelerationThreshold = 0.0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: AHRS_Parameters_accelerationThreshold: " + str(self.AHRS_Parameters_accelerationThreshold))
+        #########################################################
+        #########################################################
+        
+        #########################################################
+        #########################################################
+        if "AHRS_Parameters_magTime" in setup_dict:
+            self.AHRS_Parameters_magTime = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("AHRS_Parameters_magTime", setup_dict["AHRS_Parameters_magTime"], 0.0, 1000000000.0)
+
+        else:
+            self.AHRS_Parameters_magTime = 0.0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: AHRS_Parameters_magTime: " + str(self.AHRS_Parameters_magTime))
+        #########################################################
+        #########################################################
+        
+        #########################################################
+        #########################################################
+        if "AHRS_Parameters_accelTime" in setup_dict:
+            self.AHRS_Parameters_accelTime = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("AHRS_Parameters_accelTime", setup_dict["AHRS_Parameters_accelTime"], 0.0, 1000000000.0)
+
+        else:
+            self.AHRS_Parameters_accelTime = 0.0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: AHRS_Parameters_accelTime: " + str(self.AHRS_Parameters_accelTime))
+        #########################################################
+        #########################################################
+        
+        #########################################################
+        #########################################################
+        if "AHRS_Parameters_biasTime" in setup_dict:
+            self.AHRS_Parameters_biasTime = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("AHRS_Parameters_biasTime", setup_dict["AHRS_Parameters_biasTime"], 0.0, 1000000000.0)
+
+        else:
+            self.AHRS_Parameters_biasTime = 0.0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: AHRS_Parameters_biasTime: " + str(self.AHRS_Parameters_biasTime))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
         self.ZeroGyros_NeedsToBeChangedFlag = self.ZeroGyrosAtStartOfProgramFlag
         self.ZeroAlgorithm_NeedsToBeChangedFlag = self.ZeroAlgorithmAtStartOfProgramFlag
         #########################################################
@@ -573,25 +570,6 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
         self.PrintToGui_Label_TextInputHistory_List = [" "]*self.NumberOfPrintLines
         self.PrintToGui_Label_TextInput_Str = ""
         self.GUI_ready_to_be_updated_flag = 0
-        #########################################################
-        #########################################################
-
-        #########################################################
-        #########################################################
-        self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object = LowPassFilter_ReubenPython2and3Class(dict([
-                    ("UseMedianFilterFlag", self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
-                    ("UseExponentialSmoothingFilterFlag", self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
-                    ("ExponentialSmoothingFilterLambda", self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda)]))
-
-        self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object = LowPassFilter_ReubenPython2and3Class(dict([
-                    ("UseMedianFilterFlag", self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
-                    ("UseExponentialSmoothingFilterFlag", self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
-                    ("ExponentialSmoothingFilterLambda", self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda)]))
-
-        self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object = LowPassFilter_ReubenPython2and3Class(dict([
-                    ("UseMedianFilterFlag", self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
-                    ("UseExponentialSmoothingFilterFlag", self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
-                    ("ExponentialSmoothingFilterLambda", self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda)]))
         #########################################################
         #########################################################
 
@@ -755,7 +733,7 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
                                                                                       dict([("Variable_Name", "Pitch_AbtYaxis_Degrees"),("DataCollectionDurationInSecondsForSnapshotting", self.DataCollectionDurationInSecondsForSnapshottingAndZeroing)]),
                                                                                       dict([("Variable_Name", "Yaw_AbtZaxis_Degrees"),("DataCollectionDurationInSecondsForSnapshotting", self.DataCollectionDurationInSecondsForSnapshottingAndZeroing)])]
 
-            self.ZeroAndSnapshotData_ReubenPython2and3ClassObject_GUIparametersDict = dict([("USE_GUI_FLAG", self.USE_GUI_FLAG), #def gui
+            self.ZeroAndSnapshotData_ReubenPython2and3ClassObject_GUIparametersDict = dict([("USE_GUI_FLAG", self.USE_GUI_FLAG),
                                             ("root", self.root),
                                             ("EnableInternal_MyPrint_Flag", 1),
                                             ("NumberOfPrintLines", 10),
@@ -797,6 +775,145 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
     #######################################################################################################################
     def __del__(self):
         pass
+    #######################################################################################################################
+    #######################################################################################################################
+
+    #######################################################################################################################
+    #######################################################################################################################
+    def UpdateDifferentiatedAngularVelocityFilterParameters(self, setup_dict):
+
+        #########################################################
+        #########################################################
+        if "RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag" in setup_dict:
+            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", setup_dict["RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag"])
+        else:
+            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = 0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag" in setup_dict:
+            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", setup_dict["RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag"])
+        else:
+            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = 1
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda" in setup_dict:
+            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", setup_dict["RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda"], 0.0, 1.0)
+
+        else:
+            self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = 0.98 #Default to no filtering, new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag" in setup_dict:
+            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", setup_dict["PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag"])
+        else:
+            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = 0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag" in setup_dict:
+            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", setup_dict["PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag"])
+        else:
+            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = 1
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda" in setup_dict:
+            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", setup_dict["PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda"], 0.0, 1.0)
+
+        else:
+            self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = 0.98 #Default to no filtering, new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag" in setup_dict:
+            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", setup_dict["YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag"])
+        else:
+            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag = 0
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag" in setup_dict:
+            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = self.PassThrough0and1values_ExitProgramOtherwise("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", setup_dict["YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag"])
+        else:
+            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag = 1
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda" in setup_dict:
+            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", setup_dict["YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda"], 0.0, 1.0)
+
+        else:
+            self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda = 0.98 #Default to no filtering, new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
+
+        print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class __init__: YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object.UpdateFilterParameters(dict([
+                    ("UseMedianFilterFlag", self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                    ("UseExponentialSmoothingFilterFlag", self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                    ("ExponentialSmoothingFilterLambda", self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda)]),
+                    StringPrefixToPrint="Updated: ")
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object.UpdateFilterParameters(dict([
+                    ("UseMedianFilterFlag", self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                    ("UseExponentialSmoothingFilterFlag", self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                    ("ExponentialSmoothingFilterLambda", self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda)]),
+                    StringPrefixToPrint="Updated: ")
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_MyLowPassFilterClass_Object.UpdateFilterParameters(dict([
+                    ("UseMedianFilterFlag", self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                    ("UseExponentialSmoothingFilterFlag", self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                    ("ExponentialSmoothingFilterLambda", self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda)]),
+                    StringPrefixToPrint="Updated: ")
+        #########################################################
+        #########################################################
+
     #######################################################################################################################
     #######################################################################################################################
 
@@ -1040,6 +1157,96 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
 
         except PhidgetException as e:
             print("SpatialOnAlgorithmDataCallback ERROR, Phidget Exception %i: %s" % (e.code, e.details))
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def SetAHRSParameters_MyFunction(self, AHRS_Parameters_angularVelocityThreshold, AHRS_Parameters_angularVelocityDeltaThreshold, AHRS_Parameters_accelerationThreshold, AHRS_Parameters_magTime, AHRS_Parameters_accelTime, AHRS_Parameters_biasTime):
+        '''
+        AHRS_Parameters_angularVelocityThreshold(type: float):The maximum angular velocity reading where the device is assumed to be "at rest"
+        AHRS_Parameters_angularVelocityDeltaThreshold(type: float):The acceptable amount of change in angular velocity between measurements before movement is assumed.
+        AHRS_Parameters_accelerationThreshold(type: float):The maximum acceleration applied to the device (minus gravity) where it is assumed to be "at rest". This is also the maximum acceleration allowable before the device stops correcting to the acceleration vector.
+        AHRS_Parameters_magTime(type: float):The time it will take to correct the heading 95% of the way to aligning with the compass (in seconds),up to 15 degrees of error. Beyond 15 degrees, this is the time it will take for the bearing to move 45 degrees towards the compass reading. Remember you can zero the algorithm at any time to instantly realign the spatial with acceleration and magnetic field vectors regardless of magnitude.
+        AHRS_Parameters_accelTime(type: float):The time it will take to correct the pitch and roll 95% of the way to aligning with the accelerometer (in seconds).
+        AHRS_Parameters_biasTime(type: float):The time it will take to have the gyro biases settle to within 95% of the measured steady state (in seconds).
+        '''
+
+        self.AHRS_Parameters_angularVelocityThreshold = self.LimitNumber_FloatOutputOnly(0.0, 1000000000.0, AHRS_Parameters_angularVelocityThreshold)
+        self.AHRS_Parameters_angularVelocityDeltaThreshold = self.LimitNumber_FloatOutputOnly(0.0, 1000000000.0, AHRS_Parameters_angularVelocityDeltaThreshold)
+        self.AHRS_Parameters_accelerationThreshold = self.LimitNumber_FloatOutputOnly(0.0, 1000000000.0, AHRS_Parameters_accelerationThreshold)
+        self.AHRS_Parameters_magTime = self.LimitNumber_FloatOutputOnly(0.0, 1000000000.0, AHRS_Parameters_magTime)
+        self.AHRS_Parameters_accelTime = self.LimitNumber_FloatOutputOnly(0.0, 1000000000.0, AHRS_Parameters_accelTime)
+        self.AHRS_Parameters_biasTime = self.LimitNumber_FloatOutputOnly(0.0, 1000000000.0, AHRS_Parameters_biasTime)
+
+        self.setAHRSParameters_NeedsToBeFiredFlag = 1
+
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def LimitNumber_IntOutputOnly(self, min_val, max_val, test_val):
+        if test_val > max_val:
+            test_val = max_val
+
+        elif test_val < min_val:
+            test_val = min_val
+
+        else:
+            test_val = test_val
+
+        test_val = int(test_val)
+
+        return test_val
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def LimitNumber_FloatOutputOnly(self, min_val, max_val, test_val):
+        if test_val > max_val:
+            test_val = max_val
+
+        elif test_val < min_val:
+            test_val = min_val
+
+        else:
+            test_val = test_val
+
+        test_val = float(test_val)
+
+        return test_val
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def LimitTextEntryInput(self, min_val, max_val, test_val, TextEntryObject):
+
+        try:
+            test_val = float(test_val)  # MUST HAVE THIS LINE TO CATCH STRINGS PASSED INTO THE FUNCTION
+
+            if test_val > max_val:
+                test_val = max_val
+            elif test_val < min_val:
+                test_val = min_val
+            else:
+                test_val = test_val
+
+        except:
+            pass
+
+        try:
+            if TextEntryObject != "":
+                if isinstance(TextEntryObject, list) == 1:  # Check if the input 'TextEntryObject' is a list or not
+                    TextEntryObject[0].set(str(test_val))  # Reset the text, overwriting the bad value that was entered.
+                else:
+                    TextEntryObject.set(str(test_val))  # Reset the text, overwriting the bad value that was entered.
+        except:
+            pass
+
+        return test_val
     ##########################################################################################################
     ##########################################################################################################
 
@@ -1304,6 +1511,26 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
                 ##########################################################################################################
 
                 ##########################################################################################################
+                if self.setAHRSParameters_NeedsToBeFiredFlag == 1:
+                    self.Spatial_PhidgetsSpatialObject.setAHRSParameters(self.AHRS_Parameters_angularVelocityThreshold,
+                                                                         self.AHRS_Parameters_angularVelocityDeltaThreshold,
+                                                                         self.AHRS_Parameters_accelerationThreshold,
+                                                                         self.AHRS_Parameters_magTime,
+                                                                         self.AHRS_Parameters_accelTime,
+                                                                         self.AHRS_Parameters_biasTime)
+
+                    print("setAHRSParameters event fired for\n" +
+                          "self.AHRS_Parameters_angularVelocityThreshold = " + str(self.AHRS_Parameters_angularVelocityThreshold) + "\n" +\
+                          "self.AHRS_Parameters_angularVelocityDeltaThreshold = " + str(self.AHRS_Parameters_angularVelocityDeltaThreshold) + "\n" +\
+                          "self.AHRS_Parameters_accelerationThreshold = " + str(self.AHRS_Parameters_accelerationThreshold) + "\n" +\
+                          "self.AHRS_Parameters_magTime = " + str(self.AHRS_Parameters_magTime) + "\n" +\
+                          "self.AHRS_Parameters_accelTime = " + str(self.AHRS_Parameters_accelTime) + "\n" +\
+                          "self.AHRS_Parameters_biasTime = " + str(self.AHRS_Parameters_biasTime))
+
+                    self.setAHRSParameters_NeedsToBeFiredFlag = 0
+                ##########################################################################################################
+
+                ##########################################################################################################
                 if self.SpatialData_AccelGyroMag_EventHandler_Queue.qsize() > 0:
                     [Acceleration_PhidgetUnits_Raw_temp, AngularRate_PhidgetUnits_Raw_temp, MagneticField_PhidgetUnits_Raw_temp, Timestamp_temp] = self.SpatialData_AccelGyroMag_EventHandler_Queue.get()
 
@@ -1403,14 +1630,6 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
                                             ("DataStreamingFrequency_CalculatedFromMainThread", self.DataStreamingFrequency_CalculatedFromMainThread),
                                             ("DataStreamingFrequency_TimestampFromPhidget_AlgorithmData_Quaternions", self.DataStreamingFrequency_TimestampFromPhidget_AlgorithmData_Quaternions),
                                             ("Time", Timestamp_DirectFromDataEventHandler_temp)])
-
-                                            #("DataStreamingFrequency_TimestampFromPhidget_SpatialData_AccelGyroMag", self.DataStreamingFrequency_TimestampFromPhidget_SpatialData_AccelGyroMag),
-                                            #("Roll_AbtXaxis_Degrees", self.Roll_AbtXaxis_Degrees),
-                                            #("Pitch_AbtYaxis_Degrees", self.Pitch_AbtYaxis_Degrees),
-                                            #("Yaw_AbtZaxis_Degrees", self.Yaw_AbtZaxis_Degrees),
-                                            #("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED", self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED),
-                                            #("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED", self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED),
-                                            #("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED", self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED),
                         ###################################################
                         ###################################################
 
@@ -1627,6 +1846,19 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
                                                 "\nRollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED: " + self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED, 0, 3) + \
                                                 "\nPitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED: " + self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED, 0, 3) + \
                                                 "\nYawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED: " + self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_SMOOTHED, 0, 3) + \
+                                                " " + \
+                                                "\nRoll DifferentiatedAngularVelocity FILTER parameters: Median: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag) + \
+                                                ", Exp: " + str(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag) + \
+                                                ", Lambda: " + self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(self.RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda, 0, 3) + \
+                                                " " +\
+                                                "\nPitch DifferentiatedAngularVelocity FILTER parameters: Median: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag) + \
+                                                ", Exp: " + str(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag) + \
+                                                ", Lambda: " + self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(self.PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda, 0, 3) + \
+                                                " " +\
+                                                "\nYaw DifferentiatedAngularVelocity FILTER parameters: Median: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag) + \
+                                                ", Exp: " + str(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag) + \
+                                                ", Lambda: " + self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(self.YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda, 0, 3) + \
+                                                " " +\
                                                 "\nSpatialData Queue Size: " + str(self.SpatialData_AccelGyroMag_EventHandler_Queue.qsize()) + \
                                                 "\nAlgorithmData Queue Size: " + str(self.AlgorithmData_Quaternions_EventHandler_Queue.qsize())
                     #######################################################
@@ -1649,7 +1881,7 @@ class PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class(Frame):
 
                 except:
                     exceptions = sys.exc_info()[0]
-                    print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class GUI_update_clock ERROR: Exceptions: %s" % exceptions)
+                    print("PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class GUI_update_clock, Exceptions: %s" % exceptions)
                     traceback.print_exc()
                 #######################################################
                 #######################################################

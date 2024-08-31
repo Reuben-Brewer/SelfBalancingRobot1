@@ -6,14 +6,17 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision H, 09/24/2023
+Software Revision I, 08/31/2024
 
-Verified working on: Python 3.9 for Windows 10 64-bit and Raspberry Pi Bullseye.
+Verified working on: Python 3.8 for Windows 10 64-bit (not yet tested on Raspberry Pi, Ubuntu, or Mac).
 '''
 
 __author__ = 'reuben.brewer'
 
 #########################################################
+#https://github.com/Reuben-Brewer/BarGraphDisplay_ReubenPython3Class
+from BarGraphDisplay_ReubenPython3Class import *
+
 #https://github.com/Reuben-Brewer/EntryListWithBlinking_ReubenPython2and3Class
 from EntryListWithBlinking_ReubenPython2and3Class import *
 
@@ -58,20 +61,12 @@ import subprocess #for beep command line call
 import numpy
 import re
 from scipy.spatial.transform import Rotation #'sudo pip install scipy' (*AFTER* 'sudo apt install -y python3-scipy' if on Raspberry Pi)
-
-if platform.system() == "Windows":
-    import winsound
 #########################################################
 
 #########################################################
-if sys.version_info[0] < 3:
-    from Tkinter import * #Python 2
-    import tkFont
-    import ttk
-else:
-    from tkinter import * #Python 3
-    import tkinter.font as tkFont #Python 3
-    from tkinter import ttk
+from tkinter import *
+import tkinter.font as tkFont
+from tkinter import ttk
 #########################################################
 
 #########################################################
@@ -1121,6 +1116,10 @@ def GUI_update_clock():
     global EntryListWithBlinking_OPEN_FLAG
     global SHOW_IN_GUI_EntryListWithBlinking_FLAG
 
+    global BarGraphDisplay_ReubenPython3ClassObject
+    global BarGraphDisplay_OPEN_FLAG
+    global SHOW_IN_GUI_BarGraphDisplay_FLAG
+
     global MyPrint_ReubenPython2and3ClassObject
     global MyPrint_OPEN_FLAG
     global SHOW_IN_GUI_MyPrint_FLAG
@@ -1161,6 +1160,15 @@ def GUI_update_clock():
     global LQR_YawControl_GainVectorElement_Kdelta_0
     global LQR_YawControl_GainVectorElement_Kdelta_1
     global Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION
+    global Pitch_PosControl_PID_CommandToMotor_Term_1
+    global Pitch_PosControl_PID_CommandToMotor_Term_2
+    global Pitch_PosControl_PID_CommandToMotor_Term_3
+    global LQR_ControlLaw_Term_1
+    global LQR_ControlLaw_Term_2
+    global LQR_ControlLaw_Term_3
+    global LQR_ControlLaw_Term_4
+    global LQR_ControlLaw_Term_5
+    global LQR_ControlLaw_Term_6
 
     global Wheel_Theta_RL_Radians_Actual
     global Wheel_Theta_RR_Radians_Actual
@@ -1180,10 +1188,10 @@ def GUI_update_clock():
     global PitchAngle_Theta_Deg_Commanded
     global PitchAngle_Theta_Radians_Commanded
 
-    global PitchAngularRate_ThetaDot_DegPerSec_Actual
+    global PitchAngularRate_ThetaDot_DegreesPerSecond_Actual
     global PitchAngularRate_ThetaDot_RadiansPerSec_Actual
 
-    global PitchAngularRate_ThetaDot_DegPerSec_Commanded
+    global PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded
     global PitchAngularRate_ThetaDot_RadiansPerSec_Commanded
 
     global YawAngle_Delta_Deg_Actual
@@ -1195,8 +1203,8 @@ def GUI_update_clock():
     global YawAngularRate_DeltaDot_RadiansPerSec_Actual
     global YawAngularRate_DeltaDot_RadiansPerSec_Commanded
 
-    global YawAngularRate_DeltaDot_DegPerSec_Actual
-    global YawAngularRate_DeltaDot_DegPerSec_Commanded
+    global YawAngularRate_DeltaDot_DegreesPerSecond_Actual
+    global YawAngularRate_DeltaDot_DegreesPerSecond_Commanded
 
     global TorqueToBeCommanded_Motor0
     global TorqueToBeCommanded_Motor1
@@ -1245,8 +1253,8 @@ def GUI_update_clock():
                             "\nYawAngle_Delta_Deg_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngle_Delta_Deg_Actual, 3, 3) + \
                             "\t\tYawAngle_Delta_Deg_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngle_Delta_Deg_Commanded, 3, 3) + \
                             "\n" +\
-                            "\nYawAngularRate_DeltaDot_DegPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegPerSec_Actual, 3, 3) + \
-                            "\t\tYawAngularRate_DeltaDot_DegPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegPerSec_Commanded, 3, 3) + \
+                            "\nYawAngularRate_DeltaDot_DegreesPerSecond_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegreesPerSecond_Actual, 3, 3) + \
+                            "\t\tYawAngularRate_DeltaDot_DegreesPerSecond_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegreesPerSecond_Commanded, 3, 3) + \
                             "\n" +\
                             "\nLQR Ktheta_0: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_PitchControl_GainVectorElement_Ktheta_0, 3, 3) + \
                             "\t\tLQR Ktheta_1: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_PitchControl_GainVectorElement_Ktheta_1, 3, 3) + \
@@ -1355,6 +1363,37 @@ def GUI_update_clock():
             #########################################################
             if EntryListWithBlinking_OPEN_FLAG == 1 and SHOW_IN_GUI_EntryListWithBlinking_FLAG == 1:
                 EntryListWithBlinking_ReubenPython2and3ClassObject.GUI_update_clock()
+            #########################################################
+            #########################################################
+
+            #########################################################
+            #########################################################
+            if BarGraphDisplay_OPEN_FLAG == 1:
+
+                if ControlAlgorithm == "PID":
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_1", Pitch_PosControl_PID_CommandToMotor_Term_1) #Too slow to update from non-GUI loop.
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_2", Pitch_PosControl_PID_CommandToMotor_Term_2)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_3", Pitch_PosControl_PID_CommandToMotor_Term_3)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_4", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", 0.0)
+
+                elif ControlAlgorithm == "LQR":
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_1", LQR_ControlLaw_Term_1) #Too slow to update from non-GUI loop.
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_2", LQR_ControlLaw_Term_2)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_3", LQR_ControlLaw_Term_3)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_4", LQR_ControlLaw_Term_4)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", LQR_ControlLaw_Term_5)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", LQR_ControlLaw_Term_6)
+                else:
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_1", 0.0) #Too slow to update from non-GUI loop.
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_2", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_3", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_4", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", 0.0)
+
+                BarGraphDisplay_ReubenPython3ClassObject.GUI_update_clock()
             #########################################################
             #########################################################
 
@@ -1489,7 +1528,13 @@ def GUI_Thread():
     ExtraProgramControlGuiFrame = Frame(GUItabObjectsOrderedDict["MainControls"]["TabObject"])
     ExtraProgramControlGuiFrame["borderwidth"] = 2
     ExtraProgramControlGuiFrame["relief"] = "ridge"
-    ExtraProgramControlGuiFrame.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
+    ExtraProgramControlGuiFrame.grid(row=GUI_ROW_ExtraProgramControlGuiFrame,
+                                     column=GUI_COLUMN_ExtraProgramControlGuiFrame,
+                                     padx=GUI_PADX_ExtraProgramControlGuiFrame,
+                                     pady=GUI_PADY_ExtraProgramControlGuiFrame,
+                                     rowspan=GUI_ROWSPAN_ExtraProgramControlGuiFrame,
+                                     columnspan=GUI_COLUMNSPAN_ExtraProgramControlGuiFrame,
+                                     sticky='w')
     ###########################################################
     ###########################################################
 
@@ -1497,7 +1542,7 @@ def GUI_Thread():
     ############################################
     global ExitProgramButton
     ExitProgramButton = Button(ExtraProgramControlGuiFrame, text="Exit Program", state="normal", width=GUIbuttonWidth, command=lambda i=1: ExitProgram_Callback())
-    ExitProgramButton.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1,)
+    ExitProgramButton.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ExitProgramButton.config(font=("Helvetica", GUIbuttonFontSize))
     ############################################
     ############################################
@@ -1506,17 +1551,26 @@ def GUI_Thread():
     ############################################
     global JSONfiles_NeedsToBeLoadedFlagButton
     JSONfiles_NeedsToBeLoadedFlagButton = Button(ExtraProgramControlGuiFrame, text="Load JSON files", state="normal", width=GUIbuttonWidth, command=lambda i=1: JSONfiles_NeedsToBeLoadedFlag_ButtonResponse())
-    JSONfiles_NeedsToBeLoadedFlagButton.grid(row=0, column=1, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1,)
+    JSONfiles_NeedsToBeLoadedFlagButton.grid(row=1, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     JSONfiles_NeedsToBeLoadedFlagButton.config(font=("Helvetica", GUIbuttonFontSize))
     ############################################
     ############################################
 
     ############################################
     ############################################
-    global EnableMotors_Button
-    EnableMotors_Button = Button(ExtraProgramControlGuiFrame, text="Enable Motors", state="normal", width=GUIbuttonWidth, command=lambda i=1: EnableMotors_ButtonResponse())
-    EnableMotors_Button.grid(row=0, column=2, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1,)
-    EnableMotors_Button.config(font=("Helvetica", GUIbuttonFontSize))
+    global ZeroSpatialPrecision333Gyros_Button
+    ZeroSpatialPrecision333Gyros_Button = Button(ExtraProgramControlGuiFrame, text="Zero Spatial Gyros", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroSpatialPrecision333Gyros_ButtonResponse())
+    ZeroSpatialPrecision333Gyros_Button.grid(row=0, column=1, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
+    ZeroSpatialPrecision333Gyros_Button.config(font=("Helvetica", GUIbuttonFontSize))
+    ############################################
+    ############################################
+
+    ############################################
+    ############################################
+    global ZeroSpatialPrecision333Algorithm_Button
+    ZeroSpatialPrecision333Algorithm_Button = Button(ExtraProgramControlGuiFrame, text="Zero Spatial Alg", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroSpatialPrecision333Algorithm_ButtonResponse())
+    ZeroSpatialPrecision333Algorithm_Button.grid(row=0, column=2, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
+    ZeroSpatialPrecision333Algorithm_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ############################################
     ############################################
 
@@ -1524,17 +1578,28 @@ def GUI_Thread():
     ############################################
     global ZeroLQR_Button
     ZeroLQR_Button = Button(ExtraProgramControlGuiFrame, text="ZeroLQR", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroLQR_ButtonResponse())
-    ZeroLQR_Button.grid(row=0, column=3, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1,)
+    ZeroLQR_Button.grid(row=0, column=3, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ZeroLQR_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ############################################
     ############################################
 
+    '''
     ############################################
     ############################################
     global ZeroPitch_Button
     ZeroPitch_Button = Button(ExtraProgramControlGuiFrame, text="ZeroPitch", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroPitch_ButtonResponse())
-    ZeroPitch_Button.grid(row=0, column=4, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1,)
+    ZeroPitch_Button.grid(row=0, column=4, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ZeroPitch_Button.config(font=("Helvetica", GUIbuttonFontSize))
+    ############################################
+    ############################################
+    '''
+
+    ############################################
+    ############################################
+    global EnableMotors_Button
+    EnableMotors_Button = Button(ExtraProgramControlGuiFrame, text="Enable Motors", state="normal", width=GUIbuttonWidth, command=lambda i=1: EnableMotors_ButtonResponse())
+    EnableMotors_Button.grid(row=1, column=1, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
+    EnableMotors_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ############################################
     ############################################
 
@@ -1542,25 +1607,7 @@ def GUI_Thread():
     ###########################################################
     global DebuggingInfo_Label
     DebuggingInfo_Label = Label(ExtraProgramControlGuiFrame, text="DebuggingInfo_Label", width=120, font=("Helvetica", 10))  #
-    DebuggingInfo_Label.grid(row=1, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
-    ###########################################################
-    ###########################################################
-
-    ###########################################################
-    ###########################################################
-    global KeyboardInfo_Label
-    KeyboardInfo_Label = Label(GUItabObjectsOrderedDict["Keyboard"]["TabObject"], text="KeyboardInfo_Label", width=120, font=("Helvetica", 10))
-    if USE_Keyboard_FLAG == 1:
-        KeyboardInfo_Label.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
-    ###########################################################
-    ###########################################################
-
-    ###########################################################
-    ###########################################################
-    global WiFiVINTthumbstick_Label
-    WiFiVINTthumbstick_Label = Label(GUItabObjectsOrderedDict["WiFiVINTthumbstick"]["TabObject"], text="WiFiVINTthumbstick_Label", width=120, font=("Helvetica", 10))
-    if USE_WiFiVINTthumbstick_FLAG == 1:
-        WiFiVINTthumbstick_Label.grid(row=1, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
+    DebuggingInfo_Label.grid(row=3, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
     ###########################################################
     ###########################################################
 
@@ -1629,6 +1676,24 @@ def GUI_Thread():
         ControlAlgorithm_RadioButtonObjectsList[Index].grid(row=1, column=Index, padx=1, pady=1, columnspan=1, rowspan=1)
         #if ControlAlgorithm_StartingValue == "ControlAlgorithmString":
         #    ControlAlgorithm_RadioButtonObjectsList[Index].select()
+    ###########################################################
+    ###########################################################
+
+    ###########################################################
+    ###########################################################
+    global KeyboardInfo_Label
+    KeyboardInfo_Label = Label(GUItabObjectsOrderedDict["Keyboard"]["TabObject"], text="KeyboardInfo_Label", width=120, font=("Helvetica", 10))
+    if USE_Keyboard_FLAG == 1:
+        KeyboardInfo_Label.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
+    ###########################################################
+    ###########################################################
+
+    ###########################################################
+    ###########################################################
+    global WiFiVINTthumbstick_Label
+    WiFiVINTthumbstick_Label = Label(GUItabObjectsOrderedDict["WiFiVINTthumbstick"]["TabObject"], text="WiFiVINTthumbstick_Label", width=120, font=("Helvetica", 10))
+    if USE_WiFiVINTthumbstick_FLAG == 1:
+        WiFiVINTthumbstick_Label.grid(row=1, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
     ###########################################################
     ###########################################################
 
@@ -1752,6 +1817,28 @@ def EnableMotor(MotorNumber_Input, EnableMotorState_Input):
 
 #######################################################################################################################
 #######################################################################################################################
+def ZeroSpatialPrecision333Gyros_ButtonResponse():
+    global SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag
+
+    SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1
+
+    #MyPrint_ReubenPython2and3ClassObject.my_print("ZeroSpatialPrecision333Gyros_ButtonResponse event fired!")
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+def ZeroSpatialPrecision333Algorithm_ButtonResponse():
+    global SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag
+
+    SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1
+
+    #MyPrint_ReubenPython2and3ClassObject.my_print("ZeroSpatialPrecision333Algorithm_ButtonResponse event fired!")
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
 def ZeroLQR_ButtonResponse():
     global ZeroLQR_EventNeedsToBeFiredFlag
 
@@ -1767,8 +1854,9 @@ def ZeroPitch_ButtonResponse():
     global SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag
     global SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag
 
-    SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1
-    SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1
+    #SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1
+    #SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1
+    pass
 
     #MyPrint_ReubenPython2and3ClassObject.my_print("ZeroPitch_ButtonResponse event fired!")
 #######################################################################################################################
@@ -1814,6 +1902,10 @@ def UpdateGUItabObjectsOrderedDict():
     global DC30AmpCurrentSensor_OPEN_FLAG
     global SHOW_IN_GUI_DC30AmpCurrentSensor_FLAG
 
+    global USE_BarGraphDisplay_FLAG
+    global BarGraphDisplay_OPEN_FLAG
+    global SHOW_IN_GUI_BarGraphDisplay_FLAG
+
     global USE_MyPrint_FLAG
     global MyPrint_OPEN_FLAG
     global SHOW_IN_GUI_MyPrint_FLAG
@@ -1832,6 +1924,7 @@ def UpdateGUItabObjectsOrderedDict():
                                    ("SpatialPrecision333", dict([("UseFlag", USE_SpatialPrecision333_FLAG), ("ShowFlag", SHOW_IN_GUI_SpatialPrecision333_FLAG), ("GUItabObjectName", "SpatialPrecision333"), ("GUItabNameToDisplay", "Spatial"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
                                    ("Keyboard", dict([("UseFlag", USE_Keyboard_FLAG), ("ShowFlag", SHOW_IN_GUI_Keyboard_FLAG), ("GUItabObjectName", "Keyboard"), ("GUItabNameToDisplay", "Keyboard"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
                                    ("DC30AmpCurrentSensor", dict([("UseFlag", USE_DC30AmpCurrentSensor_FLAG),  ("ShowFlag", SHOW_IN_GUI_DC30AmpCurrentSensor_FLAG), ("GUItabObjectName", "DC30AmpCurrentSensor"), ("GUItabNameToDisplay", "Current"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
+                                   ("BarGraphDisplay", dict([("UseFlag", USE_BarGraphDisplay_FLAG),  ("ShowFlag", SHOW_IN_GUI_BarGraphDisplay_FLAG), ("GUItabObjectName", "BarGraphDisplay"), ("GUItabNameToDisplay", "BarGraph"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
                                    ("MyPrint", dict([("UseFlag", USE_MyPrint_FLAG), ("ShowFlag", SHOW_IN_GUI_MyPrint_FLAG), ("GUItabObjectName", "MyPrint"), ("GUItabNameToDisplay", "MyPrint"), ("IsTabCreatedFlag", 0), ("TabObject", None)]))])
         ###########################################################
         ###########################################################
@@ -1845,6 +1938,7 @@ def UpdateGUItabObjectsOrderedDict():
         GUItabObjectsOrderedDict["SpatialPrecision333"]["OpenFlag"] = SpatialPrecision333_OPEN_FLAG
         GUItabObjectsOrderedDict["Keyboard"]["OpenFlag"] = Keyboard_OPEN_FLAG
         GUItabObjectsOrderedDict["DC30AmpCurrentSensor"]["OpenFlag"] = DC30AmpCurrentSensor_OPEN_FLAG
+        GUItabObjectsOrderedDict["BarGraphDisplay"]["OpenFlag"] = BarGraphDisplay_OPEN_FLAG
         GUItabObjectsOrderedDict["MyPrint"]["OpenFlag"] = MyPrint_OPEN_FLAG
         ###########################################################
         ###########################################################
@@ -1981,6 +2075,15 @@ if __name__ == '__main__':
     global GUIbuttonPadX
     global GUIbuttonPadY
     global GUIbuttonFontSize
+    global EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth
+    global EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth
+
+    global GUI_ROW_ExtraProgramControlGuiFrame
+    global GUI_COLUMN_ExtraProgramControlGuiFrame
+    global GUI_PADX_ExtraProgramControlGuiFrame
+    global GUI_PADY_ExtraProgramControlGuiFrame
+    global GUI_ROWSPAN_ExtraProgramControlGuiFrame
+    global GUI_COLUMNSPAN_ExtraProgramControlGuiFrame
 
     global GUI_ROW_RoboteqBLDCcontroller_0
     global GUI_COLUMN_RoboteqBLDCcontroller_0
@@ -2023,6 +2126,13 @@ if __name__ == '__main__':
     global GUI_PADY_EntryListWithBlinking
     global GUI_ROWSPAN_EntryListWithBlinking
     global GUI_COLUMNSPAN_EntryListWithBlinking
+
+    global GUI_ROW_BarGraphDisplay
+    global GUI_COLUMN_BarGraphDisplay
+    global GUI_PADX_BarGraphDisplay
+    global GUI_PADY_BarGraphDisplay
+    global GUI_ROWSPAN_BarGraphDisplay
+    global GUI_COLUMNSPAN_BarGraphDisplay
 
     global GUI_ROW_MyPrint
     global GUI_COLUMN_MyPrint
@@ -2149,15 +2259,15 @@ if __name__ == '__main__':
     global SpatialPrecision333_NameToDisplay_UserSet
     global SpatialPrecision333_UsePhidgetsLoggingInternalToThisClassObjectFlag
     global SpatialPrecision333_SpatialAlgorithm
-    global SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag
-    global SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag
-    global SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda
-    global SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag
-    global SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag
-    global SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda
-    global SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag
-    global SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag
-    global SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda
+    global SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag
+    global SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag
+    global SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda
+    global SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag
+    global SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag
+    global SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda
+    global SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag
+    global SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag
+    global SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda
     global SpatialPrecision333_Spatial_CallbackUpdateDeltaTmilliseconds
     global SpatialPrecision333_DataCollectionDurationInSecondsForSnapshottingAndZeroing
     global SpatialPrecision333_MainThread_TimeToSleepEachLoop
@@ -2165,6 +2275,12 @@ if __name__ == '__main__':
     global SpatialPrecision333_ZeroGyrosAtStartOfProgramFlag
     global SpatialPrecision333_ZeroAlgorithmAtStartOfProgramFlag
     global SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset
+    global SpatialPrecision333_AHRS_Parameters_angularVelocityThreshold
+    global SpatialPrecision333_AHRS_Parameters_angularVelocityDeltaThreshold
+    global SpatialPrecision333_AHRS_Parameters_accelerationThreshold
+    global SpatialPrecision333_AHRS_Parameters_magTime
+    global SpatialPrecision333_AHRS_Parameters_accelTime
+    global SpatialPrecision333_AHRS_Parameters_biasTime
 
     LoadAndParseJSONfile_SpatialPrecision333()
     #################################################
@@ -2278,6 +2394,33 @@ if __name__ == '__main__':
 
     global ControlAlgorithm_NeedsToBeChangedFlag
     ControlAlgorithm_NeedsToBeChangedFlag = 0
+    
+    global LQR_ControlLaw_Term_1
+    LQR_ControlLaw_Term_1 = 0.0
+    
+    global LQR_ControlLaw_Term_2
+    LQR_ControlLaw_Term_2 = 0.0
+    
+    global LQR_ControlLaw_Term_3
+    LQR_ControlLaw_Term_3 = 0.0
+
+    global LQR_ControlLaw_Term_4
+    LQR_ControlLaw_Term_4 = 0.0
+
+    global LQR_ControlLaw_Term_5
+    LQR_ControlLaw_Term_5 = 0.0
+    
+    global LQR_ControlLaw_Term_6
+    LQR_ControlLaw_Term_6 = 0.0
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
+    global BarGraphDisplay_ReubenPython3ClassObject
+
+    global BarGraphDisplay_OPEN_FLAG
+    BarGraphDisplay_OPEN_FLAG = -1
     #################################################
     #################################################
 
@@ -2719,14 +2862,14 @@ if __name__ == '__main__':
     global YawAngularRate_DeltaDot_RadiansPerSec_Actual
     YawAngularRate_DeltaDot_RadiansPerSec_Actual = 0.0
 
-    global YawAngularRate_DeltaDot_DegPerSec_Actual
-    YawAngularRate_DeltaDot_DegPerSec_Actual = 0.0
+    global YawAngularRate_DeltaDot_DegreesPerSecond_Actual
+    YawAngularRate_DeltaDot_DegreesPerSecond_Actual = 0.0
 
     global YawAngularRate_DeltaDot_RadiansPerSec_Commanded
     YawAngularRate_DeltaDot_RadiansPerSec_Commanded = 0.0
 
-    global YawAngularRate_DeltaDot_DegPerSec_Commanded
-    YawAngularRate_DeltaDot_DegPerSec_Commanded = 0.0
+    global YawAngularRate_DeltaDot_DegreesPerSecond_Commanded
+    YawAngularRate_DeltaDot_DegreesPerSecond_Commanded = 0.0
 
     global PitchAngle_Theta_Deg_Actual
     PitchAngle_Theta_Deg_Actual = 0.0
@@ -2740,8 +2883,8 @@ if __name__ == '__main__':
     global PitchAngle_Theta_Radians_Commanded
     PitchAngle_Theta_Radians_Commanded = 0.0
 
-    global PitchAngularRate_ThetaDot_DegPerSec_Actual
-    PitchAngularRate_ThetaDot_DegPerSec_Actual = 0.0
+    global PitchAngularRate_ThetaDot_DegreesPerSecond_Actual
+    PitchAngularRate_ThetaDot_DegreesPerSecond_Actual = 0.0
 
     global PitchAngularRate_ThetaDot_RadiansPerSec_Actual
     PitchAngularRate_ThetaDot_RadiansPerSec_Actual = 0.0
@@ -2779,6 +2922,15 @@ if __name__ == '__main__':
     global Pitch_PosControl_PID_ErrorD
     Pitch_PosControl_PID_ErrorD = 0
 
+    global Pitch_PosControl_PID_CommandToMotor_Term_1
+    Pitch_PosControl_PID_CommandToMotor_Term_1 = 0.0
+
+    global Pitch_PosControl_PID_CommandToMotor_Term_2
+    Pitch_PosControl_PID_CommandToMotor_Term_2 = 0.0
+
+    global Pitch_PosControl_PID_CommandToMotor_Term_3
+    Pitch_PosControl_PID_CommandToMotor_Term_3 = 0.0
+
     global Pitch_PID_CommandToMotor
     Pitch_PID_CommandToMotor = 0
 
@@ -2802,7 +2954,7 @@ if __name__ == '__main__':
     #################################################
     #################################################
     try:
-        DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(dict([("UseMedianFilterFlag", 1),
+        DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(dict([("UseMedianFilterFlag", 0),
                                         ("UseExponentialSmoothingFilterFlag", 1),
                                         ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda)])) #new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
 
@@ -2816,7 +2968,7 @@ if __name__ == '__main__':
     #################################################
     #################################################
     try:
-        DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(dict([("UseMedianFilterFlag", 1),
+        DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(dict([("UseMedianFilterFlag", 0),
                                         ("UseExponentialSmoothingFilterFlag", 1),
                                         ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)])) #new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
 
@@ -3124,21 +3276,27 @@ if __name__ == '__main__':
                                                                                         ("NameToDisplay_UserSet", SpatialPrecision333_NameToDisplay_UserSet),
                                                                                         ("UsePhidgetsLoggingInternalToThisClassObjectFlag", SpatialPrecision333_UsePhidgetsLoggingInternalToThisClassObjectFlag),
                                                                                         ("SpatialAlgorithm", SpatialPrecision333_SpatialAlgorithm),
-                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag),
-                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag),
-                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda),
-                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag),
-                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag),
-                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda),
-                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseMedianFilterFlag),
-                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_UseExponentialSmoothingFilterFlag),
-                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegPerSec_ExponentialSmoothingFilterLambda),
+                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),
+                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),
+                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),
                                                                                         ("Spatial_CallbackUpdateDeltaTmilliseconds", SpatialPrecision333_Spatial_CallbackUpdateDeltaTmilliseconds),
                                                                                         ("DataCollectionDurationInSecondsForSnapshottingAndZeroing", SpatialPrecision333_DataCollectionDurationInSecondsForSnapshottingAndZeroing),
                                                                                         ("MainThread_TimeToSleepEachLoop", SpatialPrecision333_MainThread_TimeToSleepEachLoop),
                                                                                         ("HeatingEnabledToStabilizeSensorTemperature", SpatialPrecision333_HeatingEnabledToStabilizeSensorTemperature),
                                                                                         ("ZeroGyrosAtStartOfProgramFlag", SpatialPrecision333_ZeroGyrosAtStartOfProgramFlag),
-                                                                                        ("ZeroAlgorithmAtStartOfProgramFlag", SpatialPrecision333_ZeroAlgorithmAtStartOfProgramFlag)])
+                                                                                        ("ZeroAlgorithmAtStartOfProgramFlag", SpatialPrecision333_ZeroAlgorithmAtStartOfProgramFlag),
+                                                                                        ("AHRS_Parameters_angularVelocityThreshold", SpatialPrecision333_AHRS_Parameters_angularVelocityThreshold),
+                                                                                        ("AHRS_Parameters_angularVelocityDeltaThreshold", SpatialPrecision333_AHRS_Parameters_angularVelocityDeltaThreshold),
+                                                                                        ("AHRS_Parameters_accelerationThreshold", SpatialPrecision333_AHRS_Parameters_accelerationThreshold),
+                                                                                        ("AHRS_Parameters_magTime", SpatialPrecision333_AHRS_Parameters_magTime),
+                                                                                        ("AHRS_Parameters_accelTime", SpatialPrecision333_AHRS_Parameters_accelTime),
+                                                                                        ("AHRS_Parameters_biasTime", SpatialPrecision333_AHRS_Parameters_biasTime)])
 
     if USE_SpatialPrecision333_FLAG == 1:
         try:
@@ -3215,12 +3373,16 @@ if __name__ == '__main__':
                                     ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_EntryListWithBlinking)])
 
     global EntryListWithBlinking_Variables_ListOfDicts
-    EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_0"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_0), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("LabelWidth", 40)]),
-                                                   dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_1"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_1), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("LabelWidth", 40)]),
-                                                   dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_2"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_2), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("LabelWidth", 40)]),
-                                                   dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_3"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_3), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("LabelWidth", 40)]),
-                                                   dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_0"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_0), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("LabelWidth", 40)]),
-                                                   dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_1"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_1), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("LabelWidth", 40)])]
+    EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "Pitch_PosControl_PID_gain_Kp"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_gain_Kp), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "Pitch_PosControl_PID_gain_Ki"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_gain_Ki), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "Pitch_PosControl_PID_gain_Kd"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_gain_Kd), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "Pitch_PosControl_PID_ErrorSum_Max"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_ErrorSum_Max), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_0"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_0), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_1"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_1), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_2"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_2), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_3"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_3), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_0"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_0), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_1"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_1), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)])]
 
     global EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict
     EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", EntryListWithBlinking_ReubenPython2and3ClassObject_GUIparametersDict),
@@ -3236,6 +3398,53 @@ if __name__ == '__main__':
             exceptions = sys.exc_info()[0]
             print("EntryListWithBlinking_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions, 0)
             traceback.print_exc()
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
+    UpdateGUItabObjectsOrderedDict()
+    #################################################
+    #################################################
+
+    ##################################################
+    #################################################
+    global BarGraphDisplay_Variables_ListOfDicts
+    BarGraphDisplay_Variables_ListOfDicts = [dict([("Name", "LQR_1"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "LQR_2"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "LQR_3"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "LQR_4"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "LQR_5"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "LQR_6"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)])]
+
+    global BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict
+    BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict = dict([("root", GUItabObjectsOrderedDict["MainControls"]["TabObject"]),
+                                    ("GUI_ROW", GUI_ROW_BarGraphDisplay),
+                                    ("GUI_COLUMN", GUI_COLUMN_BarGraphDisplay),
+                                    ("GUI_PADX", GUI_PADX_BarGraphDisplay),
+                                    ("GUI_PADY", GUI_PADY_BarGraphDisplay),
+                                    ("GUI_ROWSPAN", GUI_ROWSPAN_BarGraphDisplay),
+                                    ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_BarGraphDisplay)])
+
+    global BarGraphDisplay_ReubenPython3ClassObject_setup_dict
+    BarGraphDisplay_ReubenPython3ClassObject_setup_dict = dict([("GUIparametersDict", BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict),
+                                                                ("Variables_ListOfDicts", BarGraphDisplay_Variables_ListOfDicts),
+                                                                ("Canvas_Width", 600),
+                                                                ("Canvas_Height", 250),
+                                                                ("BarWidth",90),
+                                                                ("BarPadX", 5),
+                                                                ("FontSize", 12),
+                                                                ("NegativeColor", TKinter_LightRedColor),
+                                                                ("PositiveColor", TKinter_LightGreenColor)])
+
+    try:
+        BarGraphDisplay_ReubenPython3ClassObject = BarGraphDisplay_ReubenPython3Class(BarGraphDisplay_ReubenPython3ClassObject_setup_dict)
+        BarGraphDisplay_OPEN_FLAG = BarGraphDisplay_ReubenPython3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+
+    except:
+        exceptions = sys.exc_info()[0]
+        print("BarGraphDisplay_ReubenPython3ClassObject __init__: Exceptions: %s" % exceptions, 0)
+        #traceback.print_exc()
     #################################################
     #################################################
 
@@ -3370,6 +3579,14 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
+    if BarGraphDisplay_OPEN_FLAG != 1:
+        print("Failed to open BarGraphDisplay_ReubenPython3Class.")
+        #ExitProgram_Callback()
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
     if MyPrint_OPEN_FLAG == 1:
         MyPrint_ReubenPython2and3ClassObject.my_print("Starting main loop of SelfBalancingRobot1.py")
     else:
@@ -3414,6 +3631,11 @@ if __name__ == '__main__':
 
             ################################################### SET's
             if EntryListWithBlinking_OPEN_FLAG == 1:    
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_gain_Kp", Pitch_PosControl_PID_gain_Kp)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_gain_Ki", Pitch_PosControl_PID_gain_Ki)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_gain_Kd", Pitch_PosControl_PID_gain_Kd)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_ErrorSum_Max", Pitch_PosControl_PID_ErrorSum_Max)
+
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_0", LQR_PitchControl_GainVectorElement_Ktheta_0)
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_1", LQR_PitchControl_GainVectorElement_Ktheta_1)
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_2", LQR_PitchControl_GainVectorElement_Ktheta_2)
@@ -3423,28 +3645,28 @@ if __name__ == '__main__':
             ###################################################
             
             ###################################################
-            DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 1),
+            DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
                                         ("UseExponentialSmoothingFilterFlag", 1),
                                         ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
                                         StringPrefixToPrint = "Updated: ")
             ###################################################
 
             ###################################################
-            DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 1),
+            DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
                                         ("UseExponentialSmoothingFilterFlag", 1),
                                         ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
                                         StringPrefixToPrint = "Updated: ")
             ###################################################
 
             ###################################################
-            Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 1),
+            Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
                                         ("UseExponentialSmoothingFilterFlag", 1),
                                         ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
                                         StringPrefixToPrint = "Updated: ")
             ###################################################
 
             ###################################################
-            YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 1),
+            YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
                                         ("UseExponentialSmoothingFilterFlag", 1),
                                         ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
                                         StringPrefixToPrint = "Updated: ")
@@ -3452,6 +3674,16 @@ if __name__ == '__main__':
             
             ###################################################
             ###################################################
+
+            PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3ClassObject.UpdateDifferentiatedAngularVelocityFilterParameters(dict([("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                                                                                        ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),
+                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                                                                                        ("PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),
+                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
+                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
+                                                                                        ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),]))
             
             LoadAndParseJSONfile_RobotModelParameters()
 
@@ -3475,6 +3707,11 @@ if __name__ == '__main__':
 
             if "DataUpdateNumber" in EntryListWithBlinking_MostRecentDict and EntryListWithBlinking_MostRecentDict["DataUpdateNumber"] != EntryListWithBlinking_MostRecentDict_DataUpdateNumber_last:
                 EntryListWithBlinking_MostRecentDict_DataUpdateNumber = EntryListWithBlinking_MostRecentDict["DataUpdateNumber"]
+
+                Pitch_PosControl_PID_gain_Kp = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_gain_Kp"]
+                Pitch_PosControl_PID_gain_Ki = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_gain_Ki"]
+                Pitch_PosControl_PID_gain_Kd = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_gain_Kd"]
+                Pitch_PosControl_PID_ErrorSum_Max = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_ErrorSum_Max"]
 
                 LQR_PitchControl_GainVectorElement_Ktheta_0 = EntryListWithBlinking_MostRecentDict["LQR_PitchControl_GainVectorElement_Ktheta_0"] 
                 LQR_PitchControl_GainVectorElement_Ktheta_1 = EntryListWithBlinking_MostRecentDict["LQR_PitchControl_GainVectorElement_Ktheta_1"]
@@ -3678,22 +3915,22 @@ if __name__ == '__main__':
                 PitchAngle_Theta_Deg_Commanded = 0.0
 
                 if KeyPressResponse_FWD_NeedsToBeChangedFlag == 1:
-                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue0to1scale"]
+                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue_LQR"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded FWD")
                     #KeyPressResponse_FWD_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_REV_NeedsToBeChangedFlag == 1:
-                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue0to1scale"]
+                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue_LQR"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded REV")
                     #KeyPressResponse_REV_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_RIGHT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue0to1scale"]
+                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue_LQR"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded RIGHT")
                     #KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_LEFT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue0to1scale"]
+                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue_LQR"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded LEFT")
                     #KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
             ######################################################################################################
@@ -3708,26 +3945,25 @@ if __name__ == '__main__':
                 PitchAngle_Theta_Deg_Commanded = 0.0
 
                 if KeyPressResponse_FWD_NeedsToBeChangedFlag == 1:
-                    PitchAngle_Theta_Deg_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue0to1scale"]
+                    PitchAngle_Theta_Deg_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded FWD")
                     #KeyPressResponse_FWD_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_REV_NeedsToBeChangedFlag == 1:
-                    PitchAngle_Theta_Deg_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue0to1scale"]
+                    PitchAngle_Theta_Deg_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded REV")
                     #KeyPressResponse_REV_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
-                '''
                 if KeyPressResponse_RIGHT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue0to1scale"]
+                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded RIGHT")
                     #KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
     
                 if KeyPressResponse_LEFT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue0to1scale"]
+                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded LEFT")
                     #KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
-                '''
+
             ######################################################################################################
             ######################################################################################################
 
@@ -3847,8 +4083,8 @@ if __name__ == '__main__':
         PitchAngle_Theta_Radians_Commanded = PitchAngle_Theta_Deg_Commanded*math.pi/180.0
 
         ###NEED TO SMOOTH HERE.
-        PitchAngularRate_ThetaDot_DegPerSec_Actual = SpatialPrecision333_MostRecentDict_RollPitchYaw_Rate_AbtXYZ_Dict["RollPitchYaw_Rate_AbtXYZ_List_DegreesPerSecond"][1]#spatial333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegPerSec_SMOOTHED_1
-        PitchAngularRate_ThetaDot_RadiansPerSec_Actual = PitchAngularRate_ThetaDot_DegPerSec_Actual*math.pi/180.0
+        PitchAngularRate_ThetaDot_DegreesPerSecond_Actual = SpatialPrecision333_MostRecentDict_RollPitchYaw_Rate_AbtXYZ_Dict["RollPitchYaw_Rate_AbtXYZ_List_DegreesPerSecond"][1]
+        PitchAngularRate_ThetaDot_RadiansPerSec_Actual = PitchAngularRate_ThetaDot_DegreesPerSecond_Actual*math.pi/180.0
         PitchAngularRate_ThetaDot_RadiansPerSec_Commanded = 0.0
 
         YawAngle_Delta_Radians_Actual = -1.0*RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Theta_RL_Radians_Actual - Wheel_Theta_RR_Radians_Actual) / RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters #NOT SURE WHY WE NEED MINUS SIGN TO GET YAW IN CORRECT DIRECTION
@@ -3857,10 +4093,10 @@ if __name__ == '__main__':
         YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED = -1.0*RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_Theta_RL_RadiansPerSec_Actual - Wheel_Omega_Theta_RR_RadiansPerSec_Actual) / RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters #NOT SURE WHY WE NEED MINUS SIGN TO GET YAW IN CORRECT DIRECTION
         YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED)
         YawAngularRate_DeltaDot_RadiansPerSec_Actual = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.GetMostRecentDataDict()["SignalOutSmoothed"]
-        YawAngularRate_DeltaDot_DegPerSec_Actual = YawAngularRate_DeltaDot_RadiansPerSec_Actual * 180.0 / math.pi
+        YawAngularRate_DeltaDot_DegreesPerSecond_Actual = YawAngularRate_DeltaDot_RadiansPerSec_Actual * 180.0 / math.pi
 
         #YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Set in above code by ControlInput
-        YawAngularRate_DeltaDot_DegPerSec_Commanded = YawAngularRate_DeltaDot_RadiansPerSec_Commanded * 180.0 / math.pi
+        YawAngularRate_DeltaDot_DegreesPerSecond_Commanded = YawAngularRate_DeltaDot_RadiansPerSec_Commanded * 180.0 / math.pi
 
         YawAngle_Delta_Radians_Commanded = YawAngle_Delta_Radians_Commanded + YawAngularRate_DeltaDot_RadiansPerSec_Commanded*(1.0/DataStreamingFrequency_CalculatedFromMainThread_Filtered)
 
@@ -3907,9 +4143,12 @@ if __name__ == '__main__':
 
             Pitch_PosControl_PID_ErrorD = (0.0 - PitchAngularRate_ThetaDot_RadiansPerSec_Actual)
 
-            Pitch_PosControl_PID_CommandToMotor = -1.0 * Pitch_PosControl_PID_Error * Pitch_PosControl_PID_gain_Kp \
-                                                  - Pitch_PosControl_PID_ErrorSum * Pitch_PosControl_PID_gain_Ki \
-                                                  - Pitch_PosControl_PID_ErrorD * Pitch_PosControl_PID_gain_Kd
+            Pitch_PosControl_PID_CommandToMotor_Term_1 = -1.0 * Pitch_PosControl_PID_Error * Pitch_PosControl_PID_gain_Kp
+            Pitch_PosControl_PID_CommandToMotor_Term_2 = -1.0 * Pitch_PosControl_PID_ErrorSum * Pitch_PosControl_PID_gain_Ki
+            Pitch_PosControl_PID_CommandToMotor_Term_3 = -1.0 * Pitch_PosControl_PID_ErrorD * Pitch_PosControl_PID_gain_Kd
+
+            Pitch_PosControl_PID_CommandToMotor =  Pitch_PosControl_PID_CommandToMotor_Term_1 + Pitch_PosControl_PID_CommandToMotor_Term_2 + Pitch_PosControl_PID_CommandToMotor_Term_3
+
 
             TorqueToBeCommanded_Motor0 = Pitch_PosControl_PID_CommandToMotor
             TorqueToBeCommanded_Motor1 = -1.0*Pitch_PosControl_PID_CommandToMotor #Wheels are mounted opposite, so need a minus sign to get them both spinning in same direction.
@@ -3923,13 +4162,17 @@ if __name__ == '__main__':
         elif ControlAlgorithm == "LQR":
 
             #'''
-            C_Theta = -1.0 * (-1.0*LQR_PitchControl_GainVectorElement_Ktheta_0 * (Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded) +
-                                -1.0 *LQR_PitchControl_GainVectorElement_Ktheta_1 * (Velocity_V_RM_MetersPerSec_Actual - Velocity_V_RMC_MetersPerSec_Commanded) +
-                                -1.0*LQR_PitchControl_GainVectorElement_Ktheta_2 * (PitchAngle_Theta_Radians_Actual - PitchAngle_Theta_Radians_Commanded) +
-                                -1.0 *LQR_PitchControl_GainVectorElement_Ktheta_3 * (PitchAngularRate_ThetaDot_RadiansPerSec_Actual - PitchAngularRate_ThetaDot_RadiansPerSec_Commanded))  #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
 
-            C_Delta =  -1.0 * (LQR_YawControl_GainVectorElement_Kdelta_0 * (YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded) +
-                               LQR_YawControl_GainVectorElement_Kdelta_1 * (YawAngularRate_DeltaDot_RadiansPerSec_Actual - YawAngularRate_DeltaDot_RadiansPerSec_Commanded)) #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
+            LQR_ControlLaw_Term_1 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_0 * (Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded)
+            LQR_ControlLaw_Term_2 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_1 * (Velocity_V_RM_MetersPerSec_Actual - Velocity_V_RMC_MetersPerSec_Commanded)
+            LQR_ControlLaw_Term_3 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_2 * (PitchAngle_Theta_Radians_Actual - PitchAngle_Theta_Radians_Commanded)
+            LQR_ControlLaw_Term_4 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_3 * (PitchAngularRate_ThetaDot_RadiansPerSec_Actual - PitchAngularRate_ThetaDot_RadiansPerSec_Commanded)
+            LQR_ControlLaw_Term_5 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_0 * (YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded)
+            LQR_ControlLaw_Term_6 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_1 * (YawAngularRate_DeltaDot_RadiansPerSec_Actual - YawAngularRate_DeltaDot_RadiansPerSec_Commanded)
+
+            C_Theta = 1.0 * (LQR_ControlLaw_Term_1 + LQR_ControlLaw_Term_2 + LQR_ControlLaw_Term_3 + LQR_ControlLaw_Term_4)  #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
+
+            C_Delta =  1.0 * (LQR_ControlLaw_Term_5 + LQR_ControlLaw_Term_6) #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
             #'''
 
             #C_Delta = 0 #unicorn
@@ -4077,8 +4320,8 @@ if __name__ == '__main__':
                 if MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
                     if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_PLOTTER >= MyPlotterPureTkinterStandAloneProcess_RefreshDurationInSeconds:
                         #pass
-                        MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0"], [CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual])
-                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual, PitchAngularRate_ThetaDot_DegPerSec_Actual])
+                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0"], [CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual])
+                        MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual, PitchAngularRate_ThetaDot_DegreesPerSecond_Actual])
                         #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Wheel_Omega_Theta_RL_RadiansPerSec_Actual, Wheel_Omega_Theta_RR_RadiansPerSec_Actual])
                         #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0"], [CurrentTime_CalculatedFromMainThread], [Velocity_V_RM_MetersPerSec_Actual])
                         #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, Velocity_V_RM_MetersPerSec_Actual])
@@ -4149,6 +4392,11 @@ if __name__ == '__main__':
     #################################################
     if EntryListWithBlinking_OPEN_FLAG == 1:
         EntryListWithBlinking_ReubenPython2and3ClassObject.ExitProgram_Callback()
+    #################################################
+
+    #################################################
+    if BarGraphDisplay_OPEN_FLAG == 1:
+        BarGraphDisplay_ReubenPython3ClassObject.ExitProgram_Callback()
     #################################################
 
     #################################################

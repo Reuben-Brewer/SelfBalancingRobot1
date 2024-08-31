@@ -71,7 +71,7 @@ def GetCurrentPythonFileNameString(IncludeFullPathFlag = 0):
     except:
         pass
         # exceptions = sys.exc_info()[0]
-        # print("GetCurrentPythonFileNameString, exceptions: %s" % exceptions, 0)
+        # print("GetCurrentPythonFileNameString, exceptions: %s" % exceptions)
         # traceback.print_exc()
 
     return FileName
@@ -194,7 +194,7 @@ def GetPIDsByProcessEnglishName(ProcessName = ""):
             except:
                 pass
                 # exceptions = sys.exc_info()[0]
-                # print("GetPIDsByProcessEnglishName, exceptions: %s" % exceptions, 0)
+                # print("GetPIDsByProcessEnglishName, exceptions: %s" % exceptions)
                 # traceback.print_exc()
     #################################
 
@@ -267,7 +267,7 @@ if __name__ == '__main__':
         print("UseSigkillForceCloseImmediatelyFlag: " + str(UseSigkillForceCloseImmediatelyFlag))
     except:
         exceptions = sys.exc_info()[0]
-        print("Parsing ARGV_1, exceptions: %s" % exceptions, 0)
+        print("Parsing ARGV_1, exceptions: %s" % exceptions)
         traceback.print_exc()
     ############################################
     ############################################

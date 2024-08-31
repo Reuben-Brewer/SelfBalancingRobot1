@@ -6,19 +6,19 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision G, 08/31/2024
+Software Revision B, 08/31/2024
 
-Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (no Mac testing yet).
+Verified working on: Python 3.8 for Windows 10 64-bit (no Ubuntu, Raspberry Pi, or Mac testing yet).
 '''
 
 __author__ = 'reuben.brewer'
 
-#########################################################
-from EntryListWithBlinking_ReubenPython2and3Class import *
+#################################################
+from BarGraphDisplay_ReubenPython3Class import *
 from MyPrint_ReubenPython2and3Class import *
-#########################################################
+#################################################
 
-#########################################################
+#################################################
 import os
 import sys
 import platform
@@ -26,26 +26,21 @@ import time
 import datetime
 import threading
 import collections
-#########################################################
+#################################################
 
-#########################################################
-if sys.version_info[0] < 3:
-    from Tkinter import * #Python 2
-    import tkFont
-    import ttk
-else:
-    from tkinter import * #Python 3
-    import tkinter.font as tkFont #Python 3
-    from tkinter import ttk
-#########################################################
+#################################################
+from tkinter import * #Python 3
+import tkinter.font as tkFont #Python 3
+from tkinter import ttk
+#################################################
 
-#########################################################
+#################################################
 import platform
 if platform.system() == "Windows":
     import ctypes
     winmm = ctypes.WinDLL('winmm')
     winmm.timeBeginPeriod(1) #Set minimum timer resolution to 1ms so that time.sleep(0.001) behaves properly.
-#########################################################
+#################################################
 
 ###########################################################################################################
 ##########################################################################################################
@@ -58,32 +53,21 @@ def getPreciseSecondsTimeStampString():
 
 ##########################################################################################################
 ##########################################################################################################
-def TestButtonResponse():
-    global MyPrint_ReubenPython2and3ClassObject
-    global USE_MyPrint_FLAG
-
-    if USE_MyPrint_FLAG == 1:
-        MyPrint_ReubenPython2and3ClassObject.my_print("Test Button was Pressed!")
-    else:
-        print("Test Button was Pressed!")
-##########################################################################################################
-##########################################################################################################
-
-##########################################################################################################
-##########################################################################################################
 def GUI_update_clock():
     global root
     global EXIT_PROGRAM_FLAG
     global GUI_RootAfterCallbackInterval_Milliseconds
     global USE_GUI_FLAG
 
-    global EntryListWithBlinking_ReubenPython2and3ClassObject
-    global EntryListWithBlinking_OPEN_FLAG
-    global SHOW_IN_GUI_EntryListWithBlinking_FLAG
+    global BarGraphDisplay_ReubenPython3ClassObject
+    global BarGraphDisplay_OPEN_FLAG
 
     global MyPrint_ReubenPython2and3ClassObject
     global MyPrint_OPEN_FLAG
     global SHOW_IN_GUI_MyPrint_FLAG
+
+    global SINUSOIDAL_INPUT_TO_COMMAND_1
+    global SINUSOIDAL_INPUT_TO_COMMAND_2
 
     if USE_GUI_FLAG == 1:
         if EXIT_PROGRAM_FLAG == 0:
@@ -91,8 +75,11 @@ def GUI_update_clock():
         #########################################################
 
             #########################################################
-            if EntryListWithBlinking_OPEN_FLAG == 1 and SHOW_IN_GUI_EntryListWithBlinking_FLAG == 1:
-                EntryListWithBlinking_ReubenPython2and3ClassObject.GUI_update_clock()
+            if BarGraphDisplay_OPEN_FLAG == 1:
+                BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("Var1", SINUSOIDAL_INPUT_TO_COMMAND_1) #TOO SLOW TO UPDATE FROM NON-GUI THREAD!
+                BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("Var2", SINUSOIDAL_INPUT_TO_COMMAND_2) #TOO SLOW TO UPDATE FROM NON-GUI THREAD!
+
+                BarGraphDisplay_ReubenPython3ClassObject.GUI_update_clock()
             #########################################################
 
             #########################################################
@@ -139,18 +126,18 @@ def GUI_Thread():
     #################################################
     global TabControlObject
     global Tab_MainControls
-    global Tab_EntryListWithBlinking
+    global Tab_BarGraphDisplay
     global Tab_MyPrint
 
     if USE_TABS_IN_GUI_FLAG == 1:
         #################################################
         TabControlObject = ttk.Notebook(root)
 
-        Tab_EntryListWithBlinking = ttk.Frame(TabControlObject)
-        TabControlObject.add(Tab_EntryListWithBlinking, text='   EntryListWithBlinking   ')
-
         Tab_MainControls = ttk.Frame(TabControlObject)
         TabControlObject.add(Tab_MainControls, text='   Main Controls   ')
+
+        Tab_BarGraphDisplay = ttk.Frame(TabControlObject)
+        TabControlObject.add(Tab_BarGraphDisplay, text='   BarGraphDisplay   ')
 
         Tab_MyPrint = ttk.Frame(TabControlObject)
         TabControlObject.add(Tab_MyPrint, text='   MyPrint Terminal   ')
@@ -165,21 +152,16 @@ def GUI_Thread():
     else:
         #################################################
         Tab_MainControls = root
-        Tab_EntryListWithBlinking = root
+        Tab_BarGraphDisplay = root
         Tab_MyPrint = root
         #################################################
 
     #################################################
     #################################################
 
-    #################################################
-    TestButton = Button(Tab_MainControls, text='Test Button', state="normal", width=20, command=lambda i=1: TestButtonResponse())
-    TestButton.grid(row=0, column=0, padx=1, pady=1)
-    #################################################
-
     ################################################# THIS BLOCK MUST COME 2ND-TO-LAST IN def GUI_Thread() IF USING TABS.
     root.protocol("WM_DELETE_WINDOW", ExitProgram_Callback)  # Set the callback function for when the window's closed.
-    root.title("test_program_for_EntryListWithBlinking_ReubenPython2and3Class")
+    root.title("test_program_for_BarGraphDisplay_ReubenPython3Class")
     root.geometry('%dx%d+%d+%d' % (root_width, root_height, root_Xpos, root_Ypos)) # set the dimensions of the screen and where it is placed
     root.after(GUI_RootAfterCallbackInterval_Milliseconds, GUI_update_clock)
     root.mainloop()
@@ -227,21 +209,18 @@ if __name__ == '__main__':
     USE_GUI_FLAG = 1
 
     global USE_TABS_IN_GUI_FLAG
-    USE_TABS_IN_GUI_FLAG = 1
-
-    global USE_EntryListWithBlinking_FLAG
-    USE_EntryListWithBlinking_FLAG = 1
+    USE_TABS_IN_GUI_FLAG = 0
 
     global USE_MyPrint_FLAG
     USE_MyPrint_FLAG = 1
+
+    global USE_SINUSOIDAL_TEST_FLAG
+    USE_SINUSOIDAL_TEST_FLAG = 1
     #################################################
     #################################################
 
     #################################################
     #################################################
-    global SHOW_IN_GUI_EntryListWithBlinking_FLAG
-    SHOW_IN_GUI_EntryListWithBlinking_FLAG = 1
-
     global SHOW_IN_GUI_MyPrint_FLAG
     SHOW_IN_GUI_MyPrint_FLAG = 1
     #################################################
@@ -249,19 +228,19 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    global GUI_ROW_EntryListWithBlinking
-    global GUI_COLUMN_EntryListWithBlinking
-    global GUI_PADX_EntryListWithBlinking
-    global GUI_PADY_EntryListWithBlinking
-    global GUI_ROWSPAN_EntryListWithBlinking
-    global GUI_COLUMNSPAN_EntryListWithBlinking
-    GUI_ROW_EntryListWithBlinking = 1
+    global GUI_ROW_BarGraphDisplay
+    global GUI_COLUMN_BarGraphDisplay
+    global GUI_PADX_BarGraphDisplay
+    global GUI_PADY_BarGraphDisplay
+    global GUI_ROWSPAN_BarGraphDisplay
+    global GUI_COLUMNSPAN_BarGraphDisplay
+    GUI_ROW_BarGraphDisplay = 1
 
-    GUI_COLUMN_EntryListWithBlinking = 0
-    GUI_PADX_EntryListWithBlinking = 1
-    GUI_PADY_EntryListWithBlinking = 1
-    GUI_ROWSPAN_EntryListWithBlinking = 1
-    GUI_COLUMNSPAN_EntryListWithBlinking = 1
+    GUI_COLUMN_BarGraphDisplay = 0
+    GUI_PADX_BarGraphDisplay = 1
+    GUI_PADY_BarGraphDisplay = 10
+    GUI_ROWSPAN_BarGraphDisplay = 1
+    GUI_COLUMNSPAN_BarGraphDisplay = 1
 
     global GUI_ROW_MyPrint
     global GUI_COLUMN_MyPrint
@@ -273,7 +252,7 @@ if __name__ == '__main__':
 
     GUI_COLUMN_MyPrint = 0
     GUI_PADX_MyPrint = 1
-    GUI_PADY_MyPrint = 1
+    GUI_PADY_MyPrint = 10
     GUI_ROWSPAN_MyPrint = 1
     GUI_COLUMNSPAN_MyPrint = 1
     #################################################
@@ -284,12 +263,6 @@ if __name__ == '__main__':
     global EXIT_PROGRAM_FLAG
     EXIT_PROGRAM_FLAG = 0
 
-    global CurrentTime_MainLoopThread
-    CurrentTime_MainLoopThread = -11111.0
-
-    global StartingTime_MainLoopThread
-    StartingTime_MainLoopThread = -11111.0
-
     global root
 
     global root_Xpos
@@ -299,41 +272,60 @@ if __name__ == '__main__':
     root_Ypos = 0
 
     global root_width
-    root_width = 1920 - root_Xpos
+    root_width = 900
 
     global root_height
-    root_height = 1020 - root_Ypos
+    root_height = 900
 
     global TabControlObject
     global Tab_MainControls
-    global Tab_EntryListWithBlinking
+    global Tab_BarGraphDisplay
     global Tab_MyPrint
 
     global GUI_RootAfterCallbackInterval_Milliseconds
     GUI_RootAfterCallbackInterval_Milliseconds = 30
 
-    TKinter_LightGreenColor = '#%02x%02x%02x' % (150, 255, 150) #RGB
     TKinter_LightRedColor = '#%02x%02x%02x' % (255, 150, 150) #RGB
+    TKinter_LightGreenColor = '#%02x%02x%02x' % (150, 255, 150)  # RGB
+    TKinter_LightBlueColor = '#%02x%02x%02x' % (150, 150, 255) #RGB
     TKinter_LightYellowColor = '#%02x%02x%02x' % (255, 255, 150) #RGB
     TKinter_DefaultGrayColor = '#%02x%02x%02x' % (240, 240, 240) #RGB
+
+    global CurrentTime_MainLoopThread
+    CurrentTime_MainLoopThread = -11111.0
+
+    global StartingTime_MainLoopThread
+    StartingTime_MainLoopThread = -11111.0
+
+    global SINUSOIDAL_INPUT_TO_COMMAND_1
+    SINUSOIDAL_INPUT_TO_COMMAND_1 = 0.0
+
+    global SINUSOIDAL_INPUT_TO_COMMAND_2
+    SINUSOIDAL_INPUT_TO_COMMAND_2 = 0.0
+
+    global SINUSOIDAL_MOTION_INPUT_ROMtestTimeToPeakAngle
+    SINUSOIDAL_MOTION_INPUT_ROMtestTimeToPeakAngle = 2.0
+
+    global SINUSOIDAL_MOTION_INPUT_MinValue_1
+    SINUSOIDAL_MOTION_INPUT_MinValue_1 = -50.0
+
+    global SINUSOIDAL_MOTION_INPUT_MaxValue_1
+    SINUSOIDAL_MOTION_INPUT_MaxValue_1 = 50.0
+
+    global SINUSOIDAL_MOTION_INPUT_MinValue_2
+    SINUSOIDAL_MOTION_INPUT_MinValue_2 = -25
+
+    global SINUSOIDAL_MOTION_INPUT_MaxValue_2
+    SINUSOIDAL_MOTION_INPUT_MaxValue_2 = 25
     #################################################
     #################################################
 
     #################################################
     #################################################
-    global EntryListWithBlinking_ReubenPython2and3ClassObject
+    global BarGraphDisplay_ReubenPython3ClassObject
 
-    global EntryListWithBlinking_OPEN_FLAG
-    EntryListWithBlinking_OPEN_FLAG = -1
-
-    global EntryListWithBlinking_MostRecentDict
-    EntryListWithBlinking_MostRecentDict = dict()
-
-    global EntryListWithBlinking_MostRecentDict_DataUpdateNumber
-    EntryListWithBlinking_MostRecentDict_DataUpdateNumber = 0
-
-    global EntryListWithBlinking_MostRecentDict_DataUpdateNumber_last
-    EntryListWithBlinking_MostRecentDict_DataUpdateNumber_last = -1
+    global BarGraphDisplay_OPEN_FLAG
+    BarGraphDisplay_OPEN_FLAG = -1
     #################################################
     #################################################
 
@@ -357,42 +349,46 @@ if __name__ == '__main__':
     else:
         root = None
         Tab_MainControls = None
-        Tab_EntryListWithBlinking = None
+        Tab_BarGraphDisplay = None
         Tab_MyPrint = None
     #################################################
     #################################################
 
     #################################################
     #################################################
-    global EntryListWithBlinking_ReubenPython2and3ClassObject_GUIparametersDict
-    EntryListWithBlinking_ReubenPython2and3ClassObject_GUIparametersDict = dict([("root", Tab_EntryListWithBlinking),
-                                    ("UseBorderAroundThisGuiObjectFlag", 0),
-                                    ("GUI_ROW", GUI_ROW_EntryListWithBlinking),
-                                    ("GUI_COLUMN", GUI_COLUMN_EntryListWithBlinking),
-                                    ("GUI_PADX", GUI_PADX_EntryListWithBlinking),
-                                    ("GUI_PADY", GUI_PADY_EntryListWithBlinking),
-                                    ("GUI_ROWSPAN", GUI_ROWSPAN_EntryListWithBlinking),
-                                    ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_EntryListWithBlinking)])
+    global BarGraphDisplay_Variables_ListOfDicts
+    BarGraphDisplay_Variables_ListOfDicts = [dict([("Name", "Var1"), ("StartingValue", 50.0), ("MinValue", -100), ("MaxValue", 100)]),
+                                             dict([("Name", "Var2"), ("StartingValue", -25), ("MinValue", -50), ("MaxValue", 50)]),
+                                             dict([("Name", "foo"), ("StartingValue", 33), ("MinValue", -33), ("MaxValue", 33), ("FontSize", 8), ("PositiveColor", TKinter_LightBlueColor), ("NegativeColor", TKinter_LightYellowColor)])]
 
-    global EntryListWithBlinking_Variables_ListOfDicts
-    EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "TestIntVariable"),("Type", "int"), ("StartingVal", 0), ("MinVal", -10), ("MaxVal", 10),("EntryBlinkEnabled", 1), ("EntryBlinkInactiveColor", TKinter_DefaultGrayColor), ("EntryBlinkActiveColor", TKinter_LightGreenColor)]),
-                                                   dict([("Name", "TestFloatVariable"),("Type", "float"), ("StartingVal", 1.1), ("MinVal", -10.1), ("MaxVal", 10.1),("EntryBlinkEnabled", 0)]),
-                                                   dict([("Name", "TestStrVariable"),("Type", "str"), ("StartingVal", "default"),("EntryBlinkEnabled", 1),("EntryWidth", 10),("LabelWidth", 25),("FontSize", 8)])]
+    global BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict
+    BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict = dict([("root", Tab_BarGraphDisplay),
+                                    ("GUI_ROW", GUI_ROW_BarGraphDisplay),
+                                    ("GUI_COLUMN", GUI_COLUMN_BarGraphDisplay),
+                                    ("GUI_PADX", GUI_PADX_BarGraphDisplay),
+                                    ("GUI_PADY", GUI_PADY_BarGraphDisplay),
+                                    ("GUI_ROWSPAN", GUI_ROWSPAN_BarGraphDisplay),
+                                    ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_BarGraphDisplay)])
 
-    global EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict
-    EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", EntryListWithBlinking_ReubenPython2and3ClassObject_GUIparametersDict),
-                                                                          ("EntryListWithBlinking_Variables_ListOfDicts", EntryListWithBlinking_Variables_ListOfDicts),
-                                                                          ("DebugByPrintingVariablesFlag", 0),
-                                                                          ("LoseFocusIfMouseLeavesEntryFlag", 0)])
-    if USE_EntryListWithBlinking_FLAG == 1:
-        try:
-            EntryListWithBlinking_ReubenPython2and3ClassObject = EntryListWithBlinking_ReubenPython2and3Class(EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict)
-            EntryListWithBlinking_OPEN_FLAG = EntryListWithBlinking_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+    global BarGraphDisplay_ReubenPython3ClassObject_setup_dict
+    BarGraphDisplay_ReubenPython3ClassObject_setup_dict = dict([("GUIparametersDict", BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict),
+                                                                ("Variables_ListOfDicts", BarGraphDisplay_Variables_ListOfDicts),
+                                                                ("Canvas_Width", 500),
+                                                                ("Canvas_Height", 300),
+                                                                ("BarWidth", 100),
+                                                                ("BarPadX", 10),
+                                                                ("FontSize", 12),
+                                                                ("NegativeColor", TKinter_LightRedColor),
+                                                                ("PositiveColor", TKinter_LightGreenColor)])
 
-        except:
-            exceptions = sys.exc_info()[0]
-            print("EntryListWithBlinking_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions, 0)
-            traceback.print_exc()
+    try:
+        BarGraphDisplay_ReubenPython3ClassObject = BarGraphDisplay_ReubenPython3Class(BarGraphDisplay_ReubenPython3ClassObject_setup_dict)
+        BarGraphDisplay_OPEN_FLAG = BarGraphDisplay_ReubenPython3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+
+    except:
+        exceptions = sys.exc_info()[0]
+        print("BarGraphDisplay_ReubenPython3ClassObject __init__: Exceptions: %s" % exceptions, 0)
+        traceback.print_exc()
     #################################################
     #################################################
 
@@ -418,7 +414,6 @@ if __name__ == '__main__':
 
         try:
             MyPrint_ReubenPython2and3ClassObject = MyPrint_ReubenPython2and3Class(MyPrint_ReubenPython2and3ClassObject_setup_dict)
-            time.sleep(0.25)
             MyPrint_OPEN_FLAG = MyPrint_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
 
         except:
@@ -430,8 +425,8 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    if USE_EntryListWithBlinking_FLAG == 1 and EntryListWithBlinking_OPEN_FLAG != 1:
-        print("Failed to open EntryListWithBlinking_ReubenPython2and3Class.")
+    if BarGraphDisplay_OPEN_FLAG != 1:
+        print("Failed to open BarGraphDisplay_ReubenPython3Class.")
         ExitProgram_Callback()
     #################################################
     #################################################
@@ -446,64 +441,43 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    #EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryEnabledState("TestIntVariable", 0)
-
-    print("Starting main loop 'test_program_for_EntryListWithBlinking_ReubenPython2and3Class.")
+    print("Starting main loop 'test_program_for_BarGraphDisplay_ReubenPython3Class.")
     StartingTime_MainLoopThread = getPreciseSecondsTimeStampString()
 
-    ToggleVar = 0
     while(EXIT_PROGRAM_FLAG == 0):
+        try:
+            ###################################################
+            ###################################################
+            CurrentTime_MainLoopThread = getPreciseSecondsTimeStampString() - StartingTime_MainLoopThread
+            ###################################################
+            ###################################################
 
-        ###################################################
-        CurrentTime_MainLoopThread = getPreciseSecondsTimeStampString() - StartingTime_MainLoopThread
-        ###################################################
+            ################################################### SET's
+            ###################################################
+            if USE_SINUSOIDAL_TEST_FLAG == 1:
+                time_gain = math.pi / (2.0 * SINUSOIDAL_MOTION_INPUT_ROMtestTimeToPeakAngle)
 
-        ################################################### GET's
-        if EntryListWithBlinking_OPEN_FLAG == 1:
+                SINUSOIDAL_INPUT_TO_COMMAND_1 = (SINUSOIDAL_MOTION_INPUT_MaxValue_1 + SINUSOIDAL_MOTION_INPUT_MinValue_1)/2.0 + 0.5*abs(SINUSOIDAL_MOTION_INPUT_MaxValue_1 - SINUSOIDAL_MOTION_INPUT_MinValue_1)*math.sin(time_gain*CurrentTime_MainLoopThread)
+                SINUSOIDAL_INPUT_TO_COMMAND_2 = (SINUSOIDAL_MOTION_INPUT_MaxValue_2 + SINUSOIDAL_MOTION_INPUT_MinValue_2)/2.0 + 0.5*abs(SINUSOIDAL_MOTION_INPUT_MaxValue_2 - SINUSOIDAL_MOTION_INPUT_MinValue_2)*math.sin(time_gain*CurrentTime_MainLoopThread + math.pi/4.0)
+            ###################################################
+            ###################################################
 
-            EntryListWithBlinking_MostRecentDict = EntryListWithBlinking_ReubenPython2and3ClassObject.GetMostRecentDataDict()
+        except:
+            exceptions = sys.exc_info()[0]
+            print("test_program_for_BarGraphDisplay_ReubenPython3Class: while(EXIT_PROGRAM_FLAG == 0) Exceptions: %s" % exceptions)
+            traceback.print_exc()
 
-            if "DataUpdateNumber" in EntryListWithBlinking_MostRecentDict and EntryListWithBlinking_MostRecentDict["DataUpdateNumber"] != EntryListWithBlinking_MostRecentDict_DataUpdateNumber_last:
-                EntryListWithBlinking_MostRecentDict_DataUpdateNumber = EntryListWithBlinking_MostRecentDict["DataUpdateNumber"]
-
-                print("EntryListWithBlinking_MostRecentDict: " + str(EntryListWithBlinking_MostRecentDict))
-                #print("DataUpdateNumber = " + str(EntryListWithBlinking_MostRecentDict_DataUpdateNumber) + ", EntryListWithBlinking_MostRecentDict: " + str(EntryListWithBlinking_MostRecentDict))
-        ###################################################
-
-        ################################################### SET's
-        if EntryListWithBlinking_OPEN_FLAG == 1:
-
-            if "DataUpdateNumber" in EntryListWithBlinking_MostRecentDict and EntryListWithBlinking_MostRecentDict["DataUpdateNumber"] != EntryListWithBlinking_MostRecentDict_DataUpdateNumber_last:
-
-                #EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("TestIntVariable", EntryListWithBlinking_MostRecentDict["TestIntVariable"] + 1)
-                EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("TestFloatVariable", EntryListWithBlinking_MostRecentDict["TestFloatVariable"] + 1.0)
-                EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("TestStrVariable", EntryListWithBlinking_MostRecentDict["TestStrVariable"] + "a")
-
-                '''
-                EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryEnabledState("TestIntVariable", ToggleVar)
-                
-                if ToggleVar == 0:
-                    ToggleVar = 1
-                else:
-                    ToggleVar = 0
-                '''
-        ###################################################
-
-        ###################################################
-        EntryListWithBlinking_MostRecentDict_DataUpdateNumber_last = EntryListWithBlinking_MostRecentDict_DataUpdateNumber
-        ###################################################
-
-        time.sleep(0.1)
+        time.sleep(0.002)
     #################################################
     #################################################
 
     ################################################# THIS IS THE EXIT ROUTINE!
     #################################################
-    print("Exiting main program 'test_program_for_EntryListWithBlinking_ReubenPython2and3Class.")
+    print("Exiting main program 'test_program_for_BarGraphDisplay_ReubenPython3Class.")
 
     #################################################
-    if EntryListWithBlinking_OPEN_FLAG == 1:
-        EntryListWithBlinking_ReubenPython2and3ClassObject.ExitProgram_Callback()
+    if BarGraphDisplay_OPEN_FLAG == 1:
+        BarGraphDisplay_ReubenPython3ClassObject.ExitProgram_Callback()
     #################################################
 
     #################################################

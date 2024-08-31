@@ -13,7 +13,7 @@ www.reubotics.com
 
 Apache 2 License
 
-Software Revision H, 09/24/2023
+Software Revision I, 08/31/2024
 
 SelfBalancingRobot1.py verified working on:
 Python 3.9
@@ -27,10 +27,7 @@ Raspberry Pi Bullseye
 ######################################################
 
 ######################################################
-SelfBalancingRobot1.py, ListOfModuleDependencies: ['keyboard', 'LowPassFilter_ReubenPython2and3Class', 'MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class', 'MyPrint_ReubenPython2and3Class', 'numpy', 'PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class', 'PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class', 'PhidgetsWirelessVINThubWithThumbstick_ReubenPython2and3Class', 'RoboteqBLDCcontroller_ReubenPython2and3Class', 'scipy.spatial.transform']
-SelfBalancingRobot1.py, ListOfModuleDependencies_TestProgram: []
-SelfBalancingRobot1.py, ListOfModuleDependencies_NestedLayers: ['EntryListWithBlinking_ReubenPython2and3Class', 'ftd2xx', 'future.builtins', 'Joystick2DdotDisplay_ReubenPython2and3Class', 'LowPassFilter_ReubenPython2and3Class', 'LowPassFilterForDictsOfLists_ReubenPython2and3Class', 'numpy', 'pexpect', 'Phidget22', 'psutil', 'scipy.spatial.transform', 'serial', 'serial.tools', 'ZeroAndSnapshotData_ReubenPython2and3Class']
-SelfBalancingRobot1.py, ListOfModuleDependencies_All:['EntryListWithBlinking_ReubenPython2and3Class', 'ftd2xx', 'future.builtins', 'Joystick2DdotDisplay_ReubenPython2and3Class', 'keyboard', 'LowPassFilter_ReubenPython2and3Class', 'LowPassFilterForDictsOfLists_ReubenPython2and3Class', 'MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class', 'MyPrint_ReubenPython2and3Class', 'numpy', 'pexpect', 'Phidget22', 'PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class', 'PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class', 'PhidgetsWirelessVINThubWithThumbstick_ReubenPython2and3Class', 'psutil', 'RoboteqBLDCcontroller_ReubenPython2and3Class', 'scipy.spatial.transform', 'serial', 'serial.tools', 'ZeroAndSnapshotData_ReubenPython2and3Class']
+SelfBalancingRobot1.py, ListOfModuleDependencies: xxxx
 
 sudo pip install pygame
 sudo pip install keyboard

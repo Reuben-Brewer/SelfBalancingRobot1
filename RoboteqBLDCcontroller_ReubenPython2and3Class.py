@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision G, 09/24/2023
+Software Revision H, 08/31/2024
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
 '''
@@ -115,7 +115,15 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         self.SerialParity = serial.PARITY_NONE
         self.SerialStopBits = serial.STOPBITS_ONE
         self.SerialByteSize = serial.EIGHTBITS
-        self.SerialXonXoffSoftwareFlowControl = 1 #seems important for the Roboteq even though I've never had to use this with other USB-serial devices.
+
+        ##### DO NOT SET THIS TO 1 FOR ANY SERIAL DEVICE OTHER THAN ROBOTEQ
+        ##### DO NOT SET THIS TO 1 FOR ANY SERIAL DEVICE OTHER THAN ROBOTEQ
+        ##### DO NOT SET THIS TO 1 FOR ANY SERIAL DEVICE OTHER THAN ROBOTEQ
+        self.SerialXonXoffSoftwareFlowControl = 1 #important for the Roboteq even though I've never had to use this with other USB-serial devices.
+        ##### DO NOT SET THIS TO 1 FOR ANY SERIAL DEVICE OTHER THAN ROBOTEQ
+        ##### DO NOT SET THIS TO 1 FOR ANY SERIAL DEVICE OTHER THAN ROBOTEQ
+        ##### DO NOT SET THIS TO 1 FOR ANY SERIAL DEVICE OTHER THAN ROBOTEQ
+
         self.SerialPortNameCorrespondingToCorrectSerialNumber = "default"
         self.SerialRxThread_still_running_flag = 0
         self.SerialTxThread_still_running_flag = 0

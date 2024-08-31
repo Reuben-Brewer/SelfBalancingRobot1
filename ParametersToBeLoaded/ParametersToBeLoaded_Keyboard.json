@@ -7,24 +7,28 @@
                 {"KeyName":"w",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_FWD_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_FWD_STOP",
-                "CommandedValue0to1scale": 2.0},
+                "CommandedValue_PID": 2.0,
+                "CommandedValue_LQR": 0.25},
 
             "REV":
                 {"KeyName":"x",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_REV_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_REV_STOP",
-                "CommandedValue0to1scale": -2.0},
+                "CommandedValue_PID": -2.0,
+                "CommandedValue_LQR": -0.25},
 
             "RIGHT":
                 {"KeyName":"d",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_RIGHT_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_RIGHT_STOP",
-                "CommandedValue0to1scale": 0.1},
+                "CommandedValue_PID": 1.0,
+                "CommandedValue_LQR": 0.25},
 
             "LEFT":
                 {"KeyName":"a",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_LEFT_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_LEFT_STOP",
-                "CommandedValue0to1scale": -0.1}
-        }
+                "CommandedValue_PID": 1.0,
+                "CommandedValue_LQR": -0.25}
+    }
 }

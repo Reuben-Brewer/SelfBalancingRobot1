@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision H, 09/22/2023
+Software Revision I, 09/26/2023
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit, Ubuntu 20.04, and Raspberry Pi Buster (no Mac testing yet).
 '''
@@ -53,19 +53,6 @@ def getPreciseSecondsTimeStampString():
     ts = time.time()
 
     return ts
-##########################################################################################################
-##########################################################################################################
-
-##########################################################################################################
-##########################################################################################################
-def TestButtonResponse():
-    global MyPrint_ReubenPython2and3ClassObject
-    global USE_MYPRINT_FLAG
-
-    if USE_MYPRINT_FLAG == 1:
-        MyPrint_ReubenPython2and3ClassObject.my_print("Test Button was Pressed!")
-    else:
-        print("Test Button was Pressed!")
 ##########################################################################################################
 ##########################################################################################################
 
@@ -172,11 +159,6 @@ def GUI_Thread():
     #################################################
 
     #################################################
-    TestButton = Button(Tab_MainControls, text='Test Button', state="normal", width=20, command=lambda i=1: TestButtonResponse())
-    TestButton.grid(row=0, column=0, padx=5, pady=1)
-    #################################################
-
-    #################################################
     #################################################
     global Joystick2DdotDisplay_ReubenPython2and3ClassObject
     global Joystick2DdotDisplay_OPEN_FLAG
@@ -199,7 +181,9 @@ def GUI_Thread():
     global Joystick2DdotDisplay_ReubenPython2and3ClassObject_setup_dict
     Joystick2DdotDisplay_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", Joystick2DdotDisplay_ReubenPython2and3ClassObject_GUIparametersDict),
                                                                          ("JoystickXYboxCanvas_HeightAndWidth", 300),
-                                                                         ("DisplayZeroCrosshairsFlag", 1)])
+                                                                         ("Crosshairs_ShowFlag", 1),
+                                                                         ("Crosshairs_HorizontalLine_Yvalue", -0.25),
+                                                                         ("Crosshairs_VerticalLine_Xvalue", -0.9)])
 
     try:
         Joystick2DdotDisplay_ReubenPython2and3ClassObject = Joystick2DdotDisplay_ReubenPython2and3Class(Joystick2DdotDisplay_ReubenPython2and3ClassObject_setup_dict)

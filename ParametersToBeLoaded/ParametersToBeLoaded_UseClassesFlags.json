@@ -7,6 +7,7 @@
     "USE_DC30AmpCurrentSensor_FLAG":1,
     "USE_EntryListWithBlinking_FLAG": 1,
     "USE_MyPlotterPureTkinterStandAloneProcess_FLAG":1,
+    "USE_BarGraphDisplay_FLAG": 1,
     "USE_MyPrint_FLAG":1,
     "USE_Keyboard_FLAG":1,
     "USE_GUI_FLAG":1,
