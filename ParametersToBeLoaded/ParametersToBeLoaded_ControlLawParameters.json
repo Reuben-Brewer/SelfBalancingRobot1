@@ -15,29 +15,29 @@
 
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 1,
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
-    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.6,
+    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.9,
 
     "Velocity_V_RMC_MetersPerSec_Commanded_DeadbandThreshold": 0.050,
     "Velocity_V_RMC_MetersPerSec_Commanded_JoystickToMetersPerSecGain": 1.000,
 
     "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 0,
     "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
-    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.98,
+    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.9,
 
     "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_DeadbandThreshold": 0.050,
     "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_JoystickToRadiansPerSecGain": 0.400,
 
-    "LQR_ParametersToBeLoaded_Directions": "LQR Parameters. -50, -50, -1500, -100, 0, -50",
+    "LQR_ParametersToBeLoaded_Directions": "LQR Parameters.",
     "LQR_PitchControl_GainVectorElement_Ktheta_0": -200.0,
     "LQR_PitchControl_GainVectorElement_Ktheta_1": -100.0,
     "LQR_PitchControl_GainVectorElement_Ktheta_2": -800,
     "LQR_PitchControl_GainVectorElement_Ktheta_3": -100,
-    "LQR_YawControl_GainVectorElement_Kdelta_0": 0.0,
-    "LQR_YawControl_GainVectorElement_Kdelta_1": 0.0,
-    "Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION": 10.25,
+    "LQR_YawControl_GainVectorElement_Kdelta_0": -100.0,
+    "LQR_YawControl_GainVectorElement_Kdelta_1": -10.0,
+    "Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION": 1000.25,
     "YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION": 0.05,
 
-    "Pitch_ParametersToBeLoaded_Directions": "Pitch -User sets ... (-11111 = Derived).-600, 0, -40",
+    "Pitch_ParametersToBeLoaded_Directions": "Pitch -User sets ... (-11111 = Derived).",
     "Pitch_PosControl_PID_gain_Kp": -800.0,
     "Pitch_PosControl_PID_gain_Ki": -1.0,
     "Pitch_PosControl_PID_gain_Kd": -100.0,

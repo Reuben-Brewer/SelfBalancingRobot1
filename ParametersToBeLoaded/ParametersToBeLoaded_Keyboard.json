@@ -21,14 +21,24 @@
                 {"KeyName":"d",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_RIGHT_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_RIGHT_STOP",
-                "CommandedValue_PID": 1.0,
+                "CommandedValue_PID": 2.0,
                 "CommandedValue_LQR": 0.25},
 
             "LEFT":
                 {"KeyName":"a",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_LEFT_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_LEFT_STOP",
-                "CommandedValue_PID": 1.0,
-                "CommandedValue_LQR": -0.25}
+                "CommandedValue_PID": -2.0,
+                "CommandedValue_LQR": -0.25},
+
+            "TorqueEnable":
+                {"KeyName":"t",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_TorqueEnable_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_TorqueEnable_STOP"},
+
+            "ZeroLQR":
+                {"KeyName":"z",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_ZeroLQR_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ZeroLQR_STOP"}
     }
 }

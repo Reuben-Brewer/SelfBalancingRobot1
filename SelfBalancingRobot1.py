@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision I, 08/31/2024
+Software Revision J, 09/24/2024
 
 Verified working on: Python 3.8 for Windows 10 64-bit (not yet tested on Raspberry Pi, Ubuntu, or Mac).
 '''
@@ -17,11 +17,11 @@ __author__ = 'reuben.brewer'
 #https://github.com/Reuben-Brewer/BarGraphDisplay_ReubenPython3Class
 from BarGraphDisplay_ReubenPython3Class import *
 
+#https://github.com/Reuben-Brewer/CSVdataLogger_ReubenPython3Class
+from CSVdataLogger_ReubenPython3Class import *
+
 #https://github.com/Reuben-Brewer/EntryListWithBlinking_ReubenPython2and3Class
 from EntryListWithBlinking_ReubenPython2and3Class import *
-
-#https://github.com/Reuben-Brewer/LowPassFilter_ReubenPython2and3Class
-from LowPassFilter_ReubenPython2and3Class import *
 
 #https://github.com/Reuben-Brewer/LowPassFilterForDictsOfLists_ReubenPython2and3Class
 from LowPassFilterForDictsOfLists_ReubenPython2and3Class import *
@@ -229,6 +229,22 @@ def LoadAndParseJSONfile_DC30AmpCurrentSensor():
     ParametersToBeLoaded_DC30AmpCurrentSensor_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_DC30AmpCurrentSensor, 1, 1)
     #################################
     
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+def LoadAndParseJSONfile_SavingSettings():
+    global ParametersToBeLoaded_SavingSettings_Dict
+
+    print("Calling LoadAndParseJSONfile_SavingSettings().")
+
+    #################################
+    JSONfilepathFull_SavingSettings = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_SavingSettings.json"
+
+    ParametersToBeLoaded_SavingSettings_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_SavingSettings, 1, 1)
+    #################################
+
 #######################################################################################################################
 #######################################################################################################################
 
@@ -707,14 +723,18 @@ def UpdateFrequencyCalculation_MainThread_Filtered():
     global LoopCounter_CalculatedFromMainThread
     global DataStreamingDeltaT_CalculatedFromMainThread
     global DataStreamingFrequency_CalculatedFromMainThread_Filtered
-    global DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject
-    
+    global LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject
+
     try:
         DataStreamingDeltaT_CalculatedFromMainThread = CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread
 
         if DataStreamingDeltaT_CalculatedFromMainThread != 0.0:
-            DataStreamingFrequency_CalculatedFromMainThread_Filtered_TEMP = 1.0/DataStreamingDeltaT_CalculatedFromMainThread
-            DataStreamingFrequency_CalculatedFromMainThread_Filtered = DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(DataStreamingFrequency_CalculatedFromMainThread_Filtered_TEMP)["SignalOutSmoothed"]
+            DataStreamingFrequency_CalculatedFromMainThread = 1.0/DataStreamingDeltaT_CalculatedFromMainThread
+            VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("DataStreamingFrequency_CalculatedFromMainThread", [DataStreamingFrequency_CalculatedFromMainThread])]))
+            DataStreamingFrequency_CalculatedFromMainThread_Filtered = VariablesDict_Temp["DataStreamingFrequency_CalculatedFromMainThread"]["Filtered_MostRecentValuesList"][0]
+
+            if DataStreamingFrequency_CalculatedFromMainThread_Filtered <= 0.0:
+                DataStreamingFrequency_CalculatedFromMainThread_Filtered = 0.001
 
         LastTime_CalculatedFromMainThread = CurrentTime_CalculatedFromMainThread
         LoopCounter_CalculatedFromMainThread = LoopCounter_CalculatedFromMainThread + 1
@@ -735,14 +755,18 @@ def UpdateFrequencyCalculation_GUIthread_Filtered():
     global LoopCounter_CalculatedFromGUIthread
     global DataStreamingDeltaT_CalculatedFromGUIthread
     global DataStreamingFrequency_CalculatedFromGUIthread_Filtered
-    global DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject
+    global LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject
     
     try:
         DataStreamingDeltaT_CalculatedFromGUIthread = CurrentTime_CalculatedFromGUIthread - LastTime_CalculatedFromGUIthread
 
         if DataStreamingDeltaT_CalculatedFromGUIthread != 0.0:
-            DataStreamingFrequency_CalculatedFromGUIthread_Filtered_TEMP = 1.0/DataStreamingDeltaT_CalculatedFromGUIthread
-            DataStreamingFrequency_CalculatedFromGUIthread_Filtered = DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(DataStreamingFrequency_CalculatedFromGUIthread_Filtered_TEMP)["SignalOutSmoothed"]
+            DataStreamingDeltaT_CalculatedFromGUIthread = 1.0/DataStreamingDeltaT_CalculatedFromGUIthread
+            VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("DataStreamingFrequency_CalculatedFromGUIthread", [DataStreamingDeltaT_CalculatedFromGUIthread])]))
+            DataStreamingFrequency_CalculatedFromGUIthread_Filtered = VariablesDict_Temp["DataStreamingFrequency_CalculatedFromGUIthread"]["Filtered_MostRecentValuesList"][0]
+
+            if DataStreamingFrequency_CalculatedFromGUIthread_Filtered <= 0.0:
+                DataStreamingFrequency_CalculatedFromGUIthread_Filtered = 0.001
 
         LastTime_CalculatedFromGUIthread = CurrentTime_CalculatedFromGUIthread
         LoopCounter_CalculatedFromGUIthread = LoopCounter_CalculatedFromGUIthread + 1
@@ -939,6 +963,8 @@ def DedicatedKeyboardListeningThread():
     global KeyPressResponse_REV_NeedsToBeChangedFlag
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
+    global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
+    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
 
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts_FormattedAsNicelyPrintedString
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts
@@ -1069,6 +1095,52 @@ def KeyPressResponse_LEFT_STOP(event):
 
 #######################################################################################################################
 #######################################################################################################################
+def KeyPressResponse_TorqueEnable_START(event):
+    global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
+
+    KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag = 1
+
+    #print("KeyPressResponse_TorqueEnable_START event fired!")
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+def KeyPressResponse_TorqueEnable_STOP(event):
+    global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
+
+    dummy = 0
+    #KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag = 0
+
+    #print("KeyPressResponse_TorqueEnable_STOP event fired!")
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+def KeyPressResponse_ZeroLQR_START(event):
+    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
+
+    KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 1
+
+    #print("KeyPressResponse_ZeroLQR_START event fired!")
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+def KeyPressResponse_ZeroLQR_STOP(event):
+    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
+
+    dummy = 0
+    #KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 0
+
+    #print("KeyPressResponse_ZeroLQR_STOP event fired!")
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
 def GUI_update_clock():
     global root
     global EXIT_PROGRAM_FLAG
@@ -1116,6 +1188,10 @@ def GUI_update_clock():
     global EntryListWithBlinking_OPEN_FLAG
     global SHOW_IN_GUI_EntryListWithBlinking_FLAG
 
+    global CSVdataLogger_ReubenPython3ClassObject
+    global CSVdataLogger_OPEN_FLAG
+    global SHOW_IN_GUI_CSVdataLogger_FLAG
+
     global BarGraphDisplay_ReubenPython3ClassObject
     global BarGraphDisplay_OPEN_FLAG
     global SHOW_IN_GUI_BarGraphDisplay_FLAG
@@ -1131,6 +1207,8 @@ def GUI_update_clock():
     global KeyPressResponse_REV_NeedsToBeChangedFlag
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
+    global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
+    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
 
     global DebuggingInfo_Label
 
@@ -1163,6 +1241,8 @@ def GUI_update_clock():
     global Pitch_PosControl_PID_CommandToMotor_Term_1
     global Pitch_PosControl_PID_CommandToMotor_Term_2
     global Pitch_PosControl_PID_CommandToMotor_Term_3
+    global Pitch_PosControl_PID_CommandToMotor_Term_5
+    global Pitch_PosControl_PID_CommandToMotor_Term_6
     global LQR_ControlLaw_Term_1
     global LQR_ControlLaw_Term_2
     global LQR_ControlLaw_Term_3
@@ -1308,7 +1388,9 @@ def GUI_update_clock():
             KeyboardInfo_Label["text"] = "Keyboard flags: " + str([KeyPressResponse_FWD_NeedsToBeChangedFlag,
                                                                     KeyPressResponse_REV_NeedsToBeChangedFlag,
                                                                     KeyPressResponse_LEFT_NeedsToBeChangedFlag,
-                                                                    KeyPressResponse_RIGHT_NeedsToBeChangedFlag]) + \
+                                                                    KeyPressResponse_RIGHT_NeedsToBeChangedFlag,
+                                                                    KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag,
+                                                                    KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag]) + \
                             "\nKeyboard_KeysToTeleopControlsMapping_DictOfDicts: " + \
                             "\n" + Keyboard_KeysToTeleopControlsMapping_DictOfDicts_FormattedAsNicelyPrintedString
             #########################################################
@@ -1368,6 +1450,13 @@ def GUI_update_clock():
 
             #########################################################
             #########################################################
+            if CSVdataLogger_OPEN_FLAG == 1 and SHOW_IN_GUI_CSVdataLogger_FLAG == 1:
+                CSVdataLogger_ReubenPython3ClassObject.GUI_update_clock()
+            #########################################################
+            #########################################################
+
+            #########################################################
+            #########################################################
             if BarGraphDisplay_OPEN_FLAG == 1:
 
                 if ControlAlgorithm == "PID":
@@ -1375,8 +1464,8 @@ def GUI_update_clock():
                     BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_2", Pitch_PosControl_PID_CommandToMotor_Term_2)
                     BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_3", Pitch_PosControl_PID_CommandToMotor_Term_3)
                     BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_4", 0.0)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", 0.0)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", Pitch_PosControl_PID_CommandToMotor_Term_5)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", Pitch_PosControl_PID_CommandToMotor_Term_6)
 
                 elif ControlAlgorithm == "LQR":
                     BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_1", LQR_ControlLaw_Term_1) #Too slow to update from non-GUI loop.
@@ -1437,7 +1526,6 @@ def GUI_Thread():
     global TKinter_LightBlueColor
     global TKinter_LightYellowColor
     global TKinter_DefaultGrayColor
-    global SHOW_IN_GUI_UR5arm_MostRecentDict_FLAG
 
     global USE_Keyboard_FLAG
     global USE_WiFiVINTthumbstick_FLAG
@@ -1761,6 +1849,17 @@ def JSONfiles_NeedsToBeLoadedFlag_ButtonResponse():
 #######################################################################################################################
 #######################################################################################################################
 def EnableMotors_ButtonResponse():
+    global ToggleEnableForBothMotors_EventNeedsToBeFiredFlag
+
+    ToggleEnableForBothMotors_EventNeedsToBeFiredFlag = 1
+    
+    #MyPrint_ReubenPython2and3ClassObject.my_print("EnableMotors_ButtonResponse event fired!")
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+def ToggleEnableForBothMotors():
     global EnableMotorState_0
     global EnableMotorState_1
 
@@ -1777,8 +1876,7 @@ def EnableMotors_ButtonResponse():
     else:
         EnableMotor(1, 1)
     ####################################
-    
-    #MyPrint_ReubenPython2and3ClassObject.my_print("EnableMotors_ButtonResponse event fired!")
+
 #######################################################################################################################
 #######################################################################################################################
 
@@ -1906,6 +2004,10 @@ def UpdateGUItabObjectsOrderedDict():
     global BarGraphDisplay_OPEN_FLAG
     global SHOW_IN_GUI_BarGraphDisplay_FLAG
 
+    global USE_CSVdataLogger_FLAG
+    global CSVdataLogger_OPEN_FLAG
+    global SHOW_IN_GUI_CSVdataLogger_FLAG
+
     global USE_MyPrint_FLAG
     global MyPrint_OPEN_FLAG
     global SHOW_IN_GUI_MyPrint_FLAG
@@ -1918,6 +2020,7 @@ def UpdateGUItabObjectsOrderedDict():
         ###########################################################
         if len(GUItabObjectsOrderedDict) == 0: #Not yet populated
             GUItabObjectsOrderedDict = OrderedDict([("MainControls", dict([("UseFlag", 1), ("ShowFlag", 1), ("GUItabObjectName", "MainControls"), ("GUItabNameToDisplay", "MainControls"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
+                                    ("CSVdataLogger", dict([("UseFlag", USE_CSVdataLogger_FLAG), ("ShowFlag", SHOW_IN_GUI_CSVdataLogger_FLAG), ("GUItabObjectName", "CSVdataLogger"), ("GUItabNameToDisplay", "CSVdataLogger"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
                                     ("WiFiVINTthumbstick", dict([("UseFlag", USE_WiFiVINTthumbstick_FLAG), ("ShowFlag", SHOW_IN_GUI_WiFiVINTthumbstick_FLAG), ("GUItabObjectName", "WiFiVINTthumbstick"), ("GUItabNameToDisplay", "Joystick"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
                                    ("RoboteqBLDCcontroller_0", dict([("UseFlag", USE_RoboteqBLDCcontroller_FLAG_0), ("ShowFlag", SHOW_IN_GUI_RoboteqBLDCcontroller_FLAG_0), ("GUItabObjectName", "RoboteqBLDCcontroller_0"), ("GUItabNameToDisplay", "Roboteq0"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
                                    ("RoboteqBLDCcontroller_1", dict([("UseFlag", USE_RoboteqBLDCcontroller_FLAG_1), ("ShowFlag", SHOW_IN_GUI_RoboteqBLDCcontroller_FLAG_1), ("GUItabObjectName", "RoboteqBLDCcontroller_1"), ("GUItabNameToDisplay", "Roboteq1"), ("IsTabCreatedFlag", 0), ("TabObject", None)])),
@@ -1932,6 +2035,7 @@ def UpdateGUItabObjectsOrderedDict():
         ###########################################################
         ###########################################################
         GUItabObjectsOrderedDict["MainControls"]["OpenFlag"] = 1
+        GUItabObjectsOrderedDict["CSVdataLogger"]["OpenFlag"] = CSVdataLogger_OPEN_FLAG
         GUItabObjectsOrderedDict["WiFiVINTthumbstick"]["OpenFlag"] = WiFiVINTthumbstick_OPEN_FLAG
         GUItabObjectsOrderedDict["RoboteqBLDCcontroller_0"]["OpenFlag"] = RoboteqBLDCcontroller_OPEN_FLAG_0
         GUItabObjectsOrderedDict["RoboteqBLDCcontroller_1"]["OpenFlag"] = RoboteqBLDCcontroller_OPEN_FLAG_1
@@ -1943,7 +2047,7 @@ def UpdateGUItabObjectsOrderedDict():
         ###########################################################
         ###########################################################
 
-        print("UpdateGUItabObjectsOrderedDict, GUItabObjectsOrderedDict: " + str(GUItabObjectsOrderedDict))
+        #print("UpdateGUItabObjectsOrderedDict, GUItabObjectsOrderedDict: " + str(GUItabObjectsOrderedDict))
 
     except:
         exceptions = sys.exc_info()[0]
@@ -2044,7 +2148,9 @@ if __name__ == '__main__':
     global USE_EntryListWithBlinking_FLAG
     global USE_MyPlotterPureTkinterStandAloneProcess_FLAG
     global USE_MyPrint_FLAG
+    global USE_CSVdataLogger_FLAG
     global USE_Keyboard_FLAG
+    global USE_BarGraphDisplay_FLAG
     global USE_GUI_FLAG
     global SAVE_PROGRAM_LOGS_FLAG
 
@@ -2061,6 +2167,8 @@ if __name__ == '__main__':
     global SHOW_IN_GUI_DC30AmpCurrentSensor_FLAG
     global SHOW_IN_GUI_EntryListWithBlinking_FLAG
     global SHOW_IN_GUI_Keyboard_FLAG
+    global SHOW_IN_GUI_BarGraphDisplay_FLAG
+    global SHOW_IN_GUI_CSVdataLogger_FLAG
     global SHOW_IN_GUI_MyPrint_FLAG
     global SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG
     global SHOW_IN_GUI_PID_TUNING_ENTRIES_FLAG
@@ -2126,6 +2234,13 @@ if __name__ == '__main__':
     global GUI_PADY_EntryListWithBlinking
     global GUI_ROWSPAN_EntryListWithBlinking
     global GUI_COLUMNSPAN_EntryListWithBlinking
+
+    global GUI_ROW_CSVdataLogger
+    global GUI_COLUMN_CSVdataLogger
+    global GUI_PADX_CSVdataLogger
+    global GUI_PADY_CSVdataLogger
+    global GUI_ROWSPAN_CSVdataLogger
+    global GUI_COLUMNSPAN_CSVdataLogger
 
     global GUI_ROW_BarGraphDisplay
     global GUI_COLUMN_BarGraphDisplay
@@ -2286,6 +2401,18 @@ if __name__ == '__main__':
     #################################################
 
     #################################################
+    global SavingSettings_user_notes
+    global CSVdataLogger_NameToDisplay_UserSet
+    global CSVdataLogger_CSVfile_DirectoryPath
+    global CSVdataLogger_FileNamePrefix
+    global CSVdataLogger_VariableNamesForHeaderList
+    global CSVdataLogger_MainThread_TimeToSleepEachLoop
+    global CSVdataLogger_SaveOnStartupFlag
+
+    LoadAndParseJSONfile_SavingSettings()
+    #################################################
+
+    #################################################
     global Keyboard_Directions
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts
 
@@ -2318,7 +2445,14 @@ if __name__ == '__main__':
 
     global SelfBalancingRobot1_MainThread_TimeToSleepEachLoop
     global DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda
+
+    global DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda_last #NOT imported from JSON file
+    DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda_last = 1.0
+
     global DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda
+
+    global DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda_last  # NOT imported from JSON file
+    DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda_last = 1.0
 
     global Velocity_V_RMC_MetersPerSec_Commanded_DeadbandThreshold
     global Velocity_V_RMC_MetersPerSec_Commanded_JoystickToMetersPerSecGain
@@ -2330,9 +2464,15 @@ if __name__ == '__main__':
     global Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag
     global Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
 
+    global Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last  # NOT imported from JSON file
+    Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = 1.0
+
     global YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag
     global YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag
     global YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
+
+    global YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last  # NOT imported from JSON file
+    YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = 1.0
 
     global LQR_ParametersToBeLoaded_Directions
     global LQR_PitchControl_GainVectorElement_Ktheta_0
@@ -2715,6 +2855,39 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
+    global CSVdataLogger_ReubenPython3ClassObject
+
+    global CSVdataLogger_OPEN_FLAG
+    CSVdataLogger_OPEN_FLAG = -1
+
+    global CSVdataLogger_MostRecentDict
+    CSVdataLogger_MostRecentDict = dict()
+
+    global CSVdataLogger_MostRecentDict_Time
+    CSVdataLogger_MostRecentDict_Time = -11111.0
+
+    global CSVdataLogger_MostRecentDict_DataStreamingFrequency_CalculatedFromMainThread
+    CSVdataLogger_MostRecentDict_DataStreamingFrequency_CalculatedFromMainThread = -11111.0
+
+    global CSVdataLogger_MostRecentDict_AcceptNewDataFlag
+    CSVdataLogger_MostRecentDict_AcceptNewDataFlag = -1
+
+    global CSVdataLogger_MostRecentDict_SaveFlag
+    CSVdataLogger_MostRecentDict_SaveFlag = -1
+
+    global CSVdataLogger_MostRecentDict_DataQueue_qsize
+    CSVdataLogger_MostRecentDict_DataQueue_qsize = -1
+
+    global CSVdataLogger_MostRecentDict_VariableNamesForHeaderList
+    CSVdataLogger_MostRecentDict_VariableNamesForHeaderList = []
+
+    global CSVdataLogger_MostRecentDict_FilepathFull
+    CSVdataLogger_MostRecentDict_FilepathFull = ""
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
     global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject
 
     global MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG
@@ -2768,6 +2941,12 @@ if __name__ == '__main__':
 
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
     KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0
+
+    global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
+    KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag = 0
+    
+    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
+    KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 0
     #################################################
     #################################################
 
@@ -2784,6 +2963,9 @@ if __name__ == '__main__':
 
     global LastTime_CalculatedFromMainThread
     LastTime_CalculatedFromMainThread = -11111.0
+
+    global DataStreamingFrequency_CalculatedFromMainThread
+    DataStreamingFrequency_CalculatedFromMainThread = -1
 
     global DataStreamingFrequency_CalculatedFromMainThread_Filtered
     DataStreamingFrequency_CalculatedFromMainThread_Filtered = -1
@@ -2806,6 +2988,9 @@ if __name__ == '__main__':
 
     global LastTime_CalculatedFromGUIthread
     LastTime_CalculatedFromGUIthread = -11111.0
+
+    global DataStreamingFrequency_CalculatedFromGUIthread
+    DataStreamingFrequency_CalculatedFromGUIthread = -1
 
     global DataStreamingFrequency_CalculatedFromGUIthread_Filtered
     DataStreamingFrequency_CalculatedFromGUIthread_Filtered = -1
@@ -2931,6 +3116,12 @@ if __name__ == '__main__':
     global Pitch_PosControl_PID_CommandToMotor_Term_3
     Pitch_PosControl_PID_CommandToMotor_Term_3 = 0.0
 
+    global Pitch_PosControl_PID_CommandToMotor_Term_5
+    Pitch_PosControl_PID_CommandToMotor_Term_5 = 0.0
+
+    global Pitch_PosControl_PID_CommandToMotor_Term_6
+    Pitch_PosControl_PID_CommandToMotor_Term_6 = 0.0
+
     global Pitch_PID_CommandToMotor
     Pitch_PID_CommandToMotor = 0
 
@@ -2946,38 +3137,31 @@ if __name__ == '__main__':
     global EnableMotorState_NeedsToBeChangedFlag_1
     EnableMotorState_NeedsToBeChangedFlag_1 = 1
 
+    global ToggleEnableForBothMotors_EventNeedsToBeFiredFlag
+    ToggleEnableForBothMotors_EventNeedsToBeFiredFlag = 0
+
     global ZeroLQR_EventNeedsToBeFiredFlag
     ZeroLQR_EventNeedsToBeFiredFlag = 0
     #################################################
     #################################################
 
-    #################################################
-    #################################################
+    ####################################################
+    ####################################################
     try:
-        DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(dict([("UseMedianFilterFlag", 0),
-                                        ("UseExponentialSmoothingFilterFlag", 1),
-                                        ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda)])) #new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
+
+        LowPassFilterForDictsOfLists_DictOfVariableFilterSettings = dict([("DataStreamingFrequency_CalculatedFromMainThread", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda)])),
+                                                                          ("DataStreamingFrequency_CalculatedFromGUIthread", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)])),
+                                                                          ("Velocity_V_RM_MetersPerSec_Actual", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)])),
+                                                                          ("YawAngularRate_DeltaDot_RadiansPerSec_Actual", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)]))])
+
+        LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject = LowPassFilterForDictsOfLists_ReubenPython2and3Class(dict([("DictOfVariableFilterSettings", LowPassFilterForDictsOfLists_DictOfVariableFilterSettings)]))
+        LowPassFilterForDictsOfLists_OPEN_FLAG = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
 
     except:
         exceptions = sys.exc_info()[0]
-        print("DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject, Exceptions: %s" % exceptions)
-        traceback.print_exc()
-    #################################################
-    #################################################
-
-    #################################################
-    #################################################
-    try:
-        DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(dict([("UseMedianFilterFlag", 0),
-                                        ("UseExponentialSmoothingFilterFlag", 1),
-                                        ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)])) #new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value
-
-    except:
-        exceptions = sys.exc_info()[0]
-        print("DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject, Exceptions: %s" % exceptions)
-        traceback.print_exc()
-    #################################################
-    #################################################
+        print("LowPassFilterForDictsOfLists_ReubenPython2and3Class __init__: Exceptions: %s" % exceptions)
+    ####################################################
+    ####################################################
 
     #################################################
     #################################################
@@ -3379,24 +3563,72 @@ if __name__ == '__main__':
                                                 dict([("Name", "Pitch_PosControl_PID_ErrorSum_Max"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_ErrorSum_Max), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
                                                 dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_0"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_0), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
                                                 dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_1"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_1), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_2"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_2), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_3"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_3), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_2"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_2), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_3"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_3), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
                                                 dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_0"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_0), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_1"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_1), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)])]
+                                                dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_1"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_1), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset"),("Type", "float"), ("StartingVal", SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset), ("MinVal", -10.0), ("MaxVal", 10.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", -0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", 0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)])]
 
     global EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict
     EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict = dict([("GUIparametersDict", EntryListWithBlinking_ReubenPython2and3ClassObject_GUIparametersDict),
                                                                           ("EntryListWithBlinking_Variables_ListOfDicts", EntryListWithBlinking_Variables_ListOfDicts),
                                                                           ("DebugByPrintingVariablesFlag", 0),
                                                                           ("LoseFocusIfMouseLeavesEntryFlag", 0)])
+
     if USE_EntryListWithBlinking_FLAG == 1:
+
         try:
             EntryListWithBlinking_ReubenPython2and3ClassObject = EntryListWithBlinking_ReubenPython2and3Class(EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict)
             EntryListWithBlinking_OPEN_FLAG = EntryListWithBlinking_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
 
         except:
             exceptions = sys.exc_info()[0]
-            print("EntryListWithBlinking_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions, 0)
+            print("SelfBalancingRobot1.py, EntryListWithBlinking_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions, 0)
+            traceback.print_exc()
+
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
+    UpdateGUItabObjectsOrderedDict()
+    #################################################
+    #################################################
+
+    ##################################################
+    #################################################
+    global CSVdataLogger_ReubenPython3ClassObject_GUIparametersDict
+    CSVdataLogger_ReubenPython3ClassObject_GUIparametersDict = dict([("USE_GUI_FLAG", USE_GUI_FLAG and SHOW_IN_GUI_CSVdataLogger_FLAG),
+                                    ("root", GUItabObjectsOrderedDict["CSVdataLogger"]["TabObject"]),
+                                    ("EnableInternal_MyPrint_Flag", 1),
+                                    ("NumberOfPrintLines", 10),
+                                    ("UseBorderAroundThisGuiObjectFlag", 0),
+                                    ("GUI_ROW", GUI_ROW_CSVdataLogger),
+                                    ("GUI_COLUMN", GUI_COLUMN_CSVdataLogger),
+                                    ("GUI_PADX", GUI_PADX_CSVdataLogger),
+                                    ("GUI_PADY", GUI_PADY_CSVdataLogger),
+                                    ("GUI_ROWSPAN", GUI_ROWSPAN_CSVdataLogger),
+                                    ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_CSVdataLogger)])
+
+    global CSVdataLogger_ReubenPython3ClassObject_setup_dict
+    CSVdataLogger_ReubenPython3ClassObject_setup_dict = dict([("GUIparametersDict", CSVdataLogger_ReubenPython3ClassObject_GUIparametersDict),
+                                                                                ("NameToDisplay_UserSet", CSVdataLogger_NameToDisplay_UserSet),
+                                                                                ("CSVfile_DirectoryPath", CSVdataLogger_CSVfile_DirectoryPath),
+                                                                                ("FileNamePrefix", CSVdataLogger_FileNamePrefix),
+                                                                                ("VariableNamesForHeaderList", CSVdataLogger_VariableNamesForHeaderList),
+                                                                                ("MainThread_TimeToSleepEachLoop", CSVdataLogger_MainThread_TimeToSleepEachLoop),
+                                                                                ("SaveOnStartupFlag", CSVdataLogger_SaveOnStartupFlag)])
+
+    if USE_CSVdataLogger_FLAG == 1:
+        try:
+            CSVdataLogger_ReubenPython3ClassObject = CSVdataLogger_ReubenPython3Class(CSVdataLogger_ReubenPython3ClassObject_setup_dict)
+            CSVdataLogger_OPEN_FLAG = CSVdataLogger_ReubenPython3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+
+        except:
+            exceptions = sys.exc_info()[0]
+            print("SelfBalancingRobot1.py, CSVdataLogger_ReubenPython3ClassObject __init__: Exceptions: %s" % exceptions, 0)
             traceback.print_exc()
     #################################################
     #################################################
@@ -3437,14 +3669,17 @@ if __name__ == '__main__':
                                                                 ("NegativeColor", TKinter_LightRedColor),
                                                                 ("PositiveColor", TKinter_LightGreenColor)])
 
-    try:
-        BarGraphDisplay_ReubenPython3ClassObject = BarGraphDisplay_ReubenPython3Class(BarGraphDisplay_ReubenPython3ClassObject_setup_dict)
-        BarGraphDisplay_OPEN_FLAG = BarGraphDisplay_ReubenPython3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+    if USE_BarGraphDisplay_FLAG == 1:
 
-    except:
-        exceptions = sys.exc_info()[0]
-        print("BarGraphDisplay_ReubenPython3ClassObject __init__: Exceptions: %s" % exceptions, 0)
-        #traceback.print_exc()
+        try:
+            BarGraphDisplay_ReubenPython3ClassObject = BarGraphDisplay_ReubenPython3Class(BarGraphDisplay_ReubenPython3ClassObject_setup_dict)
+            BarGraphDisplay_OPEN_FLAG = BarGraphDisplay_ReubenPython3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+
+        except:
+            exceptions = sys.exc_info()[0]
+            print("SelfBalancingRobot1.py, BarGraphDisplay_ReubenPython3ClassObject __init__: Exceptions: %s" % exceptions, 0)
+            #traceback.print_exc()
+
     #################################################
     #################################################
 
@@ -3466,52 +3701,8 @@ if __name__ == '__main__':
 
         except:
             exceptions = sys.exc_info()[0]
-            print("SelfBalancingRobot1.py, MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject, exceptions: %s" % exceptions)
+            print("SelfBalancingRobot1.py, MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions)
             traceback.print_exc()
-    #################################################
-    #################################################
-
-    #################################################
-    #################################################
-    UpdateGUItabObjectsOrderedDict()
-    #################################################
-    #################################################
-
-    #################################################
-    #################################################
-    try:
-        Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject_setup_dict = dict([("UseMedianFilterFlag", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseMedianFilterFlag),
-                                                                    ("UseExponentialSmoothingFilterFlag", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag),
-                                                                    ("ExponentialSmoothingFilterLambda", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)])
-
-        Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject_setup_dict)
-        Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_OPEN_FLAG = Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
-
-    except:
-        exceptions = sys.exc_info()[0]
-        print("SelfBalancingRobot1.py, LowPassFilter_ReubenPython2and3Class __init__: Exceptions: %s" % exceptions)
-    #################################################
-    #################################################
-
-    #################################################
-    #################################################
-    UpdateGUItabObjectsOrderedDict()
-    #################################################
-    #################################################
-
-    #################################################
-    #################################################
-    try:
-        YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject_setup_dict = dict([("UseMedianFilterFlag", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag),
-                                                                    ("UseExponentialSmoothingFilterFlag", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag),
-                                                                    ("ExponentialSmoothingFilterLambda", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)])
-
-        YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject = LowPassFilter_ReubenPython2and3Class(YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject_setup_dict)
-        YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_OPEN_FLAG = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
-
-    except:
-        exceptions = sys.exc_info()[0]
-        print("SelfBalancingRobot1.py, LowPassFilter_ReubenPython2and3Class __init__: Exceptions: %s" % exceptions)
     #################################################
     #################################################
 
@@ -3561,13 +3752,13 @@ if __name__ == '__main__':
     #################################################
     #################################################
 
-    #################################################
-    #################################################
-    if Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_OPEN_FLAG != 1:
-        print("SelfBalancingRobot1.py, failed to open LowPassFilter_ReubenPython2and3ClassObject.")
+    ####################################################
+    ####################################################
+    if LowPassFilterForDictsOfLists_OPEN_FLAG != 1:
+        print("SelfBalancingRobot1.py, Failed to open LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.")
         #ExitProgram_Callback()
-    #################################################
-    #################################################
+    ####################################################
+    ####################################################
 
     #################################################
     #################################################
@@ -3579,8 +3770,16 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
+    if USE_CSVdataLogger_FLAG == 1 and CSVdataLogger_OPEN_FLAG != 1:
+        print("SelfBalancingRobot1.py, Failed to open CSVdataLogger_ReubenPython3Class.")
+        #ExitProgram_Callback()
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
     if BarGraphDisplay_OPEN_FLAG != 1:
-        print("Failed to open BarGraphDisplay_ReubenPython3Class.")
+        print("SelfBalancingRobot1.py, Failed to open BarGraphDisplay_ReubenPython3Class.")
         #ExitProgram_Callback()
     #################################################
     #################################################
@@ -3617,13 +3816,18 @@ if __name__ == '__main__':
         ###################################################
         ###################################################
         if JSONfiles_NeedsToBeLoadedFlag == 1:
-            LoadAndParseJSONfile_GUIsettings()
 
+            ###################################################
+            ###################################################
+            LoadAndParseJSONfile_GUIsettings()
             LoadAndParseJSONfile_RoboteqBLDCcontroller_0()
             LoadAndParseJSONfile_RoboteqBLDCcontroller_1()
             LoadAndParseJSONfile_WiFiVINTthumbstick()
             LoadAndParseJSONfile_SpatialPrecision333()
             LoadAndParseJSONfile_DC30AmpCurrentSensor()
+            LoadAndParseJSONfile_SavingSettings()
+            ###################################################
+            ###################################################
 
             ###################################################
             ###################################################
@@ -3642,39 +3846,13 @@ if __name__ == '__main__':
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_3", LQR_PitchControl_GainVectorElement_Ktheta_3)
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_YawControl_GainVectorElement_Kdelta_0", LQR_YawControl_GainVectorElement_Kdelta_0)
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_YawControl_GainVectorElement_Kdelta_1", LQR_YawControl_GainVectorElement_Kdelta_1)
-            ###################################################
-            
-            ###################################################
-            DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
-                                        ("UseExponentialSmoothingFilterFlag", 1),
-                                        ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
-                                        StringPrefixToPrint = "Updated: ")
+
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset", SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)
             ###################################################
 
             ###################################################
-            DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
-                                        ("UseExponentialSmoothingFilterFlag", 1),
-                                        ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
-                                        StringPrefixToPrint = "Updated: ")
-            ###################################################
-
-            ###################################################
-            Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
-                                        ("UseExponentialSmoothingFilterFlag", 1),
-                                        ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
-                                        StringPrefixToPrint = "Updated: ")
-            ###################################################
-
-            ###################################################
-            YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.UpdateFilterParameters(dict([("UseMedianFilterFlag", 0),
-                                        ("UseExponentialSmoothingFilterFlag", 1),
-                                        ("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)]),
-                                        StringPrefixToPrint = "Updated: ")
-            ###################################################
-            
-            ###################################################
-            ###################################################
-
             PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3ClassObject.UpdateDifferentiatedAngularVelocityFilterParameters(dict([("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
                                                                                         ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
                                                                                         ("RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_RollRate_AbtXaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),
@@ -3684,15 +3862,34 @@ if __name__ == '__main__':
                                                                                         ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseMedianFilterFlag),
                                                                                         ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_UseExponentialSmoothingFilterFlag),
                                                                                         ("YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda", SpatialPrecision333_YawRate_AbtZaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda),]))
-            
+
+            ###################################################
+
+            ###################################################
+            ###################################################
+
+            ###################################################
+            ###################################################
             LoadAndParseJSONfile_RobotModelParameters()
+            ###################################################
+            ###################################################
 
+            ###################################################
+            ###################################################
             LoadAndParseJSONfile_Keyboard()
-            KeyboardMapKeysToCallbackFunctions()
 
-            '''
-            UPDATE PARAMETERS HERE UPON RELOADING JSON FILE
-            '''
+            KeyboardMapKeysToCallbackFunctions()
+            ###################################################
+            ###################################################
+
+            ###################################################
+            ###################################################
+            LoadAndParseJSONfile_MyPlotterPureTkinterStandAloneProcess()
+
+            if MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG == 1:
+                MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalUpdateSetupDict(MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict)
+            ###################################################
+            ###################################################
 
             JSONfiles_NeedsToBeLoadedFlag = 0
         ###################################################
@@ -3719,6 +3916,10 @@ if __name__ == '__main__':
                 LQR_PitchControl_GainVectorElement_Ktheta_3 = EntryListWithBlinking_MostRecentDict["LQR_PitchControl_GainVectorElement_Ktheta_3"]
                 LQR_YawControl_GainVectorElement_Kdelta_0 = EntryListWithBlinking_MostRecentDict["LQR_YawControl_GainVectorElement_Kdelta_0"]
                 LQR_YawControl_GainVectorElement_Kdelta_1 = EntryListWithBlinking_MostRecentDict["LQR_YawControl_GainVectorElement_Kdelta_1"]
+
+                SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset = EntryListWithBlinking_MostRecentDict["SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset"]
+                Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda = EntryListWithBlinking_MostRecentDict["Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"]
+                YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda = EntryListWithBlinking_MostRecentDict["YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"]
                 
                 #print("EntryListWithBlinking_MostRecentDict: " + str(EntryListWithBlinking_MostRecentDict))
                 #print("DataUpdateNumber = " + str(EntryListWithBlinking_MostRecentDict_DataUpdateNumber) + ", EntryListWithBlinking_MostRecentDict: " + str(EntryListWithBlinking_MostRecentDict))
@@ -3860,6 +4061,45 @@ if __name__ == '__main__':
         ###################################################
         ###################################################
 
+        #################################################### GET's
+        ####################################################
+        if CSVdataLogger_OPEN_FLAG == 1:
+
+            CSVdataLogger_MostRecentDict = CSVdataLogger_ReubenPython3ClassObject.GetMostRecentDataDict()
+
+            if "Time" in CSVdataLogger_MostRecentDict:
+                CSVdataLogger_MostRecentDict_Time = CSVdataLogger_MostRecentDict["Time"]
+                CSVdataLogger_MostRecentDict_DataStreamingFrequency_CalculatedFromMainThread = CSVdataLogger_MostRecentDict["DataStreamingFrequency_CalculatedFromMainThread"]
+                CSVdataLogger_MostRecentDict_AcceptNewDataFlag = CSVdataLogger_MostRecentDict["AcceptNewDataFlag"]
+                CSVdataLogger_MostRecentDict_SaveFlag = CSVdataLogger_MostRecentDict["SaveFlag"]
+                CSVdataLogger_MostRecentDict_DataQueue_qsize = CSVdataLogger_MostRecentDict["DataQueue_qsize"]
+                CSVdataLogger_MostRecentDict_VariableNamesForHeaderList = CSVdataLogger_MostRecentDict["VariableNamesForHeaderList"]
+                CSVdataLogger_MostRecentDict_FilepathFull = CSVdataLogger_MostRecentDict["FilepathFull"]
+
+                #print("CSVdataLogger_MostRecentDict: " + str(CSVdataLogger_MostRecentDict))
+
+        ####################################################
+        ####################################################
+
+        ####################################################
+        ####################################################
+        if LowPassFilterForDictsOfLists_OPEN_FLAG == 1:
+
+            if DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda != DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda_last or \
+                DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda != DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda_last or \
+                Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda != Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last or \
+                YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda != YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last:
+
+                LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["DataStreamingFrequency_CalculatedFromMainThread"]["ExponentialSmoothingFilterLambda"] = DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda
+                LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["DataStreamingFrequency_CalculatedFromGUIthread"]["ExponentialSmoothingFilterLambda"] = DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda
+                LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["Velocity_V_RM_MetersPerSec_Actual"]["ExponentialSmoothingFilterLambda"] = Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
+                LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["YawAngularRate_DeltaDot_RadiansPerSec_Actual"]["ExponentialSmoothingFilterLambda"] = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
+
+                if "DataStreamingFrequency_CalculatedFromMainThread" in LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.GetMostRecentDataDict(): #Wait until it's populated
+                    LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddOrUpdateDictOfVariableFilterSettingsFromExternalProgram(LowPassFilterForDictsOfLists_DictOfVariableFilterSettings)
+        ####################################################
+        ####################################################
+
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
@@ -3906,7 +4146,23 @@ if __name__ == '__main__':
         ######################################################################################################
         if ControlInput == "KeyboardControl":
 
-            ###################################################################################################### unicorn
+            ######################################################################################################
+            ######################################################################################################
+            if KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag == 1:
+                ToggleEnableForBothMotors_EventNeedsToBeFiredFlag = 1
+                KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag = 0
+            ######################################################################################################
+            ######################################################################################################
+
+            ######################################################################################################
+            ######################################################################################################
+            if KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag == 1:
+                ZeroLQR_EventNeedsToBeFiredFlag = 1
+                KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 0
+            ######################################################################################################
+            ######################################################################################################
+
+            ###################################################################################################### NEED A SEPARATE SECTION FROM PID DUE TO DIFFERENT COMMAND VALUES
             ######################################################################################################
             if ControlAlgorithm == "LQR":
                 Velocity_V_RMC_MetersPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
@@ -3933,10 +4189,11 @@ if __name__ == '__main__':
                     YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue_LQR"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded LEFT")
                     #KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
+
             ######################################################################################################
             ######################################################################################################
 
-            ###################################################################################################### unicorn
+            ###################################################################################################### NEED A SEPARATE SECTION FROM LQR DUE TO DIFFERENT COMMAND VALUES
             ######################################################################################################
             elif ControlAlgorithm == "PID":
                 Velocity_V_RMC_MetersPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
@@ -4035,6 +4292,7 @@ if __name__ == '__main__':
         ######################################################################################################
         ######################################################################################################
         if ZeroLQR_EventNeedsToBeFiredFlag == 1:
+
             Position_X_RMC_Meters_Commanded = 0.0
             Velocity_V_RMC_MetersPerSec_Commanded = 0.0
             YawAngle_Delta_Radians_Commanded = 0.0
@@ -4046,8 +4304,8 @@ if __name__ == '__main__':
             RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_1 = 1 #Sets actual position to 0 during next loop
             RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1 = 0.0
 
-            SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1
-            SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1
+            #SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1 #Perform this separatly via its own button.
+            #SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1 #Perform this separatly via its own button.
 
             ZeroLQR_EventNeedsToBeFiredFlag = 0
         ######################################################################################################
@@ -4063,26 +4321,25 @@ if __name__ == '__main__':
         Wheel_Omega_Theta_RL_RadiansPerSec_Actual = RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_1 * 2.0 * math.pi
         Wheel_Omega_Theta_RR_RadiansPerSec_Actual = RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_0 * 2.0 * math.pi
 
-        Position_X_RM_Meters_Actual = RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Theta_RL_Radians_Actual + Wheel_Theta_RR_Radians_Actual) / 2.0
+        Position_X_RM_Meters_Actual = (RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Theta_RL_Radians_Actual + Wheel_Theta_RR_Radians_Actual) / 2.0)
 
-        Position_X_RMC_Meters_Commanded = Position_X_RMC_Meters_Commanded + Velocity_V_RMC_MetersPerSec_Commanded*(1.0/DataStreamingFrequency_CalculatedFromMainThread_Filtered)
+        if DataStreamingFrequency_CalculatedFromMainThread_Filtered > 0:
+            Position_X_RMC_Meters_Commanded = Position_X_RMC_Meters_Commanded + Velocity_V_RMC_MetersPerSec_Commanded*(1.0/DataStreamingFrequency_CalculatedFromMainThread_Filtered)
 
         if Velocity_V_RMC_MetersPerSec_Commanded != 0.0: #So that we're not integrating while commanding nothing via keyboard
             Position_X_RMC_Meters_Commanded = LimitNumber_FloatOutputOnly(Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION, Position_X_RM_Meters_Actual + Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION, Position_X_RMC_Meters_Commanded) #Cap it
 
         Velocity_V_RM_MetersPerSec_Actual_UNFILTERED = RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_Theta_RL_RadiansPerSec_Actual + Wheel_Omega_Theta_RR_RadiansPerSec_Actual) / 2.0
-
-        Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(Velocity_V_RM_MetersPerSec_Actual_UNFILTERED)
-        Velocity_V_RM_MetersPerSec_Actual = Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.GetMostRecentDataDict()["SignalOutSmoothed"]
+        VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("Velocity_V_RM_MetersPerSec_Actual", [Velocity_V_RM_MetersPerSec_Actual_UNFILTERED])]))
+        Velocity_V_RM_MetersPerSec_Actual = VariablesDict_Temp["Velocity_V_RM_MetersPerSec_Actual"]["Filtered_MostRecentValuesList"][0]
 
         PitchAngle_Theta_Deg_Actual = SpatialPrecision333_MostRecentDict_RollPitchYaw_AbtXYZ_Dict["RollPitchYaw_AbtXYZ_List_Degrees"][1]#spatial333_Pitch_AbtYaxis_Degrees_1
 
         PitchAngle_Theta_Deg_Actual = PitchAngle_Theta_Deg_Actual + SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset
         PitchAngle_Theta_Radians_Actual = PitchAngle_Theta_Deg_Actual*math.pi/180.0
-        #PitchAngle_Theta_Deg_Commanded = 0.0 #Always want it upright
+
         PitchAngle_Theta_Radians_Commanded = PitchAngle_Theta_Deg_Commanded*math.pi/180.0
 
-        ###NEED TO SMOOTH HERE.
         PitchAngularRate_ThetaDot_DegreesPerSecond_Actual = SpatialPrecision333_MostRecentDict_RollPitchYaw_Rate_AbtXYZ_Dict["RollPitchYaw_Rate_AbtXYZ_List_DegreesPerSecond"][1]
         PitchAngularRate_ThetaDot_RadiansPerSec_Actual = PitchAngularRate_ThetaDot_DegreesPerSecond_Actual*math.pi/180.0
         PitchAngularRate_ThetaDot_RadiansPerSec_Commanded = 0.0
@@ -4091,8 +4348,9 @@ if __name__ == '__main__':
         YawAngle_Delta_Deg_Actual = YawAngle_Delta_Radians_Actual * 180.0 / math.pi
         
         YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED = -1.0*RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_Theta_RL_RadiansPerSec_Actual - Wheel_Omega_Theta_RR_RadiansPerSec_Actual) / RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters #NOT SURE WHY WE NEED MINUS SIGN TO GET YAW IN CORRECT DIRECTION
-        YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED)
-        YawAngularRate_DeltaDot_RadiansPerSec_Actual = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ReubenPython2and3ClassObject.GetMostRecentDataDict()["SignalOutSmoothed"]
+        VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("YawAngularRate_DeltaDot_RadiansPerSec_Actual", [YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED])]))
+        YawAngularRate_DeltaDot_RadiansPerSec_Actual = VariablesDict_Temp["YawAngularRate_DeltaDot_RadiansPerSec_Actual"]["Filtered_MostRecentValuesList"][0]
+
         YawAngularRate_DeltaDot_DegreesPerSecond_Actual = YawAngularRate_DeltaDot_RadiansPerSec_Actual * 180.0 / math.pi
 
         #YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Set in above code by ControlInput
@@ -4147,11 +4405,29 @@ if __name__ == '__main__':
             Pitch_PosControl_PID_CommandToMotor_Term_2 = -1.0 * Pitch_PosControl_PID_ErrorSum * Pitch_PosControl_PID_gain_Ki
             Pitch_PosControl_PID_CommandToMotor_Term_3 = -1.0 * Pitch_PosControl_PID_ErrorD * Pitch_PosControl_PID_gain_Kd
 
+            Pitch_PosControl_PID_CommandToMotor_Term_5 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_0 * (YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded)
+            Pitch_PosControl_PID_CommandToMotor_Term_6 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_1 * (YawAngularRate_DeltaDot_RadiansPerSec_Actual - YawAngularRate_DeltaDot_RadiansPerSec_Commanded)
+
+
+
+            ### Simple PID
             Pitch_PosControl_PID_CommandToMotor =  Pitch_PosControl_PID_CommandToMotor_Term_1 + Pitch_PosControl_PID_CommandToMotor_Term_2 + Pitch_PosControl_PID_CommandToMotor_Term_3
-
-
+            ''' 
             TorqueToBeCommanded_Motor0 = Pitch_PosControl_PID_CommandToMotor
             TorqueToBeCommanded_Motor1 = -1.0*Pitch_PosControl_PID_CommandToMotor #Wheels are mounted opposite, so need a minus sign to get them both spinning in same direction.
+            ###
+            '''
+
+            C_Theta = 1.0 * (Pitch_PosControl_PID_CommandToMotor_Term_1 + Pitch_PosControl_PID_CommandToMotor_Term_2 + Pitch_PosControl_PID_CommandToMotor_Term_3)
+
+            C_Delta =  1.0 * (Pitch_PosControl_PID_CommandToMotor_Term_5 + Pitch_PosControl_PID_CommandToMotor_Term_6)
+            #C_Delta = 0 #unicorn
+
+            C_L = 0.5*(C_Theta + C_Delta)
+            C_R = 0.5*(C_Theta - C_Delta)
+
+            TorqueToBeCommanded_Motor0 = 1.0*C_R #Wheels are mounted opposite, so need a minus sign to get them both spinning in same direction.
+            TorqueToBeCommanded_Motor1 = -1.0*C_L
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
@@ -4160,8 +4436,6 @@ if __name__ == '__main__':
         ######################################################################################################
         ######################################################################################################
         elif ControlAlgorithm == "LQR":
-
-            #'''
 
             LQR_ControlLaw_Term_1 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_0 * (Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded)
             LQR_ControlLaw_Term_2 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_1 * (Velocity_V_RM_MetersPerSec_Actual - Velocity_V_RMC_MetersPerSec_Commanded)
@@ -4173,19 +4447,13 @@ if __name__ == '__main__':
             C_Theta = 1.0 * (LQR_ControlLaw_Term_1 + LQR_ControlLaw_Term_2 + LQR_ControlLaw_Term_3 + LQR_ControlLaw_Term_4)  #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
 
             C_Delta =  1.0 * (LQR_ControlLaw_Term_5 + LQR_ControlLaw_Term_6) #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
-            #'''
-
             #C_Delta = 0 #unicorn
 
             C_L = 0.5*(C_Theta + C_Delta)
-
             C_R = 0.5*(C_Theta - C_Delta)
 
             TorqueToBeCommanded_Motor0 = 1.0*C_R #Wheels are mounted opposite, so need a minus sign to get them both spinning in same direction.
             TorqueToBeCommanded_Motor1 = -1.0*C_L
-
-            #TorqueToBeCommanded_Motor0 = 1.0
-            #TorqueToBeCommanded_Motor1 = -1.0
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
@@ -4224,6 +4492,16 @@ if __name__ == '__main__':
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
+
+        ################################################### SET's
+        ###################################################
+        ###################################################
+        if ToggleEnableForBothMotors_EventNeedsToBeFiredFlag == 1:
+            ToggleEnableForBothMotors()
+            ToggleEnableForBothMotors_EventNeedsToBeFiredFlag = 0
+        ###################################################
+        ###################################################
+        ###################################################
 
         ################################################### SET's
         ###################################################
@@ -4306,6 +4584,26 @@ if __name__ == '__main__':
         ###################################################
         ###################################################
 
+        #################################################### SET's
+        ####################################################
+        ###################################################
+        if CSVdataLogger_OPEN_FLAG == 1 and CSVdataLogger_MostRecentDict_AcceptNewDataFlag == 1:
+
+            try:
+                ListToWriteToCSV = []
+                for VariableName in CSVdataLogger_VariableNamesForHeaderList:
+                    ListToWriteToCSV.append(globals()[VariableName])
+
+                CSVdataLogger_ReubenPython3ClassObject.AddDataToCSVfile_ExternalFunctionCall(ListToWriteToCSV)
+
+            except:
+                exceptions = sys.exc_info()[0]
+                print("SelfBalancingRobot1, CSVdataLogger_ReubenPython3ClassObject SET's, exceptions: %s" % exceptions)
+                traceback.print_exc()
+        ####################################################
+        ####################################################
+        ###################################################
+
         ################################################### SETs
         ###################################################
         ###################################################
@@ -4321,10 +4619,11 @@ if __name__ == '__main__':
                     if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_PLOTTER >= MyPlotterPureTkinterStandAloneProcess_RefreshDurationInSeconds:
                         #pass
                         #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0"], [CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual])
-                        MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual, PitchAngularRate_ThetaDot_DegreesPerSecond_Actual])
+                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual, PitchAngularRate_ThetaDot_DegreesPerSecond_Actual])
+                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [YawAngle_Delta_Deg_Actual, YawAngularRate_DeltaDot_DegreesPerSecond_Actual])
                         #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Wheel_Omega_Theta_RL_RadiansPerSec_Actual, Wheel_Omega_Theta_RR_RadiansPerSec_Actual])
                         #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0"], [CurrentTime_CalculatedFromMainThread], [Velocity_V_RM_MetersPerSec_Actual])
-                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, Velocity_V_RM_MetersPerSec_Actual])
+                        MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, Velocity_V_RM_MetersPerSec_Actual])
 
                         LastTime_CalculatedFromMainThread_PLOTTER = CurrentTime_CalculatedFromMainThread
             ####################################################
@@ -4345,6 +4644,10 @@ if __name__ == '__main__':
         ######################################################################################################
         ######################################################################################################
         #PLACE TO UPDATE LAST_ VARIABLES
+        DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda_last = DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda
+        DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda_last = DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda
+        Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
+        YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
 
         UpdateFrequencyCalculation_MainThread_Filtered()
         time.sleep(SelfBalancingRobot1_MainThread_TimeToSleepEachLoop)
@@ -4392,6 +4695,11 @@ if __name__ == '__main__':
     #################################################
     if EntryListWithBlinking_OPEN_FLAG == 1:
         EntryListWithBlinking_ReubenPython2and3ClassObject.ExitProgram_Callback()
+    #################################################
+
+    #################################################
+    if CSVdataLogger_OPEN_FLAG == 1:
+        CSVdataLogger_ReubenPython3ClassObject.ExitProgram_Callback()
     #################################################
 
     #################################################

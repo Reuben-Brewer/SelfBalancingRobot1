@@ -8,8 +8,9 @@
     "SHOW_IN_GUI_DC30AmpCurrentSensor_FLAG":1,
     "SHOW_IN_GUI_EntryListWithBlinking_FLAG": 1,
     "SHOW_IN_GUI_Keyboard_FLAG":0,
-    "SHOW_IN_GUI_BarGraphDisplay_FLAG":0,
-    "SHOW_IN_GUI_MyPrint_FLAG":0,
+    "SHOW_IN_GUI_BarGraphDisplay_FLAG":1,
+    "SHOW_IN_GUI_CSVdataLogger_FLAG": 1,
+    "SHOW_IN_GUI_MyPrint_FLAG":1,
     "SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG":1,
     "SHOW_IN_GUI_PID_TUNING_ENTRIES_FLAG":1,
 
@@ -24,7 +25,7 @@
     "GUIbuttonPadY": 5,
     "GUIbuttonFontSize": 12,
     "EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth": 10,
-    "EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth": 40,
+    "EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth": 45,
   
     "GUI_ROW_ExtraProgramControlGuiFrame": 0,
     "GUI_COLUMN_ExtraProgramControlGuiFrame": 0,
@@ -74,6 +75,13 @@
     "GUI_PADY_EntryListWithBlinking": 1,
     "GUI_ROWSPAN_EntryListWithBlinking": 1,
     "GUI_COLUMNSPAN_EntryListWithBlinking": 1,
+
+    "GUI_ROW_CSVdataLogger": 1,
+    "GUI_COLUMN_CSVdataLogger": 1,
+    "GUI_PADX_CSVdataLogger": 1,
+    "GUI_PADY_CSVdataLogger": 1,
+    "GUI_ROWSPAN_CSVdataLogger": 1,
+    "GUI_COLUMNSPAN_CSVdataLogger": 1,
 
     "GUI_ROW_BarGraphDisplay": 1,
     "GUI_COLUMN_BarGraphDisplay": 1,

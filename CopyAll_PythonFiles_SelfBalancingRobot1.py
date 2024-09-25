@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision I, 08/31/2024
+Software Revision J, 09/24/2024
 
 Verified working on: Python 3.9 for Windows 10 64-bit and Raspberry Pi Bullseye.
 '''
@@ -83,6 +83,7 @@ try:
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\__init__.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\SelfBalancingRobot1.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\CopyAll_PythonFiles_SelfBalancingRobot1.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\ExcelPlot_CSVdataLogger_ReubenPython3Code__SelfBalancingRobot1.py", FileDirectoryToCreate)
 
     CopyEntireDirectoryWithContents("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\ParametersToBeLoaded", FileDirectoryToCreate + "\\ParametersToBeLoaded") #Copies the entire directory
     CopyEntireDirectoryWithContents("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\InstallFiles_and_SupportDocuments", FileDirectoryToCreate + "\\InstallFiles_and_SupportDocuments") #Copies the entire directory
@@ -92,6 +93,9 @@ try:
 
     shutil.copy("G:\\My Drive\\CodeReuben\\BarGraphDisplay_ReubenPython3Class\\BarGraphDisplay_ReubenPython3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\BarGraphDisplay_ReubenPython3Class\\test_program_for_BarGraphDisplay_ReubenPython3Class.py", FileDirectoryToCreate)
+
+    shutil.copy("G:\\My Drive\\CodeReuben\\CSVdataLogger_ReubenPython3Class\\CSVdataLogger_ReubenPython3Class.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\CSVdataLogger_ReubenPython3Class\\test_program_for_CSVdataLogger_ReubenPython3Class.py", FileDirectoryToCreate)
 
     shutil.copy("G:\\My Drive\\CodeReuben\\EntryListWithBlinking_ReubenPython2and3Class\\EntryListWithBlinking_ReubenPython2and3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\EntryListWithBlinking_ReubenPython2and3Class\\test_program_for_EntryListWithBlinking_ReubenPython2and3Class.py", FileDirectoryToCreate)
