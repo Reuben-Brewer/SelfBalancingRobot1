@@ -7,29 +7,25 @@
                 {"KeyName":"w",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_FWD_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_FWD_STOP",
-                "CommandedValue_PID": 2.0,
-                "CommandedValue_LQR": 0.25},
+                "CommandedValue_PID": 0.05},
 
             "REV":
                 {"KeyName":"x",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_REV_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_REV_STOP",
-                "CommandedValue_PID": -2.0,
-                "CommandedValue_LQR": -0.25},
+                "CommandedValue_PID": -0.05},
 
             "RIGHT":
                 {"KeyName":"d",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_RIGHT_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_RIGHT_STOP",
-                "CommandedValue_PID": 2.0,
-                "CommandedValue_LQR": 0.25},
+                "CommandedValue_PID": 0.2},
 
             "LEFT":
                 {"KeyName":"a",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_LEFT_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_LEFT_STOP",
-                "CommandedValue_PID": -2.0,
-                "CommandedValue_LQR": -0.25},
+                "CommandedValue_PID": -0.2},
 
             "TorqueEnable":
                 {"KeyName":"t",
@@ -38,7 +34,7 @@
 
             "ZeroLQR":
                 {"KeyName":"z",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_ZeroLQR_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ZeroLQR_STOP"}
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_STOP"}
     }
 }

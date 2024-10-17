@@ -6,9 +6,9 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision F, 05/10/2023
+Software Revision G, 10/17/2024
 
-Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (no Mac testing yet).
+Verified working on: Python 2.7, 3.12 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (no Mac testing yet).
 '''
 
 __author__ = 'reuben.brewer'
@@ -81,7 +81,7 @@ def GetCurrentPythonFileNameString(IncludeFullPathFlag = 0):
 ##########################################################################################################
 ##########################################################################################################
 def GetPIDsByProcessEnglishName(ProcessName = ""):
-    print("GetPIDsByProcessEnglishName: Current PID of this program is " + str(os.getpid()))
+    #print("GetPIDsByProcessEnglishName: Current PID of this program is " + str(os.getpid()))
 
     my_platform = GetMyPlatformOS()
 
@@ -93,11 +93,17 @@ def GetPIDsByProcessEnglishName(ProcessName = ""):
 
         if ProcessName != "":
             shell_command_to_issue = 'tasklist /FI \"IMAGENAME eq "' + ProcessName + '.exe\"'
+            print("shell_command_to_issue: " + str(shell_command_to_issue))
         else:
             shell_command_to_issue = 'tasklist'
 
-        shell_response_bytes = subprocess.check_output(shell_command_to_issue)
-        shell_response_str = str(shell_response_bytes)  # Need to convert bytes to str in Python 3
+        try:
+            shell_response_bytes = subprocess.check_output(shell_command_to_issue)
+            shell_response_str = str(shell_response_bytes)  # Need to convert bytes to str in Python 3
+        except:
+            exceptions = sys.exc_info()[0]
+            print("GetPIDsByProcessEnglishName, subprocess.check_output exceptions: %s" % exceptions)
+            traceback.print_exc()
 
         ###############
         if sys.version_info[0] < 3:
@@ -239,9 +245,9 @@ if __name__ == '__main__':
 
     ############################################
     ############################################
-    KillFlag = 0
+    KillFlag = 1
     UseSigkillForceCloseImmediatelyFlag = 0
-    ProcessNameToFindAndKill = ""
+    ProcessNameToFindAndKill = "IngEcatGateway"
 
     try:
         if len(sys.argv) >= 2:

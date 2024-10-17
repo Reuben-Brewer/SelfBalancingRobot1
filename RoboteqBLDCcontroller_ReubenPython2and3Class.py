@@ -6,9 +6,9 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision H, 08/31/2024
+Software Revision I, 10/17/2024
 
-Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
+Verified working on: Python 2.7, 3.12 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
 '''
 
 __author__ = 'reuben.brewer'
@@ -103,6 +103,8 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
         self.PrintAllReceivedSerialMessageForDebuggingFlag = 0
 
+        self.PrintAllSentSerialMessageForDebuggingFlag = 0
+
         self.EXIT_PROGRAM_FLAG = 0
         self.OBJECT_CREATED_SUCCESSFULLY_FLAG = 0
         self.EnableInternal_MyPrint_Flag = 0
@@ -176,21 +178,8 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         self.ControlMode_IntegerValue = -1 #Not set
         self.ControlMode_EnlishString = "unknown"
 
-        self.CommandType_AcceptableValues_ListOfEnglishStrings = ["OpenLoop",
-                                                 "ClosedLoopSpeed",
-                                                 "ClosedLoopPositionRelative",
-                                                 "ClosedLoopCountPosition",
-                                                 "ClosedLoopPositionTracking",
-                                                 "ClosedLoopTorque",
-                                                 "ClosedLoopSpeedPosition"]
-
-        self.ControlMode_AcceptableValues_ListOfEnglishStrings = ["OpenLoop",   #0
-                                                 "ClosedLoopSpeed",             #1
-                                                 "ClosedLoopPositionRelative",  #2
-                                                 "ClosedLoopCountPosition",     #3
-                                                 "ClosedLoopPositionTracking",  #4
-                                                 "ClosedLoopTorque",            #5
-                                                 "ClosedLoopSpeedPosition"]     #6
+        self.ToggleMinMax_StateToBeSet = 0
+        self.ToggleMinMax_EventNeedsToBeFiredFlag = 0
 
         '''
         0: Open-loop
@@ -201,6 +190,14 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         5: Closed-loop torque #Can't get this to work via UART 01/20/23. Also doesn't work for AnalogInput to Pin 4 (AI1).
         6: Closed-loop speed position #Accurate speed control. Phidgets motor works via UART for Kp = 100.0, Ki = 1000000.0. Also working with AnalogInput to Pin 4 (AI1).
         '''
+
+        self.ControlMode_AcceptableValues_ListOfEnglishStrings = ["OpenLoop",   #0
+                                                 "ClosedLoopSpeed",             #1
+                                                 "ClosedLoopPositionRelative",  #2
+                                                 "ClosedLoopCountPosition",     #3
+                                                 "ClosedLoopPositionTracking",  #4
+                                                 "ClosedLoopTorque",            #5
+                                                 "ClosedLoopSpeedPosition"]     #6
 
         self.ControlMode_AcceptableValues_DictWithIntegersAsKeys = dict([(0, "OpenLoop"),
                                                                             (1, "ClosedLoopSpeed"),
@@ -217,6 +214,27 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                                                                             ("ClosedLoopPositionTracking", 4),
                                                                             ("ClosedLoopTorque", 5),
                                                                             ("ClosedLoopSpeedPosition", 6)])
+
+        ### Our commanded control modes are working, but we're receiving incorrect values. Below, we map the received values of Actual Operation Mode ("AOM") to what they are in reality (confirmed through RoboRun+).
+        self.ActualOperationModeReceived_ConvertIntToEnglishName_EMPIRICALLY_DETERMINTED_DictWithIntegersAsKeys = dict([(0, "OpenLoop"), #Commanded 0 -->, received 0
+                                                                            (3, "ClosedLoopSpeed"),             #Commanded 1 --> received 3
+                                                                            (-1, "ClosedLoopPositionRelative"),  #Commanded 2 --> received -1
+                                                                            (1, "ClosedLoopCountPosition"),     #Commanded 3 --> received 1
+                                                                            (-2, "ClosedLoopPositionTracking"),  #Commanded 4 --> received -2
+                                                                            (4, "ClosedLoopTorque"),            #Commanded 5 --> received 4
+                                                                            (-3, "ClosedLoopSpeedPosition")])    #Commanded 6 --> received -3
+
+        self.ActualOperationModeReceived_ConvertReceivedIntToRealInt_EMPIRICALLY_DETERMINTED_DictWithIntegersAsKeys = dict([(0, 0), #Commanded 0 -->, received 0
+                                                                            (3, 1),             #Commanded 1 --> received 3
+                                                                            (-1, 2),  #Commanded 2 --> received -1
+                                                                            (1, 3),     #Commanded 3 --> received 1
+                                                                            (-2, 4),  #Commanded 4 --> received -2
+                                                                            (4, 5),            #Commanded 5 --> received 4
+                                                                            (-3, 6)])    #Commanded 6 --> received -3
+        ###
+
+        self.OpenLoopPower_Target_Min_MotorHardLimit = -1000.0 #Minimum for !G command
+        self.OpenLoopPower_Target_Max_MotorHardLimit = 1000.0 #Maximum for !G command
 
         self.Position_Target_Min_MotorHardLimit = -1000.0 #Minimum for !G command
         self.Position_Target_Max_MotorHardLimit = 1000.0 #Maximum for !G command
@@ -479,6 +497,42 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
             self.ControlMode_Starting = "ClosedLoopSpeedPosition"
 
         print("RoboteqBLDCcontroller_ReubenPython2and3Class: ControlMode_Starting: " + str(self.ControlMode_Starting))
+        #########################################################
+        #########################################################
+
+        ##########################################################
+        #########################################################
+        if "OpenLoopPower_Target_Min_UserSet" in setup_dict:
+            self.OpenLoopPower_Target_Min_UserSet = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("OpenLoopPower_Target_Min_UserSet", setup_dict["OpenLoopPower_Target_Min_UserSet"], self.OpenLoopPower_Target_Min_MotorHardLimit, self.OpenLoopPower_Target_Max_MotorHardLimit)
+
+        else:
+            self.OpenLoopPower_Target_Min_UserSet = self.OpenLoopPower_Target_Min_MotorHardLimit
+
+        print("RoboteqBLDCcontroller_ReubenPython2and3Class: OpenLoopPower_Target_Min_UserSet: " + str(self.OpenLoopPower_Target_Min_UserSet))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "OpenLoopPower_Target_Max_UserSet" in setup_dict:
+            self.OpenLoopPower_Target_Max_UserSet = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("OpenLoopPower_Target_Max_UserSet", setup_dict["OpenLoopPower_Target_Max_UserSet"], self.OpenLoopPower_Target_Min_MotorHardLimit, self.OpenLoopPower_Target_Max_MotorHardLimit)
+
+        else:
+            self.OpenLoopPower_Target_Max_UserSet = self.OpenLoopPower_Target_Max_MotorHardLimit
+
+        print("RoboteqBLDCcontroller_ReubenPython2and3Class: OpenLoopPower_Target_Max_UserSet: " + str(self.OpenLoopPower_Target_Max_UserSet))
+        #########################################################
+        #########################################################
+
+        #########################################################
+        #########################################################
+        if "OpenLoopPower_Target_Starting" in setup_dict:
+            self.OpenLoopPower_Target_Starting = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("OpenLoopPower_Target_Starting", setup_dict["OpenLoopPower_Target_Starting"], self.OpenLoopPower_Target_Min_UserSet, self.OpenLoopPower_Target_Max_UserSet)
+
+        else:
+            self.OpenLoopPower_Target_Starting = self.OpenLoopPower_Target_Max_UserSet
+
+        print("RoboteqBLDCcontroller_ReubenPython2and3Class: OpenLoopPower_Target_Starting: " + str(self.OpenLoopPower_Target_Starting))
         #########################################################
         #########################################################
 
@@ -922,7 +976,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         #########################################################
         '''
 
-        ######################################################### unicorn
+        #########################################################
         #########################################################
         self.TimeToSleepBetweenConfigurationCommands = 0.050
 
@@ -952,9 +1006,9 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         '''
 
         if self.ControlMode_Starting in ["OpenLoop"]:
-            self.Motor_Target_Min_UserSet = self.Speed_Target_Min_UserSet
-            self.Motor_Target_Max_UserSet = self.Speed_Target_Max_UserSet
-            self.Motor_Target_ToBeSet = self.Speed_Target_Starting
+            self.Motor_Target_Min_UserSet = self.OpenLoopPower_Target_Min_UserSet
+            self.Motor_Target_Max_UserSet = self.OpenLoopPower_Target_Max_UserSet
+            self.Motor_Target_ToBeSet = self.OpenLoopPower_Target_Starting
 
         elif self.ControlMode_Starting in ["ClosedLoopPositionRelative", "ClosedLoopCountPosition", "ClosedLoopPositionTracking"]:
             self.Motor_Target_Min_UserSet = self.Position_Target_Min_UserSet
@@ -973,7 +1027,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
             self.Motor_Target_ToBeSet = self.Speed_Target_Starting
 
         self.Motor_Target_NeedsToBeChangedFlag = 1
-        self.Motor_Target_GUIscale_NeedsToBeChangedFlag = 0
+        self.Motor_Target_GUIscale_NeedsToBeChangedFlag = 1
 
         #########################################################
         if self.SetBrushlessCounterOnDeviceTo0atStartOfProgramFlag == 1:
@@ -984,30 +1038,71 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         if self.SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag == 1:
             self.SetCurrentPositionAsHomeSoftwareOffsetOnly()
         #########################################################
-        
-        self.SetControlMode(self.ControlMode_Starting)
-        time.sleep(self.TimeToSleepBetweenConfigurationCommands)
 
-        self.SetSerialWatchdogTimerInMilliseconds(self.HeartbeatTimeIntervalMilliseconds)
+        #########################################################
+        self.SetControlMode(self.ControlMode_Starting, SkipQueueAndSendImmediately = 1)
         time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        #########################################################
 
-        self.SetCurrentLimit(self.Current_Amps_Starting)
+        #########################################################
+        self.SetSerialWatchdogTimerInMilliseconds(self.HeartbeatTimeIntervalMilliseconds, SkipQueueAndSendImmediately = 1)
         time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        #########################################################
 
-        self.SetAcceleration(self.Acceleration_Target_Starting)
+        #########################################################
+        self.SetCurrentLimit(self.Current_Amps_Starting, SkipQueueAndSendImmediately = 1)
         time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        #########################################################
 
-        self.SetPID_Kd(self.PID_Kp)
+        #########################################################
+        self.SetAcceleration(self.Acceleration_Target_Starting, SkipQueueAndSendImmediately = 1)
         time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        #########################################################
 
-        self.SetPID_Ki(self.PID_Ki)
-        time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        #########################################################
+        if self.ControlMode_EnlishString != "ClosedLoopTorque" and self.ControlMode_EnlishString != "OpenLoop":
+            self.SetPID_Kp(self.PID_Kp, SkipQueueAndSendImmediately = 1)
 
-        self.SetPID_Kd(self.PID_Kd)
-        time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        elif self.ControlMode_EnlishString == "ClosedLoopTorque":
+            self.SetPID_Kp_TorqueModeFOC(self.PID_Kp, SkipQueueAndSendImmediately=1)
 
-        self.SetPID_IntegratorCap1to100percent(self.PID_IntegratorCap1to100percent)
+        else:
+            print("Did not st Kp gain.")
+
         time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        #########################################################
+
+        #########################################################
+        if self.ControlMode_EnlishString != "ClosedLoopTorque" and self.ControlMode_EnlishString != "OpenLoop":
+            self.SetPID_Ki(self.PID_Ki, SkipQueueAndSendImmediately = 1)
+
+        elif self.ControlMode_EnlishString == "ClosedLoopTorque":
+            self.SetPID_Ki_TorqueModeFOC(self.PID_Ki, SkipQueueAndSendImmediately=1)
+
+        else:
+            print("Did not st Ki gain.")
+
+        time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+        #########################################################
+
+        #########################################################
+        if self.ControlMode_EnlishString != "ClosedLoopTorque" and self.ControlMode_EnlishString != "OpenLoop":
+            self.SetPID_Kd(self.PID_Kd, SkipQueueAndSendImmediately = 1)
+            time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+
+        else:
+            print("Did not st Kd gain.")
+        #########################################################
+
+        #########################################################
+        if self.ControlMode_EnlishString != "ClosedLoopTorque" and self.ControlMode_EnlishString != "OpenLoop":
+            self.SetPID_IntegratorCap1to100percent(self.PID_IntegratorCap1to100percent, SkipQueueAndSendImmediately = 1)
+            time.sleep(self.TimeToSleepBetweenConfigurationCommands)
+
+        else:
+            print("Did not set IntegratorCap1to100percent.")
+        #########################################################
+
         #########################################################
         #########################################################
 
@@ -1406,7 +1501,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def ClearBufferHistory(self):
+    def ClearBufferHistory(self, SkipQueueAndSendImmediately = 0):
 
         if self.SerialConnectedFlag == 1:
             try:
@@ -1416,7 +1511,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "# C \r"
 
-                self.SendSerialStrToTx(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1432,10 +1530,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetSerialWatchdogTimerInMilliseconds(self, WatchdogTimerDurationMilliseconds_Input):
+    def SetSerialWatchdogTimerInMilliseconds(self, WatchdogTimerDurationMilliseconds_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 274 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 274:
         This is the Serial Commands watchdog timeout parameter. It is used to detect when the
         controller is no longer receiving commands and switch to the next priority level. Any Realtime
         Command arriving from RS232, RS485, TCP, USB, CAN or Microbasic Scripting, The
@@ -1451,9 +1549,12 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                 WatchdogTimerDurationMilliseconds_Input = self.LimitNumber_IntOutputOnly(0.0, 65000.0, WatchdogTimerDurationMilliseconds_Input)
 
                 #Setting to 0 disables the watchdog!
-                StringToTx = "^RWD 1 " + str(WatchdogTimerDurationMilliseconds_Input) + "\r"
+                StringToTx = "^RWD " + str(WatchdogTimerDurationMilliseconds_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1469,10 +1570,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetSerialCommandEcho(self, EnabledState):
+    def SetSerialCommandEcho(self, EnabledState, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 270 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 270:
         ECHOF - Enable/Disable Serial Echo
         HexCode: 09
         Description:
@@ -1502,7 +1603,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "^ECHOF " + str(IntToSend) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1518,10 +1622,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ########################################################################################################## unicorn
     ##########################################################################################################
-    def StartVariableStreaming(self):
+    def StartVariableStreaming(self, SkipQueueAndSendImmediately = 0):
 
         '''
-        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ PAGES *174* AND *201* HAS VARIABLES $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ "Roboteq Controllers User Manual v2.0.pdf" pageS *202* HAS VARIABLES $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         #TM Read time (only to the nearest second)
         #AI N Read Nth analog in
@@ -1541,8 +1645,8 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         f7 = MOSFET failure
         f8 = Default configuration loaded at startup
 
-        #FF Read Runtime Status Flag ####THIS IS THE MONEY SHOT, READ ON PAGE 223
-        #FS status flags PAGE 224
+        #FF Read Runtime Status Flag ####THIS IS THE MONEY SHOT, READ ON "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 223
+        #FS status flags "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 224
         #BCR Brushless count relative, seems to work OK
         #C encoder count absolute doesn't work currently trying to get hall count
         #CB Read Absolute Brushless Counter WORKS
@@ -1564,15 +1668,18 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                 #self.VariableNamesEnglishList = ["EncoderPosition", "BrushlessCountRelative", "EncoderSpeedRPM", "SpeedRPM", "AnalogInput1", "BatteryCurrentInAmps", "BatteryVoltsX10", "FaultFlags"]
 
                 #### Longer set
-                #self.VariableNamesToStartStreamingList = ["CB 0", "BS", "TC", "BA", "V 2", "FF"]
-                #self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "TorqueTarget", "BatteryCurrentInAmps", "BatteryVoltsX10", "FaultFlags"]
+                #self.VariableNamesToStartStreamingList = ["CB 0", "BS", "P", "TC", "A", "DPA", "BA", "V 2", "AOM", "FF"]
+                #self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "MotorPowerOutputApplied", "TorqueTarget", "MotorCurrentRMSamps", "MotorCurrentPeakAmps", "BatteryCurrentInAmps", "BatteryVoltsX10", "ActualOperationMode", "FaultFlags"]
                 #### Longer set
 
-                #unicorn
+                #### Medium set
+                self.VariableNamesToStartStreamingList = ["CB 0", "BS", "P", "AOM", "FF"]
+                self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "MotorPowerOutputApplied", "ActualOperationMode", "FaultFlags"]
+                #### Medium set
 
                 #### Shorter set
-                self.VariableNamesToStartStreamingList = ["CB 0", "BS", "FF"]
-                self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "FaultFlags"]
+                #self.VariableNamesToStartStreamingList = ["CB 0", "BS", "FF"]
+                #self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "FaultFlags"]
                 #### Shorter set
 
                 StringToTx = "/" + self.QuoteString + self.PrefixOfReturnedMessages + self.QuoteString + "," + self.QuoteString + self.DelimiterOfReturnedMessages + self.QuoteString
@@ -1582,7 +1689,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = StringToTx + "_# " + str(self.VariableStreamingSendDataEveryDeltaT_MillisecondsInt) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1598,10 +1708,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def GoToSpeedOrRelativePositionGeneric(self, SpeedOrRelativePosition_Input):
+    def GoToSpeedOrRelativePositionGeneric(self, SpeedOrRelativePosition_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 184 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 184:
           G is the main command for activating the motors. The command is a number ranging
         1000 to +1000 so that the controller respond the same way as when commanded using
         Analog or Pulse, which are also -1000 to +1000 commands. The effect of the command
@@ -1644,7 +1754,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "!G 1 " + str(SpeedOrRelativePosition_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1660,10 +1773,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def GoToRelativePosition(self, RelativePosition_Input):
+    def GoToRelativePosition(self, RelativePosition_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 188 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 188:
         Alias: MPOSREL HexCode: 11 CANOpen id: 0x200F
         Description:
         This command is used in the Position Count mode to make the motor move to a feedback
@@ -1695,7 +1808,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "!PR 1 " + str(RelativePosition_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1711,10 +1827,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def GoToTorqueNM_TC(self, TorqueNM_Input):
+    def GoToTorqueNM_TC(self, TorqueNM_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 162 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 162:
         '''
 
         if self.SerialConnectedFlag == 1:
@@ -1722,9 +1838,12 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                 TorqueAmps_Input = 100.0*TorqueNM_Input #Command is 100x actual NM torque
                 #TorqueAmps_Input = self.LimitNumber_IntOutputOnly(-1.0*self.max, self.min, TorqueNM_Input)
 
-                StringToTx = "!TC 1 " + str(TorqueAmps_Input) + "\r"
+                StringToTx = "!TC 1 " + self.ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(TorqueAmps_Input, 0, 1) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1740,13 +1859,13 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def GoToTorqueAmps_SinusoidalModeOnly(self, TorqueAmps_Input):
+    def GoToTorqueAmps_SinusoidalModeOnly(self, TorqueAmps_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 184 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 184:
 
         The torque mode uses the Motor Amps and not the Battery Amps. See “Battery Current
-        vs. Motor Current”on page 28. In some Roboteq controllers, Battery Amps is measured
+        vs. Motor Current”on "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 28. In some Roboteq controllers, Battery Amps is measured
         and Motor Amps is estimated. The estimation is fairly accurate at power level of 20% and
         higher. Its accuracy drops below 20% of PWM output and no motor current is measured
         at all when the power output level is 0%, even though current may be flowing in the
@@ -1769,7 +1888,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "!GIQ 1 " + str(TorqueAmps_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1785,10 +1907,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetCurrentLimit(self, CurrentLimitAmps_Input):
+    def SetCurrentLimit(self, CurrentLimitAmps_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 298 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" "Roboteq Controllers User Manual v2.0.pdf" page 298:
         HexCode: 2A
         Description:
         This is the maximum Amps that the controller will be allowed to deliver to a motor regardless
@@ -1824,7 +1946,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "^ALIM 1 " + str(CurrentLimitAmps_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1840,10 +1965,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetHomeOrBrushlessCounterOnDevice(self, BrushlessCounterToBeSetAsHomeOnDevice_Input):
+    def SetHomeOrBrushlessCounterOnDevice(self, BrushlessCounterToBeSetAsHomeOnDevice_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 178 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 178:
         #Alias: SBLCNTR HexCode: 05 CANOpen id: 0x2004
         Description:
         This command loads the brushless counter with the value contained in the command
@@ -1872,7 +1997,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "!CB 1 " + str(BrushlessCounterToBeSetAsHomeOnDevice_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -1888,10 +2016,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetPID_Kp(self, Kp_Input):
+    def SetPID_Kp(self, Kp_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 311 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 311:
         HexCode: 2E
         Description:
         Sets the PID’s Proportional Gain for that channel. The value is set as the gain multiplied
@@ -1920,12 +2048,18 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         if self.SerialConnectedFlag == 1:
             try:
 
-                Kp_Input = self.LimitNumber_FloatOutputOnly(self.PID_Kp_Min, self.PID_Kp_Max, Kp_Input)
-                Kp_Input = 1 * Kp_Input
+                Kp_Input = 1000000 * Kp_Input
+                Kp_Input = self.LimitNumber_IntOutputOnly(self.PID_Kp_Min, self.PID_Kp_Max, Kp_Input)
 
                 StringToTx = "^KP 1 " + str(Kp_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
+
+
+                print("SetPID_Kp: " + StringToTx)
 
                 #self.Kp = Kp_Input/1000000
 
@@ -1944,10 +2078,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetPID_Kp_TorqueModeFOC(self, Kp_Input, FluxGain1trqGain2_Flag = 2):
+    def SetPID_Kp_TorqueModeFOC(self, Kp_Input, FluxGain1trqGain2_Flag = 2, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 328 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 328:
 
         HexCode: 8E
         Description:
@@ -1986,16 +2120,19 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         if self.SerialConnectedFlag == 1:
             try:
 
-                Kp_Input = self.LimitNumber_FloatOutputOnly(self.PID_Kp_Min, self.PID_Kp_Max, Kp_Input)
-                Kp_Input = 1 * Kp_Input
+                Kp_Input = 1000000 * Kp_Input
+                Kp_Input = self.LimitNumber_IntOutputOnly(self.PID_Kp_Min, self.PID_Kp_Max, Kp_Input)
 
                 StringToTx = "^KPF " + str(FluxGain1trqGain2_Flag) + " " + str(Kp_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 #self.Kp = Kp_Input/1000000
 
-                #print("SetPID_Kp_TorqueModeFOC: " + StringToTx)
+                print("SetPID_Kp_TorqueModeFOC: " + StringToTx)
                 return 1
 
             except:
@@ -2010,10 +2147,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetPID_Ki(self, Ki_Input):
+    def SetPID_Ki(self, Ki_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 310 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 310:
         HexCode: 2F
         Description:
         Sets the PID’s Integral Gain for that channel. The value is set as the gain multiplied by 10^6.
@@ -2041,12 +2178,15 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         if self.SerialConnectedFlag == 1:
             try:
 
-                Ki_Input = self.LimitNumber_FloatOutputOnly(self.PID_Ki_Min, self.PID_Ki_Max, Ki_Input)
-                Ki_Input = 1 * Ki_Input
+                Ki_Input = 1000000 * Ki_Input
+                Ki_Input = self.LimitNumber_IntOutputOnly(self.PID_Ki_Min, self.PID_Ki_Max, Ki_Input)
 
                 StringToTx = "^KI 1 " + str(Ki_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 #self.Ki = Ki_Input/1000000
 
@@ -2065,10 +2205,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetPID_Ki_TorqueModeFOC(self, Ki_Input, FluxGain1trqGain2_Flag = 2):
+    def SetPID_Ki_TorqueModeFOC(self, Ki_Input, FluxGain1trqGain2_Flag = 2, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 328 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 328:
 
         HexCode: 8E
         Description:
@@ -2107,12 +2247,15 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         if self.SerialConnectedFlag == 1:
             try:
 
-                Ki_Input = self.LimitNumber_FloatOutputOnly(self.PID_Ki_Min, self.PID_Ki_Max, Ki_Input)
-                Ki_Input = 1 * Ki_Input
+                Ki_Input = 1000000 * Ki_Input
+                Ki_Input = self.LimitNumber_IntOutputOnly(self.PID_Ki_Min, self.PID_Ki_Max, Ki_Input)
 
                 StringToTx = "^KIF " + str(FluxGain1trqGain2_Flag) + " " + str(Ki_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 #self.Ki = Ki_Input/1000000
 
@@ -2131,10 +2274,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetPID_Kd(self, Kd_Input):
+    def SetPID_Kd(self, Kd_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 309 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 309:
         HexCode: 30
         Description:
         Sets the PID’s Differential Gain for that channel. The value is set as the gain multiplied by
@@ -2162,12 +2305,15 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         if self.SerialConnectedFlag == 1:
             try:
 
-                Kd_Input = self.LimitNumber_FloatOutputOnly(self.PID_Kd_Min, self.PID_Kd_Max, Kd_Input)
-                Kd_Input = 1 * Kd_Input
+                Kd_Input = 1000000 * Kd_Input
+                Kd_Input = self.LimitNumber_IntOutputOnly(self.PID_Kd_Min, self.PID_Kd_Max, Kd_Input)
 
                 StringToTx = "^KD 1 " + str(Kd_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 #self.Kd = Kd_Input/1000000
 
@@ -2186,10 +2332,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetPID_IntegratorCap1to100percent(self, IntegratorCap1to100percent_Input):
+    def SetPID_IntegratorCap1to100percent(self, IntegratorCap1to100percent_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 309 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 309:
         HexCode: 32
         Description:
         This parameter is the integral cap as a percentage. This parameter will limit maximum
@@ -2221,7 +2367,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "^ICAP 1 " + str(IntegratorCap1to100percent_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 #self.PID_IntegratorCap1to100percent = IntegratorCap1to100percent_Input
 
@@ -2240,10 +2389,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetSpeed(self, Speed_Input):
+    def SetSpeed(self, Speed_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 191 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 191:
         Alias: MOTVEL HexCode: 03 CANOpen id: 0x2002
         Description:
         In the Closed-Loop Speed mode, this command will cause the motor to spin at the desired
@@ -2272,7 +2421,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 StringToTx = "!S 1 " + str(Speed_Input) + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -2288,10 +2440,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetAcceleration(self, Acceleration_Input):
+    def SetAcceleration(self, Acceleration_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 175 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 175:
         Set the rate of speed change during acceleration for a motor channel. This command is
         identical to the MACC configuration command but is provided so that it can be changed
         rapidly during motor operation. Acceleration value is in 0.1 * RPM per second. When using
@@ -2306,7 +2458,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         applicable if either of the acceleration (MAC) or deceleration (MDEC) configuration value is
         set to 0.
 
-        From page 181 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 181:
         Set the rate of speed change during decceleration for a motor channel. This command is
         identical to the MDEC configuration command but is provided so that it can be changed
         rapidly during motor operation. Decceleration value is in 0.1 * RPM per second. When
@@ -2327,13 +2479,20 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 Acceleration_Input = self.LimitNumber_IntOutputOnly(self.Acceleration_Target_Min_UserSet, self.Acceleration_Target_Max_UserSet, Acceleration_Input)
 
-                StringToTx = "!AC 1 " + str(Acceleration_Input) + "\r" #Acceleration, page 175
+                StringToTx = "!AC 1 " + str(Acceleration_Input) + "\r" #Acceleration, "Roboteq Controllers User Manual v2.0.pdf" page 175
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
+                    time.sleep(self.TimeToSleepBetweenConfigurationCommands)
 
-                StringToTx = "!DC 1 " + str(Acceleration_Input) + "\r" #Decelleration, page 181
+                StringToTx = "!DC 1 " + str(Acceleration_Input) + "\r" #Decelleration, "Roboteq Controllers User Manual v2.0.pdf" page 181
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 return 1
 
@@ -2349,18 +2508,24 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def StopInAllModes(self):
+    def ResetController(self, SkipQueueAndSendImmediately = 0):
 
         '''
-        Page 187 of the user manual.
+        From "Roboteq Controllers User Manual v2.0.pdf" page 262:
         '''
 
         if self.SerialConnectedFlag == 1:
             try:
 
-                StringToTx = "!MS 1" + "\r"
+                StringToTx = "%RESET 321654987" + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
+
+                print("@@@@@ ResetController event fired! @@@@@")
 
                 return 1
 
@@ -2376,10 +2541,42 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetEmergencyStopState(self, EmergencyStopState_Input):
+    def StopInAllModes(self, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 184 and 187 of the user manual:
+        "Roboteq Controllers User Manual v2.0.pdf" page 187.
+        '''
+
+        if self.SerialConnectedFlag == 1:
+            try:
+
+                StringToTx = "!MS 1" + "\r"
+
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
+
+                print("StopInAllModes event fired!")
+
+                return 1
+
+            except:
+                exceptions = sys.exc_info()[0]
+                print("StopInAllModes, exceptions: %s" % exceptions)
+
+        else:
+            print("StopInAllModes: Error, SerialConnectedFlag = 0, cannot issue command.")
+            return 0
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def SetEmergencyStopState(self, EmergencyStopState_Input, SkipQueueAndSendImmediately = 0):
+
+        '''
+        From "Roboteq Controllers User Manual v2.0.pdf" page 184 and 187:
         '''
 
         if self.SerialConnectedFlag == 1:
@@ -2396,7 +2593,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                 else:
                     StringToTx = "!MG" + "\r"
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                if SkipQueueAndSendImmediately == 0:
+                    self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                else:
+                    self.SendSerialStrToTx(StringToTx)
 
                 #self.EmergencyStopState = EmergencyStopState_Input
 
@@ -2416,10 +2616,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def SetControlMode(self, ControlMode_IntegerValueOrEnglishString_Input):
+    def SetControlMode(self, ControlMode_IntegerValueOrEnglishString_Input, SkipQueueAndSendImmediately = 0):
 
         '''
-        From page 314 of the user manual:
+        From "Roboteq Controllers User Manual v2.0.pdf" page 314:
         HexCode: 27
         Description:
         This parameter lets you select the operating mode for that channel. See manual for description
@@ -2484,12 +2684,20 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 #print("SetControlMode: setting ControlMode to " + ControlMode_EnglishString_temp)
 
-                StringToTx = "^MMOD 1 " + str(ControlMode_IntegerValue_temp) + "\r"
+                StringToTx = "^MMOD " + str(ControlMode_IntegerValue_temp) + "\r" #Do NOT includr the " 1" cc first argument (ambiguous in user manual, works without)..
+                print("SetControlMode, StringToTx:" + StringToTx)
 
-                self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                for Counter in range(0, 10):
+                    if SkipQueueAndSendImmediately == 0:
+                        self.DedicatedTxThread_TxMessageToSend_Queue.put(StringToTx)
+                    else:
+                        self.SendSerialStrToTx(StringToTx)
+                        time.sleep(self.TimeToSleepBetweenConfigurationCommands)
 
                 self.ControlMode_IntegerValue = ControlMode_IntegerValue_temp
                 self.ControlMode_EnlishString = ControlMode_EnglishString_temp
+
+                print("SetControlMode event fired for self.ControlMode_EnlishString = " + self.ControlMode_EnlishString)
 
                 return 1
 
@@ -2524,12 +2732,12 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
     ##########################################################################################################
     ##########################################################################################################
 
-    ########################################################################################################## unicorn dragon
+    ##########################################################################################################
     ##########################################################################################################
     def SendCommandToMotor_ExternalClassFunction(self, CommandValue, CommandTypeString, IgnoreNewDataIfQueueIsFullFlag = 1):
 
         try:
-            if CommandTypeString not in self.CommandType_AcceptableValues_ListOfEnglishStrings:
+            if CommandTypeString not in self.ControlMode_AcceptableValues_ListOfEnglishStrings:
                 print("SendCommandToMotor_ExternalClassFunction, ERROR: CommandTypeString of " + str(CommandTypeString) + " is invalid.")
 
             '''
@@ -2563,6 +2771,9 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
     ########################################################################################################## unicorn
     ##########################################################################################################
     ##########################################################################################################
+    ##########################################################################################################
+    ##########################################################################################################
+    ##########################################################################################################
     def DedicatedTxThread(self):
 
         self.MyPrint_WithoutLogFile("Started DedicatedTxThread for RoboteqBLDCcontroller_ReubenPython2and3Class object.")
@@ -2571,82 +2782,168 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         self.StartingTime_CalculatedFromDedicatedTxThread = self.getPreciseSecondsTimeStampString()
         ##########################################################################################################
         ##########################################################################################################
+        ##########################################################################################################
+        ##########################################################################################################
         while self.EXIT_PROGRAM_FLAG == 0:
 
             ##########################################################################################################
+            ##########################################################################################################
+            ##########################################################################################################
             self.CurrentTime_CalculatedFromDedicatedTxThread = self.getPreciseSecondsTimeStampString() - self.StartingTime_CalculatedFromDedicatedTxThread
+            ##########################################################################################################
+            ##########################################################################################################
             ##########################################################################################################
 
             ########################################################################################################## These should be outside of the queue and heartbeat
             ##########################################################################################################
+            ##########################################################################################################
 
+            ##########################################################################################################
             ##########################################################################################################
             if self.EnabledState_NeedsToBeChangedFlag == 1:
                 self.EmergencyStopState_ToBeSet = int(not self.EnabledState_ToBeSet) #WHY DOES THE EnabledState_NeedsToBeChangedFlag fire EmergencyStop?
                 self.EmergencyStopState_NeedsToBeChangedFlag = 1
                 self.EnabledState_NeedsToBeChangedFlag = 0
             ##########################################################################################################
+            ##########################################################################################################
 
+            ##########################################################################################################
             ##########################################################################################################
             if self.EmergencyStopState_NeedsToBeChangedFlag == 1:
                 self.SetEmergencyStopState(self.EmergencyStopState_ToBeSet)
                 self.EmergencyStopState_NeedsToBeChangedFlag = 0
             ##########################################################################################################
+            ##########################################################################################################
 
+            ##########################################################################################################
             ##########################################################################################################
             if self.StopInAllModes_NeedsToBeChangedFlag == 1:
                 self.StopInAllModes()
                 self.StopInAllModes_NeedsToBeChangedFlag = 0
             ##########################################################################################################
+            ##########################################################################################################
 
+            ##########################################################################################################
             ##########################################################################################################
             if self.HomeOrBrushlessCounterOnDevice_NeedsToBeChangedFlag == 1:
                 self.SetHomeOrBrushlessCounterOnDevice(self.HomeOrBrushlessCounterOnDevice_ToBeSet)
                 self.HomeOrBrushlessCounterOnDevice_NeedsToBeChangedFlag = 0
             ##########################################################################################################
+            ##########################################################################################################
 
+            ##########################################################################################################
             ##########################################################################################################
             if self.PID_Kp != self.PID_Kp_last:
-                
+                #self.SetPID_Kp(self.PID_Kp)
+
+                #I DON'T UNDERSTAND WHEN I WOULD WANT TO ISSE SetPID_Kp_TorqueModeFOC VS SetPID_Kp
+                #'''
                 if self.ControlMode_EnlishString != "ClosedLoopTorque":
                     self.SetPID_Kp(self.PID_Kp)
-                elif self.ControlMode_EnlishString == "ClosedLoopTorque":
-                    #self.SetPID_Kp_TorqueModeFOC(self.PID_Kp, FluxGain1trqGain2_Flag=1) #FLUX GAIN
+                else:
                     self.SetPID_Kp_TorqueModeFOC(self.PID_Kp, FluxGain1trqGain2_Flag=2) #TORQUE GAIN
-                
+                #'''
+
                 self.PID_Kp_last = self.PID_Kp
             ##########################################################################################################
+            ##########################################################################################################
 
             ##########################################################################################################
+            ##########################################################################################################
             if self.PID_Ki != self.PID_Ki_last:
+                #self.SetPID_Ki(self.PID_Ki)
 
+                #'''
                 if self.ControlMode_EnlishString != "ClosedLoopTorque":
                     self.SetPID_Ki(self.PID_Ki)
-                elif self.ControlMode_EnlishString == "ClosedLoopTorque":
-                    #self.SetPID_Ki_TorqueModeFOC(self.PID_Ki, FluxGain1trqGain2_Flag=1) #FLUX GAIN
+                else:
                     self.SetPID_Ki_TorqueModeFOC(self.PID_Ki, FluxGain1trqGain2_Flag=2) #TORQUE GAIN
+                #'''
 
                 self.PID_Ki_last = self.PID_Ki
             ##########################################################################################################
+            ##########################################################################################################
 
             ##########################################################################################################
+            ##########################################################################################################
             if self.PID_Kd != self.PID_Kd_last:
+                #self.SetPID_Kd(self.PID_Kd)
 
+                #'''
                 if self.ControlMode_EnlishString != "ClosedLoopTorque":
                     self.SetPID_Kd(self.PID_Kd)
+                #'''
 
                 self.PID_Kd_last = self.PID_Kd
             ##########################################################################################################
+            ##########################################################################################################
 
             ##########################################################################################################
+            ##########################################################################################################
             if self.PID_IntegratorCap1to100percent != self.PID_IntegratorCap1to100percent_last:
+                #self.SetPID_IntegratorCap1to100percent(self.PID_IntegratorCap1to100percent)
 
+                #'''
                 if self.ControlMode_EnlishString != "ClosedLoopTorque":
                     self.SetPID_IntegratorCap1to100percent(self.PID_IntegratorCap1to100percent)
+                #'''
 
                 self.PID_IntegratorCap1to100percent_last = self.PID_IntegratorCap1to100percent
             ##########################################################################################################
+            ##########################################################################################################
 
+            ##########################################################################################################
+            ##########################################################################################################
+            if self.ToggleMinMax_EventNeedsToBeFiredFlag == 1:
+
+                ##########################################################################################################
+                if self.ToggleMinMax_StateToBeSet == 0:
+                    self.ToggleMinMax_StateToBeSet = 1
+                else:
+                    self.ToggleMinMax_StateToBeSet = 0
+                ##########################################################################################################
+
+                ##########################################################################################################
+                if self.ControlMode_EnlishString in ["OpenLoop"]:
+                    MinToSet = self.OpenLoopPower_Target_Min_UserSet
+                    MaxToSet = self.OpenLoopPower_Target_Max_UserSet
+
+                elif self.ControlMode_EnlishString in ["ClosedLoopPositionRelative", "ClosedLoopCountPosition", "ClosedLoopPositionTracking"]:
+                    MinToSet = self.Position_Target_Min_UserSet
+                    MaxToSet = self.Position_Target_Max_UserSet
+
+                elif self.ControlMode_EnlishString in ["ClosedLoopSpeed", "ClosedLoopSpeedPosition"]:
+                    MinToSet = self.Speed_Target_Min_UserSet
+                    MaxToSet = self.Speed_Target_Max_UserSet
+
+                elif self.ControlMode_EnlishString in ["ClosedLoopTorque"]:
+                    MinToSet = self.Torque_Amps_Min_UserSet
+                    MaxToSet = self.Torque_Amps_Max_UserSet
+
+                else:
+                   MinToSet = 0.0
+                   MaxToSet = 0.0
+
+                ##########################################################################################################
+
+                ##########################################################################################################
+                if self.ToggleMinMax_StateToBeSet == 0:
+                    self.Motor_Target_ToBeSet = MinToSet
+                else:
+                    self.Motor_Target_ToBeSet = MaxToSet
+                ##########################################################################################################
+
+                ##########################################################################################################
+                self.Motor_Target_NeedsToBeChangedFlag = 1
+                self.Motor_Target_GUIscale_NeedsToBeChangedFlag = 1
+
+                self.ToggleMinMax_EventNeedsToBeFiredFlag = 0
+                ##########################################################################################################
+
+            ##########################################################################################################
+            ##########################################################################################################
+
+            ##########################################################################################################
             ##########################################################################################################
             if self.Motor_Target_NeedsToBeChangedFlag == 1:
 
@@ -2664,16 +2961,19 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                 self.Motor_Target_NeedsToBeChangedFlag = 0
             ##########################################################################################################
+            ##########################################################################################################
 
             ##########################################################################################################
             ##########################################################################################################
+            ##########################################################################################################
 
-            ###############################################
-            ###############################################
-            ###############################################
+            ##########################################################################################################
+            ##########################################################################################################
+            ##########################################################################################################
             if self.DedicatedTxThread_TxMessageToSend_Queue.qsize() > 0:
                 try:
 
+                    ##########################################################################################################
                     ##########################################################################################################
                     TxDataToWrite = self.DedicatedTxThread_TxMessageToSend_Queue.get()
 
@@ -2681,20 +2981,10 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                         TxDataToWrite = TxDataToWrite + "\r"
 
                     self.SendSerialStrToTx(TxDataToWrite)
-                    #print("TxDataToWrite: " + str(TxDataToWrite))
+                    if self.PrintAllSentSerialMessageForDebuggingFlag == 1:
+                        print("ByteLen = " + str(len(TxDataToWrite)) + ", TxDataToWrite = " + TxDataToWrite)
                     ##########################################################################################################
-
-                    '''
-                    ###################
-                    if "Position" in CommandToSendDict:
-                        Position = CommandToSendDict["Position"]
-
-                        if Position != self.Position_ToBeSet:
-                            self.Position_ToBeSet = Position
-                            self.__SendCommandToMotor_InternalClassFunction(self.Position_ToBeSet, "Position")
-                            self.Position_GUIscale_NeedsToBeChangedFlag = 1
-                    ###################
-                    '''
+                    ##########################################################################################################
 
                 except:
                     exceptions = sys.exc_info()[0]
@@ -2710,13 +3000,13 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             #print("Heartbeat at time = " + str(self.CurrentTime_CalculatedFromDedicatedTxThread))
                             self.LastTimeHeartbeatWasSent_CalculatedFromDedicatedTxThread = self.CurrentTime_CalculatedFromDedicatedTxThread
 
-            ###############################################
-            ###############################################
-            ###############################################
+            ##########################################################################################################
+            ##########################################################################################################
+            ##########################################################################################################
             
-            ############################################### USE THE TIME.SLEEP() TO SET THE LOOP FREQUENCY
-            ###############################################
-            ###############################################
+            ########################################################################################################## USE THE TIME.SLEEP() TO SET THE LOOP FREQUENCY
+            ##########################################################################################################
+            ##########################################################################################################
             self.UpdateFrequencyCalculation_DedicatedTxThread_Filtered()
 
             if self.DedicatedTxThread_TimeToSleepEachLoop > 0.0:
@@ -2724,15 +3014,60 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                     time.sleep(self.DedicatedTxThread_TimeToSleepEachLoop - 0.001) #The "- 0.001" corrects for slight deviation from intended frequency due to other functions being called.
                 else:
                     time.sleep(self.DedicatedTxThread_TimeToSleepEachLoop)
-            ###############################################
-            ###############################################
-            ###############################################
+            ##########################################################################################################
+            ##########################################################################################################
+            ##########################################################################################################
 
         ##########################################################################################################
         ##########################################################################################################
+        ##########################################################################################################
+        ##########################################################################################################
+
+        ##########################################################################################################
+        ##########################################################################################################
+        ##########################################################################################################
+        ##########################################################################################################
+        if self.ControlMode_EnlishString == "ClosedLoopTorque":
+            Motor_Target_ToBeSet_AtStartOfWindDown  = self.Motor_Target_ToBeSet
+            print("Motor_Target_ToBeSet_AtStartOfWindDown: " + str(Motor_Target_ToBeSet_AtStartOfWindDown))
+
+            Counter = 0
+            CounterLimit = 50
+            for Counter in range(1, CounterLimit):
+
+                ##########################################################################################################
+                ##########################################################################################################
+                ##########################################################################################################
+                if Counter <= round(0.5*CounterLimit):
+                    if Motor_Target_ToBeSet_AtStartOfWindDown >= 0:
+                        self.Motor_Target_ToBeSet = -1.0*self.Torque_Amps_Max_UserSet
+                    else:
+                        self.Motor_Target_ToBeSet = 1.0*self.Torque_Amps_Max_UserSet
+                else:
+                    self.Motor_Target_ToBeSet = 0.0
+
+                #print("WIND-DOWN: Motor_Target_ToBeSet = " + str(self.Motor_Target_ToBeSet))
+                self.GoToTorqueNM_TC(self.Motor_Target_ToBeSet, SkipQueueAndSendImmediately=1)
+
+                time.sleep(0.050)
+                ##########################################################################################################
+                ##########################################################################################################
+                ##########################################################################################################
+
+
+            ##########################################################################################################
+            ##########################################################################################################
+            ##########################################################################################################
+            ##########################################################################################################
+
+        else:
+            # self.SetEmergencyStopState(0, SkipQueueAndSendImmediately = 1)
+            self.StopInAllModes(SkipQueueAndSendImmediately=1)
 
         self.MyPrint_WithoutLogFile("Finished DedicatedTxThread for RoboteqBLDCcontroller_ReubenPython2and3Class object.")
         self.DedicatedTxThread_StillRunningFlag = 0
+    ##########################################################################################################
+    ##########################################################################################################
     ##########################################################################################################
     ##########################################################################################################
     ##########################################################################################################
@@ -2761,7 +3096,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                     try:
                         '''
-                        Page 172 of user manual
+                        "Roboteq Controllers User Manual v2.0.pdf" page 172
                         Command Acknowledgment
                         The controller will acknowledge commands in one of the two ways:
                         For commands that cause a reply, such as a configuration read or a speed or amps queries,
@@ -2787,12 +3122,26 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                             ##########################################
                             for Index, VarNameEnglish in enumerate(self.VariableNamesEnglishList):
-                                self.MostRecentDataDict[VarNameEnglish] = float(RxMessageStringList[Index])
+
+                                if VarNameEnglish == "MotorCurrentRMSamps" or VarNameEnglish == "MotorCurrentPeakAmps":
+                                    self.MostRecentDataDict[VarNameEnglish] = float(RxMessageStringList[Index])/10.0
+                                elif VarNameEnglish == "TorqueTarget":
+                                    self.MostRecentDataDict[VarNameEnglish] = float(RxMessageStringList[Index])/100.0
+                                elif VarNameEnglish == "ActualOperationMode":
+                                    #self.MostRecentDataDict[VarNameEnglish] = int(RxMessageStringList[Index]) #THIS HAS TO BE CORRECT
+
+                                    ActualOperationMode_Int_TEMP_UNCORRECTED = int(RxMessageStringList[Index])
+
+                                    self.MostRecentDataDict["ActualOperationMode_CorrectInt"] = self.ActualOperationModeReceived_ConvertReceivedIntToRealInt_EMPIRICALLY_DETERMINTED_DictWithIntegersAsKeys[ActualOperationMode_Int_TEMP_UNCORRECTED]
+                                    self.MostRecentDataDict["ActualOperationMode_EnglishString"] = self.ActualOperationModeReceived_ConvertIntToEnglishName_EMPIRICALLY_DETERMINTED_DictWithIntegersAsKeys[ActualOperationMode_Int_TEMP_UNCORRECTED]
+
+                                else:
+                                    self.MostRecentDataDict[VarNameEnglish] = float(RxMessageStringList[Index])
                             ##########################################
 
                             ##########################################
                             if self.PrintAllReceivedSerialMessageForDebuggingFlag == 1:
-                                print("Type = " + str(type(RxMessageStringList)) + ", Len = " + str(len(RxMessageStringList)) + ", Message = " + str(RxMessageStringList))
+                                print("ByteLen = " + str(len(RxMessageString)) + ", RxMessageString = " + RxMessageString + ", RxMessageStringList = " + str(RxMessageStringList))
                             ##########################################
 
                             ##########################################
@@ -2800,7 +3149,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             self.UpdateFrequencyCalculation_DedicatedRxThread_Filtered()
                             ##########################################
 
-                            ########################################################################################################## unicorn
+                            ##########################################################################################################
                             if self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_NeedsToBeChangedFlag == 1:
                                 if "AbsoluteBrushlessCounter" in self.MostRecentDataDict:
                                     self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet = self.MostRecentDataDict["AbsoluteBrushlessCounter"]
@@ -2832,9 +3181,11 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             self.MostRecentDataDict["RxMessage"]  = RxMessage
                             self.MostRecentDataDict["RxMessage_length"] = len(RxMessage)
 
+                            self.MostRecentDataDict["Motor_Target_ToBeSet"] = self.Motor_Target_ToBeSet
+
                             if self.DataStreamingDeltaT_CalculatedFromDedicatedRxThread > 0.0:
                                 Speed_RPM_Calculated_Raw = (self.MostRecentDataDict["Position_Rev"] - self.Position_Rev_Last)/self.DataStreamingDeltaT_CalculatedFromDedicatedRxThread
-                                Speed_RPM_Calculated_Raw = 0.5*Speed_RPM_Calculated_Raw #UNICORN, WHY DO WE HAVE TO DIVIDE BY 2 HERE????
+                                Speed_RPM_Calculated_Raw = 0.5*Speed_RPM_Calculated_Raw #WHY DO WE HAVE TO DIVIDE BY 2 HERE????
                                 self.MostRecentDataDict["Speed_RPS_Calculated"] = self.Speed_RPS_Calculated_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(Speed_RPM_Calculated_Raw)["SignalOutSmoothed"]
 
                                 self.MostRecentDataDict["Speed_RPM_Calculated"] = self.MostRecentDataDict["Speed_RPS_Calculated"]*60.0
@@ -2842,7 +3193,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                                 self.MostRecentDataDict["Speed_DegreesPerSec_Calculated"] = self.MostRecentDataDict["Speed_RadiansPerSec_Calculated"]*360.0
 
                             '''
-                            #unicorn IMPLMENT THIS CONVERSION OF THE RECEIVED FAULT FLAG
+                            #IMPLMENT THIS CONVERSION OF THE RECEIVED FAULT FLAG
                             Reply:
                             FS = f1 + f2*2 + f3*4 + ... + fn*2^n-1 Type: Unsigned 16-bit Min: 0 Max: 65535
                             Where:
@@ -2876,7 +3227,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
                     except:
                         exceptions = sys.exc_info()[0]
-                        print("SerialRxThread ERROR: Original RxMessage: " + str(RxMessage) + ", RxMessageString: " + str(RxMessageString) + ", Exceptions: %s" % exceptions)
+                        print("SerialRxThread ERROR: Original RxMessage: " + str(RxMessage) + ", RxMessageString: " + str(RxMessageString) + "LengthInBytes = " + str(len(RxMessage)) + ", Exceptions: %s" % exceptions)
                         #traceback.print_exc()
                 ##########################################################################################################
 
@@ -2906,10 +3257,6 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
     ##########################################################################################################
     ##########################################################################################################
     def StartGUI(self, GuiParent):
-
-        #self.GUI_Thread_ThreadingObject = threading.Thread(target=self.GUI_Thread, args=(GuiParent,))
-        #self.GUI_Thread_ThreadingObject.setDaemon(True) #Should mean that the GUI thread is destroyed automatically when the main thread is destroyed.
-        #self.GUI_Thread_ThreadingObject.start()
 
         self.GUI_Thread(GuiParent)
     ##########################################################################################################
@@ -2966,14 +3313,14 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         self.DeviceInfo_Label["text"] = self.NameToDisplay_UserSet + \
                                         "\nUSBtoSerialConverter Serial Number: " + str(self.DesiredSerialNumber_USBtoSerialConverter)
 
-        self.DeviceInfo_Label.grid(row=0, column=0, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.DeviceInfo_Label.grid(row=0, column=0, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
         self.Motor_Label = Label(self.myFrame, text="Motor_Label", width=120)
-        self.Motor_Label.grid(row=1, column=0, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.Motor_Label.grid(row=1, column=0, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
@@ -2981,41 +3328,49 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         #################################################
         self.ButtonsFrame = Frame(self.myFrame)
         self.ButtonsFrame.grid(row = 2, column = 0, padx = 10, pady = 10, rowspan = 1, columnspan = 2)
+        self.ButtonWidth = 16
         #################################################
         #################################################
 
         #################################################
         #################################################
-        self.SetCurrentPositionAsHomeOnDevice_Button = Button(self.ButtonsFrame, text="OnDevice Home", state="normal", width=15, command=lambda: self.SetCurrentPositionAsHomeOnDevice_Button_Response())
-        self.SetCurrentPositionAsHomeOnDevice_Button.grid(row=0, column=0, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.SetCurrentPositionAsHomeOnDevice_Button = Button(self.ButtonsFrame, text="OnDevice Home", state="normal", width=self.ButtonWidth, command=lambda: self.SetCurrentPositionAsHomeOnDevice_Button_Response())
+        self.SetCurrentPositionAsHomeOnDevice_Button.grid(row=0, column=0, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
-        self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button = Button(self.ButtonsFrame, text="Soft Home", state="normal", width=15, command=lambda: self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button_Response())
-        self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button.grid(row=0, column=1, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button = Button(self.ButtonsFrame, text="Soft Home", state="normal", width=self.ButtonWidth, command=lambda: self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button_Response())
+        self.SetCurrentPositionAsHomeSoftwareOffsetOnly_Button.grid(row=0, column=1, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
-        self.EnabledState_Button = Button(self.ButtonsFrame, text="Enabled", state="normal", width=20, command=lambda: self.EnabledState_Button_Response())
-        self.EnabledState_Button.grid(row=0, column=2, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.EnabledState_Button = Button(self.ButtonsFrame, text="Enabled", state="normal", width=self.ButtonWidth, command=lambda: self.EnabledState_Button_Response())
+        self.EnabledState_Button.grid(row=0, column=2, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
-        self.StopInAllModes_Button = Button(self.ButtonsFrame, text="Stop", state="normal", width=20, command=lambda: self.StopInAllModes_Button_Response())
-        self.StopInAllModes_Button.grid(row=0, column=3, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.StopInAllModes_Button = Button(self.ButtonsFrame, text="Stop", state="normal", width=self.ButtonWidth, command=lambda: self.StopInAllModes_Button_Response())
+        self.StopInAllModes_Button.grid(row=0, column=3, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
         #################################################
         #################################################
-        self.EmergencyStopState_Button = Button(self.ButtonsFrame, text="EmergencyStop", state="normal", width=20, command=lambda: self.EmergencyStopState_Button_Response())
-        self.EmergencyStopState_Button.grid(row=0, column=4, padx=10, pady=10, columnspan=1, rowspan=1)
+        self.EmergencyStopState_Button = Button(self.ButtonsFrame, text="EmergencyStop", state="normal", width=self.ButtonWidth, command=lambda: self.EmergencyStopState_Button_Response())
+        self.EmergencyStopState_Button.grid(row=0, column=4, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
+        #################################################
+        #################################################
+        
+        #################################################
+        #################################################
+        self.ToggleMinMax_Button = Button(self.ButtonsFrame, text="ToggleMinMax", state="normal", width=self.ButtonWidth, command=lambda: self.ToggleMinMax_Button_Response())
+        self.ToggleMinMax_Button.grid(row=0, column=5, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         #################################################
         #################################################
 
@@ -3060,7 +3415,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         
         self.EntryListWithBlinking_ReubenPython2and3ClassObject_GUIparametersDict = dict([("root", self.myFrame),("UseBorderAroundThisGuiObjectFlag", 0),("GUI_ROW", 4),("GUI_COLUMN", 0)])
 
-        #Roboteq Controllers User Manual v2.0, page 310 for values.
+        #Roboteq Controllers User Manual v2.0, "Roboteq Controllers User Manual v2.0.pdf" page 310 for values.
         #nn = Integral Gain *1,000,000, Example: ^KI 1 1500000: Set motor channel 1 Integral Gain to 1.5.
         self.EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "Kp"),("Type", "float"), ("StartingVal", self.PID_Kp), ("MinVal", self.PID_Kp_Min), ("MaxVal", self.PID_Kp_Max), ("EntryWidth", self.PIDgains_EntryWidth),("LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
                                                        dict([("Name", "Ki"),("Type", "float"), ("StartingVal", self.PID_Ki), ("MinVal", self.PID_Ki_Min), ("MaxVal", self.PID_Ki_Max),("EntryWidth", self.PIDgains_EntryWidth),("LabelWidth", self.PIDgains_LabelWidth),("FontSize", self.PIDgains_FontSize)]),
@@ -3087,7 +3442,7 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         #################################################
         self.PrintToGui_Label = Label(self.myFrame, text="PrintToGui_Label", width=75)
         if self.EnableInternal_MyPrint_Flag == 1:
-            self.PrintToGui_Label.grid(row=5, column=0, padx=10, pady=10, columnspan=10, rowspan=10)
+            self.PrintToGui_Label.grid(row=5, column=0, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=10, rowspan=10)
         #################################################
         #################################################
 
@@ -3203,6 +3558,17 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
         self.Motor_Target_NeedsToBeChangedFlag = 1
 
         #self.MyPrint_WithoutLogFile("Motor_Target_GUIscale_EventResponse: Position set to " + str(self.Motor_Target_ToBeSet))
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def ToggleMinMax_Button_Response(self):
+
+        self.ToggleMinMax_EventNeedsToBeFiredFlag = 1
+
+        #self.MyPrint_WithoutLogFile("ToggleMinMax_Button_Response: Event fired!")
+
     ##########################################################################################################
     ##########################################################################################################
 

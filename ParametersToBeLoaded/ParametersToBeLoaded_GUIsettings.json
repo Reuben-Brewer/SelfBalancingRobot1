@@ -11,7 +11,8 @@
     "SHOW_IN_GUI_BarGraphDisplay_FLAG":1,
     "SHOW_IN_GUI_CSVdataLogger_FLAG": 1,
     "SHOW_IN_GUI_MyPrint_FLAG":1,
-    "SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG":1,
+    "SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_1_FLAG":1,
+    "SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_2_FLAG":1,
     "SHOW_IN_GUI_PID_TUNING_ENTRIES_FLAG":1,
 
     "GUItitleString": "SelfBalancingRobot1",

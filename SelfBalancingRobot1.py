@@ -6,9 +6,9 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision J, 09/24/2024
+Software Revision K, 10/17/2024
 
-Verified working on: Python 3.8 for Windows 10 64-bit (not yet tested on Raspberry Pi, Ubuntu, or Mac).
+Verified working on: Python 3.12 for Windows 10 64-bit (not yet tested on Raspberry Pi, Ubuntu, or Mac).
 '''
 
 __author__ = 'reuben.brewer'
@@ -964,7 +964,7 @@ def DedicatedKeyboardListeningThread():
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
     global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
-    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
+    global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
 
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts_FormattedAsNicelyPrintedString
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts
@@ -1118,24 +1118,24 @@ def KeyPressResponse_TorqueEnable_STOP(event):
 
 #######################################################################################################################
 #######################################################################################################################
-def KeyPressResponse_ZeroLQR_START(event):
-    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
+def KeyPressResponse_ZeroControlLoop_START(event):
+    global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
 
-    KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 1
+    KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag = 1
 
-    #print("KeyPressResponse_ZeroLQR_START event fired!")
+    #print("KeyPressResponse_ZeroControlLoop_START event fired!")
 #######################################################################################################################
 #######################################################################################################################
 
 #######################################################################################################################
 #######################################################################################################################
-def KeyPressResponse_ZeroLQR_STOP(event):
-    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
+def KeyPressResponse_ZeroControlLoop_STOP(event):
+    global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
 
     dummy = 0
-    #KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 0
+    #KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag = 0
 
-    #print("KeyPressResponse_ZeroLQR_STOP event fired!")
+    #print("KeyPressResponse_ZeroControlLoop_STOP event fired!")
 #######################################################################################################################
 #######################################################################################################################
 
@@ -1208,7 +1208,7 @@ def GUI_update_clock():
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
     global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
-    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
+    global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
 
     global DebuggingInfo_Label
 
@@ -1231,24 +1231,17 @@ def GUI_update_clock():
     global DataStreamingFrequency_CalculatedFromGUIthread_Filtered
     global DataStreamingDeltaT_CalculatedFromGUIthread
 
-    global LQR_PitchControl_GainVectorElement_Ktheta_0
-    global LQR_PitchControl_GainVectorElement_Ktheta_1
-    global LQR_PitchControl_GainVectorElement_Ktheta_2
-    global LQR_PitchControl_GainVectorElement_Ktheta_3
-    global LQR_YawControl_GainVectorElement_Kdelta_0
-    global LQR_YawControl_GainVectorElement_Kdelta_1
-    global Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION
-    global Pitch_PosControl_PID_CommandToMotor_Term_1
-    global Pitch_PosControl_PID_CommandToMotor_Term_2
-    global Pitch_PosControl_PID_CommandToMotor_Term_3
-    global Pitch_PosControl_PID_CommandToMotor_Term_5
-    global Pitch_PosControl_PID_CommandToMotor_Term_6
-    global LQR_ControlLaw_Term_1
-    global LQR_ControlLaw_Term_2
-    global LQR_ControlLaw_Term_3
-    global LQR_ControlLaw_Term_4
-    global LQR_ControlLaw_Term_5
-    global LQR_ControlLaw_Term_6
+    global Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION
+
+    global PID_OuterLoopPosControl_Kp_Term_1
+    global PID_OuterLoopPosControl_Ki_Term_2
+    global PID_OuterLoopPosControl_Kd_Term_3
+
+    global PID_InnerLoopPitchControl_Kp_Term_1
+    global PID_InnerLoopPitchControl_Kd_Term_2
+
+    global YawControl_Kdelta1_Term_1
+    global YawControl_Kdelta2_Term_2
 
     global Wheel_Theta_RL_Radians_Actual
     global Wheel_Theta_RR_Radians_Actual
@@ -1265,13 +1258,13 @@ def GUI_update_clock():
     global PitchAngle_Theta_Deg_Actual
     global PitchAngle_Theta_Radians_Actual
 
-    global PitchAngle_Theta_Deg_Commanded
+    global PitchAngle_Theta_Degrees_Commanded
     global PitchAngle_Theta_Radians_Commanded
 
-    global PitchAngularRate_ThetaDot_DegreesPerSecond_Actual
+    global PitchAngularRate_ThetaDot_DegreesPerSec_Actual
     global PitchAngularRate_ThetaDot_RadiansPerSec_Actual
 
-    global PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded
+    global PitchAngularRate_ThetaDot_DegreesPerSec_Commanded
     global PitchAngularRate_ThetaDot_RadiansPerSec_Commanded
 
     global YawAngle_Delta_Deg_Actual
@@ -1327,8 +1320,17 @@ def GUI_update_clock():
                             "\nVelocity_V_RM_MetersPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Velocity_V_RM_MetersPerSec_Actual, 3, 3) + \
                             "\t\t\t\tVelocity_V_RMC_MetersPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Velocity_V_RMC_MetersPerSec_Commanded, 3, 3) + \
                             "\n" +\
-                            "\nPitchAngle_Theta_Deg_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Deg_Actual, 3, 3) + \
-                            "\t\tPitchAngle_Theta_Deg_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Deg_Commanded, 3, 3) + \
+                            "\nPitchAngle_Theta_Deg_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Deg_Actual, number_of_leading_numbers=3, number_of_decimal_places=3) + \
+                            "\t\tPitchAngle_Theta_Degrees_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Degrees_Commanded, number_of_leading_numbers=3, number_of_decimal_places=3) + \
+                            "\n" +\
+                            "\nPitchAngularRate_ThetaDot_DegreesPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_DegreesPerSecond_Actual, 3, 3) + \
+                            "\t\tPitchAngularRate_ThetaDot_DegreesPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded, 3, 3) + \
+                            "\n" +\
+                            "\nPitchAngle_Theta_Radians_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Radians_Actual, number_of_leading_numbers=3, number_of_decimal_places=3) + \
+                            "\t\tPitchAngle_Theta_Radians_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Radians_Commanded, number_of_leading_numbers=3, number_of_decimal_places=3) + \
+                            "\n" +\
+                            "\nPitchAngularRate_ThetaDot_RadiansPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_RadiansPerSec_Actual, 3, 3) + \
+                            "\t\tPitchAngularRate_ThetaDot_RadiansPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_RadiansPerSec_Commanded, 3, 3) + \
                             "\n" +\
                             "\nYawAngle_Delta_Deg_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngle_Delta_Deg_Actual, 3, 3) + \
                             "\t\tYawAngle_Delta_Deg_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngle_Delta_Deg_Commanded, 3, 3) + \
@@ -1336,13 +1338,7 @@ def GUI_update_clock():
                             "\nYawAngularRate_DeltaDot_DegreesPerSecond_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegreesPerSecond_Actual, 3, 3) + \
                             "\t\tYawAngularRate_DeltaDot_DegreesPerSecond_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegreesPerSecond_Commanded, 3, 3) + \
                             "\n" +\
-                            "\nLQR Ktheta_0: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_PitchControl_GainVectorElement_Ktheta_0, 3, 3) + \
-                            "\t\tLQR Ktheta_1: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_PitchControl_GainVectorElement_Ktheta_1, 3, 3) + \
-                            "\t\tLQR Ktheta_2: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_PitchControl_GainVectorElement_Ktheta_2, 3, 3) + \
-                            "\t\tLQR Ktheta_3: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_PitchControl_GainVectorElement_Ktheta_3, 3, 3) + \
-                            "\nLQR Kdelta_0: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_YawControl_GainVectorElement_Kdelta_0, 3, 3) + \
-                            "\t\tLQR Kdelta_1: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(LQR_YawControl_GainVectorElement_Kdelta_1, 3, 3) + \
-                            "\nPosition_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION, 3, 3) + \
+                            "\nPosition_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, 3, 3) + \
                             "\nTorqueToBeCommanded_Motor0: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(TorqueToBeCommanded_Motor0, 0, 3) + \
                             "\nTorqueToBeCommanded_Motor1: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(TorqueToBeCommanded_Motor1, 0, 3)
             #########################################################
@@ -1390,7 +1386,7 @@ def GUI_update_clock():
                                                                     KeyPressResponse_LEFT_NeedsToBeChangedFlag,
                                                                     KeyPressResponse_RIGHT_NeedsToBeChangedFlag,
                                                                     KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag,
-                                                                    KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag]) + \
+                                                                    KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag]) + \
                             "\nKeyboard_KeysToTeleopControlsMapping_DictOfDicts: " + \
                             "\n" + Keyboard_KeysToTeleopControlsMapping_DictOfDicts_FormattedAsNicelyPrintedString
             #########################################################
@@ -1460,27 +1456,26 @@ def GUI_update_clock():
             if BarGraphDisplay_OPEN_FLAG == 1:
 
                 if ControlAlgorithm == "PID":
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_1", Pitch_PosControl_PID_CommandToMotor_Term_1) #Too slow to update from non-GUI loop.
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_2", Pitch_PosControl_PID_CommandToMotor_Term_2)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_3", Pitch_PosControl_PID_CommandToMotor_Term_3)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_4", 0.0)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", Pitch_PosControl_PID_CommandToMotor_Term_5)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", Pitch_PosControl_PID_CommandToMotor_Term_6)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("O_Kp", PID_OuterLoopPosControl_Kp_Term_1) #Too slow to update from non-GUI loop.
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("O_Ki", PID_OuterLoopPosControl_Ki_Term_2)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("O_Kd", PID_OuterLoopPosControl_Kd_Term_3)
 
-                elif ControlAlgorithm == "LQR":
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_1", LQR_ControlLaw_Term_1) #Too slow to update from non-GUI loop.
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_2", LQR_ControlLaw_Term_2)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_3", LQR_ControlLaw_Term_3)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_4", LQR_ControlLaw_Term_4)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", LQR_ControlLaw_Term_5)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", LQR_ControlLaw_Term_6)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("I_Kp", PID_InnerLoopPitchControl_Kp_Term_1)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("I_Kd", PID_InnerLoopPitchControl_Kd_Term_2)
+
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("Y_1", YawControl_Kdelta1_Term_1)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("Y_2", YawControl_Kdelta2_Term_2)
+
                 else:
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_1", 0.0) #Too slow to update from non-GUI loop.
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_2", 0.0)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_3", 0.0)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_4", 0.0)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_5", 0.0)
-                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("LQR_6", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("O_Kp", 0.0) #Too slow to update from non-GUI loop.
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("O_Ki", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("O_Kd", 0.0)
+
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("I_Kp", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("I_Kd", 0.0)
+
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("Y_1", 0.0)
+                    BarGraphDisplay_ReubenPython3ClassObject.UpdateValue("Y_2", 0.0)
 
                 BarGraphDisplay_ReubenPython3ClassObject.GUI_update_clock()
             #########################################################
@@ -1664,10 +1659,10 @@ def GUI_Thread():
 
     ############################################
     ############################################
-    global ZeroLQR_Button
-    ZeroLQR_Button = Button(ExtraProgramControlGuiFrame, text="ZeroLQR", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroLQR_ButtonResponse())
-    ZeroLQR_Button.grid(row=0, column=3, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
-    ZeroLQR_Button.config(font=("Helvetica", GUIbuttonFontSize))
+    global ZeroControlLoop_Button
+    ZeroControlLoop_Button = Button(ExtraProgramControlGuiFrame, text="ZeroController", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroControlLoop_ButtonResponse())
+    ZeroControlLoop_Button.grid(row=0, column=3, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
+    ZeroControlLoop_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ############################################
     ############################################
 
@@ -1937,12 +1932,12 @@ def ZeroSpatialPrecision333Algorithm_ButtonResponse():
 
 #######################################################################################################################
 #######################################################################################################################
-def ZeroLQR_ButtonResponse():
-    global ZeroLQR_EventNeedsToBeFiredFlag
+def ZeroControlLoop_ButtonResponse():
+    global ZeroControlLoop_EventNeedsToBeFiredFlag
 
-    ZeroLQR_EventNeedsToBeFiredFlag = 1
+    ZeroControlLoop_EventNeedsToBeFiredFlag = 1
 
-    #MyPrint_ReubenPython2and3ClassObject.my_print("ZeroLQR_ButtonResponse event fired!")
+    #MyPrint_ReubenPython2and3ClassObject.my_print("ZeroControlLoop_ButtonResponse event fired!")
 #######################################################################################################################
 #######################################################################################################################
 
@@ -2146,7 +2141,8 @@ if __name__ == '__main__':
     global USE_SpatialPrecision333_FLAG
     global USE_DC30AmpCurrentSensor_FLAG
     global USE_EntryListWithBlinking_FLAG
-    global USE_MyPlotterPureTkinterStandAloneProcess_FLAG
+    global USE_MyPlotterPureTkinterStandAloneProcess_1_FLAG
+    global USE_MyPlotterPureTkinterStandAloneProcess_2_FLAG
     global USE_MyPrint_FLAG
     global USE_CSVdataLogger_FLAG
     global USE_Keyboard_FLAG
@@ -2170,7 +2166,8 @@ if __name__ == '__main__':
     global SHOW_IN_GUI_BarGraphDisplay_FLAG
     global SHOW_IN_GUI_CSVdataLogger_FLAG
     global SHOW_IN_GUI_MyPrint_FLAG
-    global SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG
+    global SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_1_FLAG
+    global SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_2_FLAG
     global SHOW_IN_GUI_PID_TUNING_ENTRIES_FLAG
 
     global GUItitleString
@@ -2260,10 +2257,15 @@ if __name__ == '__main__':
     #################################################
 
     #################################################
-    global MyPlotterPureTkinterStandAloneProcess_Directions
-    global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_GUIparametersDict
-    global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict
-    global MyPlotterPureTkinterStandAloneProcess_RefreshDurationInSeconds
+    global MyPlotterPureTkinterStandAloneProcess_1_Directions
+    global MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_GUIparametersDict
+    global MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_setup_dict
+    global MyPlotterPureTkinterStandAloneProcess_1_RefreshDurationInSeconds
+
+    global MyPlotterPureTkinterStandAloneProcess_2_Directions
+    global MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_GUIparametersDict
+    global MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_setup_dict
+    global MyPlotterPureTkinterStandAloneProcess_2_RefreshDurationInSeconds
 
     LoadAndParseJSONfile_MyPlotterPureTkinterStandAloneProcess()
     #################################################
@@ -2273,21 +2275,15 @@ if __name__ == '__main__':
     global RoboteqBLDCcontroller_NameToDisplay_UserSet_0
     global RoboteqBLDCcontroller_DesiredSerialNumber_USBtoSerialConverter_0
     global RoboteqBLDCcontroller_ControlMode_Starting_0
-    global RoboteqBLDCcontroller_Position_Target_Min_UserSet_0
-    global RoboteqBLDCcontroller_Position_Target_Max_UserSet_0
-    global RoboteqBLDCcontroller_Position_Target_Starting_0
-    global RoboteqBLDCcontroller_Speed_Target_Min_UserSet_0
-    global RoboteqBLDCcontroller_Speed_Target_Max_UserSet_0
-    global RoboteqBLDCcontroller_Speed_Target_Starting_0
+    global RoboteqBLDCcontroller_OpenLoopPower_Target_Min_UserSet_0
+    global RoboteqBLDCcontroller_OpenLoopPower_Target_Max_UserSet_0
+    global RoboteqBLDCcontroller_OpenLoopPower_Target_Starting_0
     global RoboteqBLDCcontroller_Acceleration_Target_Min_UserSet_0
     global RoboteqBLDCcontroller_Acceleration_Target_Max_UserSet_0
     global RoboteqBLDCcontroller_Acceleration_Target_Starting_0
     global RoboteqBLDCcontroller_Current_Amps_Min_UserSet_0
     global RoboteqBLDCcontroller_Current_Amps_Max_UserSet_0
     global RoboteqBLDCcontroller_Current_Amps_Starting_0
-    global RoboteqBLDCcontroller_Torque_Amps_Min_UserSet_0
-    global RoboteqBLDCcontroller_Torque_Amps_Max_UserSet_0
-    global RoboteqBLDCcontroller_Torque_Amps_Starting_0
     global RoboteqBLDCcontroller_VariableStreamingSendDataEveryDeltaT_MillisecondsInt_0
     global RoboteqBLDCcontroller_DedicatedRxThread_TimeToSleepEachLoop_0
     global RoboteqBLDCcontroller_DedicatedTxThread_TimeToSleepEachLoop_0
@@ -2296,10 +2292,6 @@ if __name__ == '__main__':
     global RoboteqBLDCcontroller_DedicatedTxThread_TxMessageToSend_Queue_MaxSize_0
     global RoboteqBLDCcontroller_HeartbeatTimeIntervalMilliseconds_0
     global RoboteqBLDCcontroller_NumberOfMagnetsInMotor_0
-    global RoboteqBLDCcontroller_PID_Kp_0
-    global RoboteqBLDCcontroller_PID_Ki_0
-    global RoboteqBLDCcontroller_PID_Kd_0
-    global RoboteqBLDCcontroller_PID_IntegratorCap1to100percent_0
     global RoboteqBLDCcontroller_SetBrushlessCounterTo0atStartOfProgramFlag_0
     global RoboteqBLDCcontroller_SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag_0
 
@@ -2311,21 +2303,15 @@ if __name__ == '__main__':
     global RoboteqBLDCcontroller_NameToDisplay_UserSet_1
     global RoboteqBLDCcontroller_DesiredSerialNumber_USBtoSerialConverter_1
     global RoboteqBLDCcontroller_ControlMode_Starting_1
-    global RoboteqBLDCcontroller_Position_Target_Min_UserSet_1
-    global RoboteqBLDCcontroller_Position_Target_Max_UserSet_1
-    global RoboteqBLDCcontroller_Position_Target_Starting_1
-    global RoboteqBLDCcontroller_Speed_Target_Min_UserSet_1
-    global RoboteqBLDCcontroller_Speed_Target_Max_UserSet_1
-    global RoboteqBLDCcontroller_Speed_Target_Starting_1
+    global RoboteqBLDCcontroller_OpenLoopPower_Target_Min_UserSet_1
+    global RoboteqBLDCcontroller_OpenLoopPower_Target_Max_UserSet_1
+    global RoboteqBLDCcontroller_OpenLoopPower_Target_Starting_1
     global RoboteqBLDCcontroller_Acceleration_Target_Min_UserSet_1
     global RoboteqBLDCcontroller_Acceleration_Target_Max_UserSet_1
     global RoboteqBLDCcontroller_Acceleration_Target_Starting_1
     global RoboteqBLDCcontroller_Current_Amps_Min_UserSet_1
     global RoboteqBLDCcontroller_Current_Amps_Max_UserSet_1
     global RoboteqBLDCcontroller_Current_Amps_Starting_1
-    global RoboteqBLDCcontroller_Torque_Amps_Min_UserSet_1
-    global RoboteqBLDCcontroller_Torque_Amps_Max_UserSet_1
-    global RoboteqBLDCcontroller_Torque_Amps_Starting_1
     global RoboteqBLDCcontroller_VariableStreamingSendDataEveryDeltaT_MillisecondsInt_1
     global RoboteqBLDCcontroller_DedicatedRxThread_TimeToSleepEachLoop_1
     global RoboteqBLDCcontroller_DedicatedTxThread_TimeToSleepEachLoop_1
@@ -2334,10 +2320,6 @@ if __name__ == '__main__':
     global RoboteqBLDCcontroller_DedicatedTxThread_TxMessageToSend_Queue_MaxSize_1
     global RoboteqBLDCcontroller_HeartbeatTimeIntervalMilliseconds_1
     global RoboteqBLDCcontroller_NumberOfMagnetsInMotor_1
-    global RoboteqBLDCcontroller_PID_Kp_1
-    global RoboteqBLDCcontroller_PID_Ki_1
-    global RoboteqBLDCcontroller_PID_Kd_1
-    global RoboteqBLDCcontroller_PID_IntegratorCap1to100percent_1
     global RoboteqBLDCcontroller_SetBrushlessCounterTo0atStartOfProgramFlag_1
     global RoboteqBLDCcontroller_SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag_1
 
@@ -2474,21 +2456,21 @@ if __name__ == '__main__':
     global YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last  # NOT imported from JSON file
     YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = 1.0
 
-    global LQR_ParametersToBeLoaded_Directions
-    global LQR_PitchControl_GainVectorElement_Ktheta_0
-    global LQR_PitchControl_GainVectorElement_Ktheta_1
-    global LQR_PitchControl_GainVectorElement_Ktheta_2
-    global LQR_PitchControl_GainVectorElement_Ktheta_3
-    global LQR_YawControl_GainVectorElement_Kdelta_0
-    global LQR_YawControl_GainVectorElement_Kdelta_1
-    global Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION
-    global YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION
+    global Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION
+    global YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION
 
     global Pitch_ParametersToBeLoaded_Directions
-    global Pitch_PosControl_PID_gain_Kp
-    global Pitch_PosControl_PID_gain_Ki
-    global Pitch_PosControl_PID_gain_Kd
-    global Pitch_PosControl_PID_ErrorSum_Max
+
+    global PID_gain_Kp_OuterLoopPosControl
+    global PID_gain_Ki_OuterLoopPosControl
+    global PID_gain_Kd_OuterLoopPosControl
+    global PID_ErrorSumMax_OuterLoopPosControl
+
+    global PID_gain_Kp_InnerLoopPitchControl
+    global PID_gain_Kd_InnerLoopPitchControl
+
+    global YawControl_gain_Kdelta1
+    global YawControl_gain_Kdelta2
 
     global MaxCommandFromControlLaw_Motor0
     global MaxCommandFromControlLaw_Motor1
@@ -2534,24 +2516,6 @@ if __name__ == '__main__':
 
     global ControlAlgorithm_NeedsToBeChangedFlag
     ControlAlgorithm_NeedsToBeChangedFlag = 0
-    
-    global LQR_ControlLaw_Term_1
-    LQR_ControlLaw_Term_1 = 0.0
-    
-    global LQR_ControlLaw_Term_2
-    LQR_ControlLaw_Term_2 = 0.0
-    
-    global LQR_ControlLaw_Term_3
-    LQR_ControlLaw_Term_3 = 0.0
-
-    global LQR_ControlLaw_Term_4
-    LQR_ControlLaw_Term_4 = 0.0
-
-    global LQR_ControlLaw_Term_5
-    LQR_ControlLaw_Term_5 = 0.0
-    
-    global LQR_ControlLaw_Term_6
-    LQR_ControlLaw_Term_6 = 0.0
     #################################################
     #################################################
 
@@ -2589,16 +2553,14 @@ if __name__ == '__main__':
     global RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_0
     RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_0 = 0.0
 
-    '''
-    global RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_0
-    RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_0 = -11111.0
+    global RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0
+    RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0 = 0.0
     
-    global RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_0
-    RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_0 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_0
-    RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_0 = -11111.0
-    '''
+    global RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_0
+    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_0 = -11111
+
+    global RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_0
+    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_0 = "unknown"
 
     global RoboteqBLDCcontroller_MostRecentDict_FaultFlags_0
     RoboteqBLDCcontroller_MostRecentDict_FaultFlags_0 = -11111.0
@@ -2632,24 +2594,6 @@ if __name__ == '__main__':
     
     global RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_0
     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_0 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_Kp_0
-    RoboteqBLDCcontroller_MostRecentDict_PID_Kp_0 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_Ki_0
-    RoboteqBLDCcontroller_MostRecentDict_PID_Ki_0 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_Kd_0
-    RoboteqBLDCcontroller_MostRecentDict_PID_Kd_0 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_0
-    RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_0 = -11111.0
-
-    global RoboteqBLDCcontroller_MostRecentDict_ControlMode_IntegerValue_0
-    RoboteqBLDCcontroller_MostRecentDict_ControlMode_IntegerValue_0 = -11111
-
-    global RoboteqBLDCcontroller_MostRecentDict_ControlMode_EnglishString_0
-    RoboteqBLDCcontroller_MostRecentDict_ControlMode_EnglishString_0 = "unknown"
 
     global RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_0
     RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_0 = 0
@@ -2672,16 +2616,14 @@ if __name__ == '__main__':
     global RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_1
     RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_1 = 0.0
 
-    '''
-    global RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_1
-    RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_1 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_1
-    RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_1 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_1
-    RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_1 = -11111.0
-    '''
+    global RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1
+    RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1 = 0.0
+
+    global RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_1
+    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_1 = -11111
+
+    global RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_1
+    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_1 = "unknown"
 
     global RoboteqBLDCcontroller_MostRecentDict_FaultFlags_1
     RoboteqBLDCcontroller_MostRecentDict_FaultFlags_1 = -11111.0
@@ -2715,27 +2657,6 @@ if __name__ == '__main__':
     
     global RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_1
     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_1 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_Kp_1
-    RoboteqBLDCcontroller_MostRecentDict_PID_Kp_1 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_Ki_1
-    RoboteqBLDCcontroller_MostRecentDict_PID_Ki_1 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_Kd_1
-    RoboteqBLDCcontroller_MostRecentDict_PID_Kd_1 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_1
-    RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_1 = -11111.0
-    
-    global RoboteqBLDCcontroller_MostRecentDict_ControlModeOfOperationIntegerValue_1
-    RoboteqBLDCcontroller_MostRecentDict_ControlModeOfOperationIntegerValue_1 = -11111.0
-
-    global RoboteqBLDCcontroller_MostRecentDict_ControlMode_IntegerValue_1
-    RoboteqBLDCcontroller_MostRecentDict_ControlMode_IntegerValue_1 = -11111
-
-    global RoboteqBLDCcontroller_MostRecentDict_ControlMode_EnglishString_1
-    RoboteqBLDCcontroller_MostRecentDict_ControlMode_EnglishString_1 = "unknown"
 
     global RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_1
     RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_1 = 0
@@ -2888,19 +2809,35 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject
+    global MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject
 
-    global MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG
-    MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG = -1
+    global MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG
+    MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG = -1
 
-    global MyPlotterPureTkinterStandAloneProcess_MostRecentDict
-    MyPlotterPureTkinterStandAloneProcess_MostRecentDict = dict()
+    global MyPlotterPureTkinterStandAloneProcess_1_MostRecentDict
+    MyPlotterPureTkinterStandAloneProcess_1_MostRecentDict = dict()
 
-    global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag
-    MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = -1
+    global MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag
+    MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = -1
 
-    global LastTime_CalculatedFromMainThread_PLOTTER
-    LastTime_CalculatedFromMainThread_PLOTTER = -11111.0
+    global LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1
+    LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1 = -11111.0
+    
+    
+    
+    global MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject
+
+    global MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG
+    MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG = -1
+
+    global MyPlotterPureTkinterStandAloneProcess_2_MostRecentDict
+    MyPlotterPureTkinterStandAloneProcess_2_MostRecentDict = dict()
+
+    global MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag
+    MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = -1
+
+    global LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2
+    LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2 = -11111.0
     #################################################
     #################################################
 
@@ -2945,8 +2882,8 @@ if __name__ == '__main__':
     global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
     KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag = 0
     
-    global KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag
-    KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 0
+    global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
+    KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag = 0
     #################################################
     #################################################
 
@@ -3002,27 +2939,37 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
+
+    #################################################
     global SINUSOIDAL_INPUT_TO_COMMAND
     SINUSOIDAL_INPUT_TO_COMMAND = 0.0
+    #################################################
 
+    #################################################
     global Wheel_Theta_RL_Radians_Actual
     Wheel_Theta_RL_Radians_Actual = 0.0
 
     global Wheel_Theta_RR_Radians_Actual
     Wheel_Theta_RR_Radians_Actual = 0.0
+    #################################################
 
+    #################################################
     global Wheel_Omega_Theta_RL_RadiansPerSec_Actual
     Wheel_Omega_Theta_RL_RadiansPerSec_Actual = 0.0
 
     global Wheel_Omega_Theta_RR_RadiansPerSec_Actual
     Wheel_Omega_Theta_RR_RadiansPerSec_Actual = 0.0
+    #################################################
 
+    #################################################
     global Position_X_RM_Meters_Actual
     Position_X_RM_Meters_Actual = 0.0
 
     global Position_X_RMC_Meters_Commanded
     Position_X_RMC_Meters_Commanded = 0.0
+    #################################################
 
+    #################################################
     global Velocity_V_RM_MetersPerSec_Actual
     Velocity_V_RM_MetersPerSec_Actual = 0.0
 
@@ -3031,7 +2978,9 @@ if __name__ == '__main__':
 
     global Velocity_V_RMC_MetersPerSec_Commanded
     Velocity_V_RMC_MetersPerSec_Commanded = 0.0
+    #################################################
 
+    #################################################
     global YawAngle_Delta_Deg_Actual
     YawAngle_Delta_Deg_Actual = 0.0
 
@@ -3043,7 +2992,9 @@ if __name__ == '__main__':
 
     global YawAngle_Delta_Radians_Commanded
     YawAngle_Delta_Radians_Commanded = 0.0
+    #################################################
 
+    #################################################
     global YawAngularRate_DeltaDot_RadiansPerSec_Actual
     YawAngularRate_DeltaDot_RadiansPerSec_Actual = 0.0
 
@@ -3055,76 +3006,117 @@ if __name__ == '__main__':
 
     global YawAngularRate_DeltaDot_DegreesPerSecond_Commanded
     YawAngularRate_DeltaDot_DegreesPerSecond_Commanded = 0.0
+    #################################################
 
+    #################################################
     global PitchAngle_Theta_Deg_Actual
     PitchAngle_Theta_Deg_Actual = 0.0
 
     global PitchAngle_Theta_Radians_Actual
     PitchAngle_Theta_Radians_Actual = 0.0
+    #################################################
 
-    global PitchAngle_Theta_Deg_Commanded
-    PitchAngle_Theta_Deg_Commanded = 0.0
+    #################################################
+    global PitchAngle_Theta_Degrees_Commanded
+    PitchAngle_Theta_Degrees_Commanded = 0.0
 
     global PitchAngle_Theta_Radians_Commanded
     PitchAngle_Theta_Radians_Commanded = 0.0
+    #################################################
 
+    #################################################
     global PitchAngularRate_ThetaDot_DegreesPerSecond_Actual
     PitchAngularRate_ThetaDot_DegreesPerSecond_Actual = 0.0
 
     global PitchAngularRate_ThetaDot_RadiansPerSec_Actual
     PitchAngularRate_ThetaDot_RadiansPerSec_Actual = 0.0
+    #################################################
+
+    #################################################
+    global PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded
+    PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded = 0.0
 
     global PitchAngularRate_ThetaDot_RadiansPerSec_Commanded
     PitchAngularRate_ThetaDot_RadiansPerSec_Commanded = 0.0
+    #################################################
 
+    #################################################
     global C_L
     C_L = 0.0
 
     global C_R
     C_R = 0.0
+    #################################################
 
+    #################################################
     global C_Theta
     C_Theta = 0.0
 
     global C_Delta
     C_Delta = 0.0
+    #################################################
 
+    #################################################
     global TorqueToBeCommanded_Motor0
     TorqueToBeCommanded_Motor0 = 0.0
 
     global TorqueToBeCommanded_Motor1
     TorqueToBeCommanded_Motor1 = 0.0
+    #################################################
 
-    global Pitch_PosControl_PID_Error
-    Pitch_PosControl_PID_Error = 0
+    #################################################
+    global PID_OuterLoopPosControl_Error
+    PID_OuterLoopPosControl_Error = 0.0
 
-    global Pitch_PosControl_PID_Error_last
-    Pitch_PosControl_PID_Error_last = 0
+    global PID_OuterLoopPosControl_Error_last
+    PID_OuterLoopPosControl_Error_last = 0.0
 
-    global Pitch_PosControl_PID_ErrorSum
-    Pitch_PosControl_PID_ErrorSum = 0
+    global PID_OuterLoopPosControl_ErrorSum
+    PID_OuterLoopPosControl_ErrorSum = 0.0
 
-    global Pitch_PosControl_PID_ErrorD
-    Pitch_PosControl_PID_ErrorD = 0
+    global PID_OuterLoopPosControl_ErrorSumMax
+    PID_OuterLoopPosControl_ErrorSumMax = 0.0
+    #################################################
 
-    global Pitch_PosControl_PID_CommandToMotor_Term_1
-    Pitch_PosControl_PID_CommandToMotor_Term_1 = 0.0
+    #################################################
+    global PID_InnerLoopPitchControl_Error
+    PID_InnerLoopPitchControl_Error = 0.0
 
-    global Pitch_PosControl_PID_CommandToMotor_Term_2
-    Pitch_PosControl_PID_CommandToMotor_Term_2 = 0.0
+    global PID_InnerLoopPitchControl_Error_last
+    PID_InnerLoopPitchControl_Error_last = 0.0
 
-    global Pitch_PosControl_PID_CommandToMotor_Term_3
-    Pitch_PosControl_PID_CommandToMotor_Term_3 = 0.0
+    global PID_InnerLoopPitchControl_ErrorD
+    PID_InnerLoopPitchControl_ErrorD = 0.0
+    #################################################
 
-    global Pitch_PosControl_PID_CommandToMotor_Term_5
-    Pitch_PosControl_PID_CommandToMotor_Term_5 = 0.0
+    #################################################
+    global PID_OuterLoopPosControl_Kp_Term_1
+    PID_OuterLoopPosControl_Kp_Term_1 = 0.0
 
-    global Pitch_PosControl_PID_CommandToMotor_Term_6
-    Pitch_PosControl_PID_CommandToMotor_Term_6 = 0.0
+    global PID_OuterLoopPosControl_Ki_Term_2
+    PID_OuterLoopPosControl_Ki_Term_2 = 0.0
 
-    global Pitch_PID_CommandToMotor
-    Pitch_PID_CommandToMotor = 0
+    global PID_OuterLoopPosControl_Kd_Term_3
+    PID_OuterLoopPosControl_Kd_Term_3 = 0.0
+    #################################################
 
+    #################################################
+    global PID_InnerLoopPitchControl_Kp_Term_1
+    PID_InnerLoopPitchControl_Kp_Term_1 = 0.0
+
+    global PID_InnerLoopPitchControl_Kd_Term_2
+    PID_InnerLoopPitchControl_Kd_Term_2 = 0.0
+    #################################################
+
+    #################################################
+    global YawControl_Kdelta1_Term_1
+    YawControl_Kdelta1_Term_1 = 0.0
+
+    global YawControl_Kdelta2_Term_2
+    YawControl_Kdelta2_Term_2 = 0.0
+    #################################################
+
+    #################################################
     global EnableMotorState_0
     EnableMotorState_0 = ENABLE_MOTORS_AT_STARTUP_FLAG
 
@@ -3139,9 +3131,13 @@ if __name__ == '__main__':
 
     global ToggleEnableForBothMotors_EventNeedsToBeFiredFlag
     ToggleEnableForBothMotors_EventNeedsToBeFiredFlag = 0
+    #################################################
 
-    global ZeroLQR_EventNeedsToBeFiredFlag
-    ZeroLQR_EventNeedsToBeFiredFlag = 0
+    #################################################
+    global ZeroControlLoop_EventNeedsToBeFiredFlag
+    ZeroControlLoop_EventNeedsToBeFiredFlag = 0
+    #################################################
+
     #################################################
     #################################################
 
@@ -3269,21 +3265,15 @@ if __name__ == '__main__':
                                                                         ("DesiredSerialNumber_USBtoSerialConverter", RoboteqBLDCcontroller_DesiredSerialNumber_USBtoSerialConverter_0),
                                                                         ("NameToDisplay_UserSet", RoboteqBLDCcontroller_NameToDisplay_UserSet_0),
                                                                         ("ControlMode_Starting", RoboteqBLDCcontroller_ControlMode_Starting_0),
-                                                                        ("Position_Target_Min_UserSet", RoboteqBLDCcontroller_Position_Target_Min_UserSet_0),
-                                                                        ("Position_Target_Max_UserSet", RoboteqBLDCcontroller_Position_Target_Max_UserSet_0),
-                                                                        ("Position_Target_Starting", RoboteqBLDCcontroller_Position_Target_Starting_0),
-                                                                        ("Speed_Target_Min_UserSet", RoboteqBLDCcontroller_Speed_Target_Min_UserSet_0),
-                                                                        ("Speed_Target_Max_UserSet", RoboteqBLDCcontroller_Speed_Target_Max_UserSet_0),
-                                                                        ("Speed_Target_Starting", RoboteqBLDCcontroller_Speed_Target_Starting_0),
+                                                                        ("OpenLoopPower_Target_Min_UserSet", RoboteqBLDCcontroller_OpenLoopPower_Target_Min_UserSet_0),
+                                                                        ("OpenLoopPower_Target_Max_UserSet", RoboteqBLDCcontroller_OpenLoopPower_Target_Max_UserSet_0),
+                                                                        ("OpenLoopPower_Target_Starting", RoboteqBLDCcontroller_OpenLoopPower_Target_Starting_0),
                                                                         ("Acceleration_Target_Min_UserSet", RoboteqBLDCcontroller_Acceleration_Target_Min_UserSet_0),
                                                                         ("Acceleration_Target_Max_UserSet", RoboteqBLDCcontroller_Acceleration_Target_Max_UserSet_0),
                                                                         ("Acceleration_Target_Starting", RoboteqBLDCcontroller_Acceleration_Target_Starting_0),
                                                                         ("Current_Amps_Min_UserSet", RoboteqBLDCcontroller_Current_Amps_Min_UserSet_0),
                                                                         ("Current_Amps_Max_UserSet", RoboteqBLDCcontroller_Current_Amps_Max_UserSet_0),
                                                                         ("Current_Amps_Starting", RoboteqBLDCcontroller_Current_Amps_Starting_0),
-                                                                        ("Torque_Amps_Min_UserSet", RoboteqBLDCcontroller_Torque_Amps_Min_UserSet_0),
-                                                                        ("Torque_Amps_Max_UserSet", RoboteqBLDCcontroller_Torque_Amps_Max_UserSet_0),
-                                                                        ("Torque_Amps_Starting", RoboteqBLDCcontroller_Torque_Amps_Starting_0),
                                                                         ("DedicatedRxThread_TimeToSleepEachLoop", RoboteqBLDCcontroller_DedicatedRxThread_TimeToSleepEachLoop_0),
                                                                         ("DedicatedTxThread_TimeToSleepEachLoop", RoboteqBLDCcontroller_DedicatedTxThread_TimeToSleepEachLoop_0),
                                                                         ("SerialRxBufferSize", RoboteqBLDCcontroller_SerialRxBufferSize_0),
@@ -3291,10 +3281,6 @@ if __name__ == '__main__':
                                                                         ("DedicatedTxThread_TxMessageToSend_Queue_MaxSize", RoboteqBLDCcontroller_DedicatedTxThread_TxMessageToSend_Queue_MaxSize_0),
                                                                         ("HeartbeatTimeIntervalMilliseconds", RoboteqBLDCcontroller_HeartbeatTimeIntervalMilliseconds_0),
                                                                         ("NumberOfMagnetsInMotor", RoboteqBLDCcontroller_NumberOfMagnetsInMotor_0),
-                                                                        ("PID_Kp", RoboteqBLDCcontroller_PID_Kp_0),
-                                                                        ("PID_Ki", RoboteqBLDCcontroller_PID_Ki_0),
-                                                                        ("PID_Kd", RoboteqBLDCcontroller_PID_Kd_0),
-                                                                        ("PID_IntegratorCap1to100percent", RoboteqBLDCcontroller_PID_IntegratorCap1to100percent_0),
                                                                         ("VariableStreamingSendDataEveryDeltaT_MillisecondsInt", RoboteqBLDCcontroller_VariableStreamingSendDataEveryDeltaT_MillisecondsInt_0),
                                                                         ("SetBrushlessCounterTo0atStartOfProgramFlag", RoboteqBLDCcontroller_SetBrushlessCounterTo0atStartOfProgramFlag_0),
                                                                         ("SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag", RoboteqBLDCcontroller_SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag_0)])
@@ -3337,21 +3323,15 @@ if __name__ == '__main__':
                                                                         ("DesiredSerialNumber_USBtoSerialConverter", RoboteqBLDCcontroller_DesiredSerialNumber_USBtoSerialConverter_1),
                                                                         ("NameToDisplay_UserSet", RoboteqBLDCcontroller_NameToDisplay_UserSet_1),
                                                                         ("ControlMode_Starting", RoboteqBLDCcontroller_ControlMode_Starting_1),
-                                                                        ("Position_Target_Min_UserSet", RoboteqBLDCcontroller_Position_Target_Min_UserSet_1),
-                                                                        ("Position_Target_Max_UserSet", RoboteqBLDCcontroller_Position_Target_Max_UserSet_1),
-                                                                        ("Position_Target_Starting", RoboteqBLDCcontroller_Position_Target_Starting_1),
-                                                                        ("Speed_Target_Min_UserSet", RoboteqBLDCcontroller_Speed_Target_Min_UserSet_1),
-                                                                        ("Speed_Target_Max_UserSet", RoboteqBLDCcontroller_Speed_Target_Max_UserSet_1),
-                                                                        ("Speed_Target_Starting", RoboteqBLDCcontroller_Speed_Target_Starting_1),
+                                                                       ("OpenLoopPower_Target_Min_UserSet", RoboteqBLDCcontroller_OpenLoopPower_Target_Min_UserSet_1),
+                                                                        ("OpenLoopPower_Target_Max_UserSet", RoboteqBLDCcontroller_OpenLoopPower_Target_Max_UserSet_1),
+                                                                        ("OpenLoopPower_Target_Starting", RoboteqBLDCcontroller_OpenLoopPower_Target_Starting_1),
                                                                         ("Acceleration_Target_Min_UserSet", RoboteqBLDCcontroller_Acceleration_Target_Min_UserSet_1),
                                                                         ("Acceleration_Target_Max_UserSet", RoboteqBLDCcontroller_Acceleration_Target_Max_UserSet_1),
                                                                         ("Acceleration_Target_Starting", RoboteqBLDCcontroller_Acceleration_Target_Starting_1),
                                                                         ("Current_Amps_Min_UserSet", RoboteqBLDCcontroller_Current_Amps_Min_UserSet_1),
                                                                         ("Current_Amps_Max_UserSet", RoboteqBLDCcontroller_Current_Amps_Max_UserSet_1),
                                                                         ("Current_Amps_Starting", RoboteqBLDCcontroller_Current_Amps_Starting_1),
-                                                                        ("Torque_Amps_Min_UserSet", RoboteqBLDCcontroller_Torque_Amps_Min_UserSet_1),
-                                                                        ("Torque_Amps_Max_UserSet", RoboteqBLDCcontroller_Torque_Amps_Max_UserSet_1),
-                                                                        ("Torque_Amps_Starting", RoboteqBLDCcontroller_Torque_Amps_Starting_1),
                                                                         ("DedicatedRxThread_TimeToSleepEachLoop", RoboteqBLDCcontroller_DedicatedRxThread_TimeToSleepEachLoop_1),
                                                                         ("DedicatedTxThread_TimeToSleepEachLoop", RoboteqBLDCcontroller_DedicatedTxThread_TimeToSleepEachLoop_1),
                                                                         ("DedicatedTxThread_TxMessageToSend_Queue_MaxSize", RoboteqBLDCcontroller_DedicatedTxThread_TxMessageToSend_Queue_MaxSize_1),
@@ -3359,10 +3339,6 @@ if __name__ == '__main__':
                                                                         ("SerialTxBufferSize", RoboteqBLDCcontroller_SerialTxBufferSize_1),
                                                                         ("HeartbeatTimeIntervalMilliseconds", RoboteqBLDCcontroller_HeartbeatTimeIntervalMilliseconds_1),
                                                                         ("NumberOfMagnetsInMotor", RoboteqBLDCcontroller_NumberOfMagnetsInMotor_1),
-                                                                        ("PID_Kp", RoboteqBLDCcontroller_PID_Kp_1),
-                                                                        ("PID_Ki", RoboteqBLDCcontroller_PID_Ki_1),
-                                                                        ("PID_Kd", RoboteqBLDCcontroller_PID_Kd_1),
-                                                                        ("PID_IntegratorCap1to100percent", RoboteqBLDCcontroller_PID_IntegratorCap1to100percent_1),
                                                                         ("VariableStreamingSendDataEveryDeltaT_MillisecondsInt", RoboteqBLDCcontroller_VariableStreamingSendDataEveryDeltaT_MillisecondsInt_1),
                                                                         ("SetBrushlessCounterTo0atStartOfProgramFlag", RoboteqBLDCcontroller_SetBrushlessCounterTo0atStartOfProgramFlag_1),
                                                                         ("SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag", RoboteqBLDCcontroller_SetBrushlessCounterSoftwareOffsetOnlyTo0atStartOfProgramFlag_1)])
@@ -3557,16 +3533,17 @@ if __name__ == '__main__':
                                     ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_EntryListWithBlinking)])
 
     global EntryListWithBlinking_Variables_ListOfDicts
-    EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "Pitch_PosControl_PID_gain_Kp"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_gain_Kp), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "Pitch_PosControl_PID_gain_Ki"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_gain_Ki), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "Pitch_PosControl_PID_gain_Kd"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_gain_Kd), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "Pitch_PosControl_PID_ErrorSum_Max"),("Type", "float"), ("StartingVal", Pitch_PosControl_PID_ErrorSum_Max), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_0"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_0), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_1"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_1), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_2"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_2), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_PitchControl_GainVectorElement_Ktheta_3"),("Type", "float"), ("StartingVal", LQR_PitchControl_GainVectorElement_Ktheta_3), ("MinVal", -1000000.0), ("MaxVal", 1000000.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_0"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_0), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "LQR_YawControl_GainVectorElement_Kdelta_1"),("Type", "float"), ("StartingVal", LQR_YawControl_GainVectorElement_Kdelta_1), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+    EntryListWithBlinking_Variables_ListOfDicts = [dict([("Name", "PID_gain_Kp_OuterLoopPosControl"),("Type", "float"), ("StartingVal", PID_gain_Kp_OuterLoopPosControl), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "PID_gain_Ki_OuterLoopPosControl"),("Type", "float"), ("StartingVal", PID_gain_Ki_OuterLoopPosControl), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "PID_gain_Kd_OuterLoopPosControl"),("Type", "float"), ("StartingVal", PID_gain_Kd_OuterLoopPosControl), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "PID_ErrorSumMax_OuterLoopPosControl"),("Type", "float"), ("StartingVal", PID_ErrorSumMax_OuterLoopPosControl), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+
+                                                dict([("Name", "PID_gain_Kp_InnerLoopPitchControl"),("Type", "float"), ("StartingVal", PID_gain_Kp_InnerLoopPitchControl), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "PID_gain_Kd_InnerLoopPitchControl"),("Type", "float"), ("StartingVal", PID_gain_Kd_InnerLoopPitchControl), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+
+                                                dict([("Name", "YawControl_gain_Kdelta1"),("Type", "float"), ("StartingVal", YawControl_gain_Kdelta1), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "YawControl_gain_Kdelta2"),("Type", "float"), ("StartingVal", YawControl_gain_Kdelta2), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+
                                                 dict([("Name", "SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset"),("Type", "float"), ("StartingVal", SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset), ("MinVal", -10.0), ("MaxVal", 10.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
                                                 dict([("Name", "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", -0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
                                                 dict([("Name", "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", 0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)])]
@@ -3642,12 +3619,13 @@ if __name__ == '__main__':
     ##################################################
     #################################################
     global BarGraphDisplay_Variables_ListOfDicts
-    BarGraphDisplay_Variables_ListOfDicts = [dict([("Name", "LQR_1"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
-                                             dict([("Name", "LQR_2"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
-                                             dict([("Name", "LQR_3"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
-                                             dict([("Name", "LQR_4"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
-                                             dict([("Name", "LQR_5"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
-                                             dict([("Name", "LQR_6"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)])]
+    BarGraphDisplay_Variables_ListOfDicts = [dict([("Name", "O_Kp"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "O_Ki"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "O_Kd"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "I_Kp"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "I_Kd"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "Y_1"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)]),
+                                             dict([("Name", "Y_2"), ("StartingValue", 0.0), ("MinValue", -100.0), ("MaxValue", 100.0)])]
 
     global BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict
     BarGraphDisplay_ReubenPython3ClassObject_GUIparametersDict = dict([("root", GUItabObjectsOrderedDict["MainControls"]["TabObject"]),
@@ -3663,7 +3641,7 @@ if __name__ == '__main__':
                                                                 ("Variables_ListOfDicts", BarGraphDisplay_Variables_ListOfDicts),
                                                                 ("Canvas_Width", 600),
                                                                 ("Canvas_Height", 250),
-                                                                ("BarWidth",90),
+                                                                ("BarWidth",80),
                                                                 ("BarPadX", 5),
                                                                 ("FontSize", 12),
                                                                 ("NegativeColor", TKinter_LightRedColor),
@@ -3691,17 +3669,40 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict["GUIparametersDict"] = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_GUIparametersDict
-    MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict["ParentPID"] = os.getpid()
+    MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_setup_dict["GUIparametersDict"] = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_GUIparametersDict
+    MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_setup_dict["ParentPID"] = os.getpid()
 
-    if USE_MyPlotterPureTkinterStandAloneProcess_FLAG == 1:
+    if USE_MyPlotterPureTkinterStandAloneProcess_1_FLAG == 1:
         try:
-            MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class(MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict)
-            MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+            MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class(MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_setup_dict)
+            MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
 
         except:
             exceptions = sys.exc_info()[0]
-            print("SelfBalancingRobot1.py, MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions)
+            print("SelfBalancingRobot1.py, MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions)
+            traceback.print_exc()
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
+    UpdateGUItabObjectsOrderedDict()
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
+    MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_setup_dict["GUIparametersDict"] = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_GUIparametersDict
+    MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_setup_dict["ParentPID"] = os.getpid()
+
+    if USE_MyPlotterPureTkinterStandAloneProcess_2_FLAG == 1:
+        try:
+            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class(MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_setup_dict)
+            MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+
+        except:
+            exceptions = sys.exc_info()[0]
+            print("SelfBalancingRobot1.py, MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions)
             traceback.print_exc()
     #################################################
     #################################################
@@ -3723,7 +3724,7 @@ if __name__ == '__main__':
     #################################################
     #################################################
     if USE_RoboteqBLDCcontroller_FLAG_1 == 1 and RoboteqBLDCcontroller_OPEN_FLAG_1 != 1:
-        print("SelfBalancingRobot1.py, failed to open RoboteqBLDCcontroller_ReubenPython2and3Class for motor 0.")
+        print("SelfBalancingRobot1.py, failed to open RoboteqBLDCcontroller_ReubenPython2and3Class for motor 1.")
         #ExitProgram_Callback()
     #################################################
     #################################################
@@ -3762,8 +3763,16 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    if USE_MyPlotterPureTkinterStandAloneProcess_FLAG == 1 and MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG != 1:
-        print("SelfBalancingRobot1.py, failed to open MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.")
+    if USE_MyPlotterPureTkinterStandAloneProcess_1_FLAG == 1 and MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG != 1:
+        print("SelfBalancingRobot1.py, failed to open MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.")
+        #ExitProgram_Callback()
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
+    if USE_MyPlotterPureTkinterStandAloneProcess_2_FLAG == 1 and MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG != 1:
+        print("SelfBalancingRobot1.py, failed to open MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.")
         #ExitProgram_Callback()
     #################################################
     #################################################
@@ -3835,17 +3844,16 @@ if __name__ == '__main__':
 
             ################################################### SET's
             if EntryListWithBlinking_OPEN_FLAG == 1:    
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_gain_Kp", Pitch_PosControl_PID_gain_Kp)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_gain_Ki", Pitch_PosControl_PID_gain_Ki)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_gain_Kd", Pitch_PosControl_PID_gain_Kd)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Pitch_PosControl_PID_ErrorSum_Max", Pitch_PosControl_PID_ErrorSum_Max)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("PID_gain_Kp_OuterLoopPosControl", PID_gain_Kp_OuterLoopPosControl)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("PID_gain_Ki_OuterLoopPosControl", PID_gain_Ki_OuterLoopPosControl)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("PID_gain_Kd_OuterLoopPosControl", PID_gain_Kd_OuterLoopPosControl)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("PID_ErrorSumMax_OuterLoopPosControl", PID_ErrorSumMax_OuterLoopPosControl)
 
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_0", LQR_PitchControl_GainVectorElement_Ktheta_0)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_1", LQR_PitchControl_GainVectorElement_Ktheta_1)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_2", LQR_PitchControl_GainVectorElement_Ktheta_2)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_PitchControl_GainVectorElement_Ktheta_3", LQR_PitchControl_GainVectorElement_Ktheta_3)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_YawControl_GainVectorElement_Kdelta_0", LQR_YawControl_GainVectorElement_Kdelta_0)
-                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("LQR_YawControl_GainVectorElement_Kdelta_1", LQR_YawControl_GainVectorElement_Kdelta_1)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("PID_gain_Kp_InnerLoopPitchControl", PID_gain_Kp_InnerLoopPitchControl)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("PID_gain_Kd_InnerLoopPitchControl", PID_gain_Kd_InnerLoopPitchControl)
+
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("YawControl_gain_Kdelta1", YawControl_gain_Kdelta1)
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("YawControl_gain_Kdelta2", YawControl_gain_Kdelta2)
 
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset", SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset)
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)
@@ -3886,8 +3894,12 @@ if __name__ == '__main__':
             ###################################################
             LoadAndParseJSONfile_MyPlotterPureTkinterStandAloneProcess()
 
-            if MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG == 1:
-                MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalUpdateSetupDict(MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict)
+            if MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG == 1:
+                MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalUpdateSetupDict(MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_setup_dict)
+            
+            if MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG == 1:
+                MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalUpdateSetupDict(MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_setup_dict)
+
             ###################################################
             ###################################################
 
@@ -3905,22 +3917,21 @@ if __name__ == '__main__':
             if "DataUpdateNumber" in EntryListWithBlinking_MostRecentDict and EntryListWithBlinking_MostRecentDict["DataUpdateNumber"] != EntryListWithBlinking_MostRecentDict_DataUpdateNumber_last:
                 EntryListWithBlinking_MostRecentDict_DataUpdateNumber = EntryListWithBlinking_MostRecentDict["DataUpdateNumber"]
 
-                Pitch_PosControl_PID_gain_Kp = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_gain_Kp"]
-                Pitch_PosControl_PID_gain_Ki = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_gain_Ki"]
-                Pitch_PosControl_PID_gain_Kd = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_gain_Kd"]
-                Pitch_PosControl_PID_ErrorSum_Max = EntryListWithBlinking_MostRecentDict["Pitch_PosControl_PID_ErrorSum_Max"]
+                PID_gain_Kp_OuterLoopPosControl = EntryListWithBlinking_MostRecentDict["PID_gain_Kp_OuterLoopPosControl"]
+                PID_gain_Ki_OuterLoopPosControl = EntryListWithBlinking_MostRecentDict["PID_gain_Ki_OuterLoopPosControl"]
+                PID_gain_Kd_OuterLoopPosControl = EntryListWithBlinking_MostRecentDict["PID_gain_Kd_OuterLoopPosControl"]
+                PID_ErrorSumMax_OuterLoopPosControl = EntryListWithBlinking_MostRecentDict["PID_ErrorSumMax_OuterLoopPosControl"]
 
-                LQR_PitchControl_GainVectorElement_Ktheta_0 = EntryListWithBlinking_MostRecentDict["LQR_PitchControl_GainVectorElement_Ktheta_0"] 
-                LQR_PitchControl_GainVectorElement_Ktheta_1 = EntryListWithBlinking_MostRecentDict["LQR_PitchControl_GainVectorElement_Ktheta_1"]
-                LQR_PitchControl_GainVectorElement_Ktheta_2 = EntryListWithBlinking_MostRecentDict["LQR_PitchControl_GainVectorElement_Ktheta_2"]
-                LQR_PitchControl_GainVectorElement_Ktheta_3 = EntryListWithBlinking_MostRecentDict["LQR_PitchControl_GainVectorElement_Ktheta_3"]
-                LQR_YawControl_GainVectorElement_Kdelta_0 = EntryListWithBlinking_MostRecentDict["LQR_YawControl_GainVectorElement_Kdelta_0"]
-                LQR_YawControl_GainVectorElement_Kdelta_1 = EntryListWithBlinking_MostRecentDict["LQR_YawControl_GainVectorElement_Kdelta_1"]
+                PID_gain_Kp_InnerLoopPitchControl = EntryListWithBlinking_MostRecentDict["PID_gain_Kp_InnerLoopPitchControl"]
+                PID_gain_Kd_InnerLoopPitchControl = EntryListWithBlinking_MostRecentDict["PID_gain_Kd_InnerLoopPitchControl"]
+
+                YawControl_gain_Kdelta1 = EntryListWithBlinking_MostRecentDict["YawControl_gain_Kdelta1"]
+                YawControl_gain_Kdelta2 = EntryListWithBlinking_MostRecentDict["YawControl_gain_Kdelta2"]
 
                 SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset = EntryListWithBlinking_MostRecentDict["SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset"]
                 Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda = EntryListWithBlinking_MostRecentDict["Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"]
                 YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda = EntryListWithBlinking_MostRecentDict["YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"]
-                
+
                 #print("EntryListWithBlinking_MostRecentDict: " + str(EntryListWithBlinking_MostRecentDict))
                 #print("DataUpdateNumber = " + str(EntryListWithBlinking_MostRecentDict_DataUpdateNumber) + ", EntryListWithBlinking_MostRecentDict: " + str(EntryListWithBlinking_MostRecentDict))
         ###################################################
@@ -3936,9 +3947,10 @@ if __name__ == '__main__':
                 if "Time" in RoboteqBLDCcontroller_MostRecentDict_0:
                     RoboteqBLDCcontroller_MostRecentDict_AbsoluteBrushlessCounter_0 = RoboteqBLDCcontroller_MostRecentDict_0["AbsoluteBrushlessCounter"]
                     RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_0 = RoboteqBLDCcontroller_MostRecentDict_0["SpeedRPM"]
-                    #RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_0 = RoboteqBLDCcontroller_MostRecentDict_0["TorqueTarget"]
-                    #RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_0 = RoboteqBLDCcontroller_MostRecentDict_0["BatteryCurrentInAmps"]
-                    #RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_0 = RoboteqBLDCcontroller_MostRecentDict_0["BatteryVoltsX10"]
+                    RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0 = RoboteqBLDCcontroller_MostRecentDict_0["MotorPowerOutputApplied"]
+
+                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_0 = RoboteqBLDCcontroller_MostRecentDict_0["ActualOperationMode_CorrectInt"]
+                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_0 = RoboteqBLDCcontroller_MostRecentDict_0["ActualOperationMode_EnglishString"]
                     RoboteqBLDCcontroller_MostRecentDict_FaultFlags_0 = RoboteqBLDCcontroller_MostRecentDict_0["FaultFlags"]
     
                     RoboteqBLDCcontroller_MostRecentDict_Position_Rev_0 = RoboteqBLDCcontroller_MostRecentDict_0["Position_Rev"]
@@ -3952,12 +3964,15 @@ if __name__ == '__main__':
                     RoboteqBLDCcontroller_MostRecentDict_Time_0 = RoboteqBLDCcontroller_MostRecentDict_0["Time"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedRxThread_0 = RoboteqBLDCcontroller_MostRecentDict_0["DataStreamingFrequency_CalculatedFromDedicatedRxThread"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_0 = RoboteqBLDCcontroller_MostRecentDict_0["DataStreamingFrequency_CalculatedFromDedicatedTxThread"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_Kp_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_Kp"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_Ki_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_Ki"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_Kd_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_Kd"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_IntegratorCap1to100percent"]
-                    RoboteqBLDCcontroller_MostRecentDict_ControlMode_IntegerValue_0 = RoboteqBLDCcontroller_MostRecentDict_0["ControlMode_IntegerValue"]
-                    RoboteqBLDCcontroller_MostRecentDict_ControlMode_EnglishString_0 = RoboteqBLDCcontroller_MostRecentDict_0["ControlMode_EnglishString"]
+
+                    #RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_0 = RoboteqBLDCcontroller_MostRecentDict_0["TorqueTarget"]
+                    #RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_0 = RoboteqBLDCcontroller_MostRecentDict_0["BatteryCurrentInAmps"]
+                    #RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_0 = RoboteqBLDCcontroller_MostRecentDict_0["BatteryVoltsX10"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_Kp_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_Kp"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_Ki_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_Ki"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_Kd_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_Kd"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_0 = RoboteqBLDCcontroller_MostRecentDict_0["PID_IntegratorCap1to100percent"]
+
                     #print("RoboteqBLDCcontroller_MostRecentDict_Time_0: " + str(RoboteqBLDCcontroller_MostRecentDict_Time_0))
 
             except:
@@ -3977,9 +3992,9 @@ if __name__ == '__main__':
                 if "Time" in RoboteqBLDCcontroller_MostRecentDict_1:
                     RoboteqBLDCcontroller_MostRecentDict_AbsoluteBrushlessCounter_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["AbsoluteBrushlessCounter"]
                     RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["SpeedRPM"]
-                    #RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_1 = RoboteqBLDCcontroller_MostRecentDict_1["TorqueTarget"]
-                    #RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_1 = RoboteqBLDCcontroller_MostRecentDict_1["BatteryCurrentInAmps"]
-                    #RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_1 = RoboteqBLDCcontroller_MostRecentDict_1["BatteryVoltsX10"]
+                    RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1 = RoboteqBLDCcontroller_MostRecentDict_1["MotorPowerOutputApplied"]
+                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_1 = RoboteqBLDCcontroller_MostRecentDict_1["ActualOperationMode_CorrectInt"]
+                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_1 = RoboteqBLDCcontroller_MostRecentDict_1["ActualOperationMode_EnglishString"]
                     RoboteqBLDCcontroller_MostRecentDict_FaultFlags_1 = RoboteqBLDCcontroller_MostRecentDict_1["FaultFlags"]
     
                     RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Position_Rev"]
@@ -3993,12 +4008,15 @@ if __name__ == '__main__':
                     RoboteqBLDCcontroller_MostRecentDict_Time_1 = RoboteqBLDCcontroller_MostRecentDict_1["Time"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedRxThread_1 = RoboteqBLDCcontroller_MostRecentDict_1["DataStreamingFrequency_CalculatedFromDedicatedRxThread"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_1 = RoboteqBLDCcontroller_MostRecentDict_1["DataStreamingFrequency_CalculatedFromDedicatedTxThread"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_Kp_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_Kp"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_Ki_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_Ki"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_Kd_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_Kd"]
-                    RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_IntegratorCap1to100percent"]
-                    RoboteqBLDCcontroller_MostRecentDict_ControlMode_IntegerValue_1 = RoboteqBLDCcontroller_MostRecentDict_0["ControlMode_IntegerValue"]
-                    RoboteqBLDCcontroller_MostRecentDict_ControlMode_EnglishString_1 = RoboteqBLDCcontroller_MostRecentDict_0["ControlMode_EnglishString"]
+
+                    #RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_1 = RoboteqBLDCcontroller_MostRecentDict_1["TorqueTarget"]
+                    #RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_1 = RoboteqBLDCcontroller_MostRecentDict_1["BatteryCurrentInAmps"]
+                    #RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10_1 = RoboteqBLDCcontroller_MostRecentDict_1["BatteryVoltsX10"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_Kp_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_Kp"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_Ki_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_Ki"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_Kd_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_Kd"]
+                    #RoboteqBLDCcontroller_MostRecentDict_PID_IntegratorCap1to100percent_1 = RoboteqBLDCcontroller_MostRecentDict_1["PID_IntegratorCap1to100percent"]
+
                     #print("RoboteqBLDCcontroller_MostRecentDict_Time_1: " + str(RoboteqBLDCcontroller_MostRecentDict_Time_1))
 
             except:
@@ -4156,58 +4174,26 @@ if __name__ == '__main__':
 
             ######################################################################################################
             ######################################################################################################
-            if KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag == 1:
-                ZeroLQR_EventNeedsToBeFiredFlag = 1
-                KeyPressResponse_ZeroLQR_NeedsToBeChangedFlag = 0
+            if KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag == 1:
+                ZeroControlLoop_EventNeedsToBeFiredFlag = 1
+                KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag = 0
             ######################################################################################################
             ######################################################################################################
 
-            ###################################################################################################### NEED A SEPARATE SECTION FROM PID DUE TO DIFFERENT COMMAND VALUES
             ######################################################################################################
-            if ControlAlgorithm == "LQR":
+            ######################################################################################################
+            if ControlAlgorithm == "PID":
+
                 Velocity_V_RMC_MetersPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
                 YawAngularRate_DeltaDot_RadiansPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
 
-                PitchAngle_Theta_Deg_Commanded = 0.0
-
                 if KeyPressResponse_FWD_NeedsToBeChangedFlag == 1:
-                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue_LQR"]
+                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded FWD")
                     #KeyPressResponse_FWD_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_REV_NeedsToBeChangedFlag == 1:
-                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue_LQR"]
-                    #print("Velocity_V_RMC_MetersPerSec_Commanded REV")
-                    #KeyPressResponse_REV_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
-
-                if KeyPressResponse_RIGHT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue_LQR"]
-                    #print("Velocity_V_RMC_MetersPerSec_Commanded RIGHT")
-                    #KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
-
-                if KeyPressResponse_LEFT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue_LQR"]
-                    #print("Velocity_V_RMC_MetersPerSec_Commanded LEFT")
-                    #KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
-
-            ######################################################################################################
-            ######################################################################################################
-
-            ###################################################################################################### NEED A SEPARATE SECTION FROM LQR DUE TO DIFFERENT COMMAND VALUES
-            ######################################################################################################
-            elif ControlAlgorithm == "PID":
-                Velocity_V_RMC_MetersPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
-                YawAngularRate_DeltaDot_RadiansPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
-
-                PitchAngle_Theta_Deg_Commanded = 0.0
-
-                if KeyPressResponse_FWD_NeedsToBeChangedFlag == 1:
-                    PitchAngle_Theta_Deg_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue_PID"]
-                    #print("Velocity_V_RMC_MetersPerSec_Commanded FWD")
-                    #KeyPressResponse_FWD_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
-
-                if KeyPressResponse_REV_NeedsToBeChangedFlag == 1:
-                    PitchAngle_Theta_Deg_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue_PID"]
+                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded REV")
                     #KeyPressResponse_REV_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
@@ -4215,7 +4201,7 @@ if __name__ == '__main__':
                     YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded RIGHT")
                     #KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
-    
+
                 if KeyPressResponse_LEFT_NeedsToBeChangedFlag == 1:
                     YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue_PID"]
                     #print("Velocity_V_RMC_MetersPerSec_Commanded LEFT")
@@ -4291,7 +4277,7 @@ if __name__ == '__main__':
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
-        if ZeroLQR_EventNeedsToBeFiredFlag == 1:
+        if ZeroControlLoop_EventNeedsToBeFiredFlag == 1:
 
             Position_X_RMC_Meters_Commanded = 0.0
             Velocity_V_RMC_MetersPerSec_Commanded = 0.0
@@ -4307,7 +4293,7 @@ if __name__ == '__main__':
             #SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1 #Perform this separatly via its own button.
             #SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1 #Perform this separatly via its own button.
 
-            ZeroLQR_EventNeedsToBeFiredFlag = 0
+            ZeroControlLoop_EventNeedsToBeFiredFlag = 0
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
@@ -4327,7 +4313,7 @@ if __name__ == '__main__':
             Position_X_RMC_Meters_Commanded = Position_X_RMC_Meters_Commanded + Velocity_V_RMC_MetersPerSec_Commanded*(1.0/DataStreamingFrequency_CalculatedFromMainThread_Filtered)
 
         if Velocity_V_RMC_MetersPerSec_Commanded != 0.0: #So that we're not integrating while commanding nothing via keyboard
-            Position_X_RMC_Meters_Commanded = LimitNumber_FloatOutputOnly(Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION, Position_X_RM_Meters_Actual + Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION, Position_X_RMC_Meters_Commanded) #Cap it
+            LimitNumber_FloatOutputOnly(Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, Position_X_RM_Meters_Actual + Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, Position_X_RMC_Meters_Commanded) #Cap it
 
         Velocity_V_RM_MetersPerSec_Actual_UNFILTERED = RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_Theta_RL_RadiansPerSec_Actual + Wheel_Omega_Theta_RR_RadiansPerSec_Actual) / 2.0
         VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("Velocity_V_RM_MetersPerSec_Actual", [Velocity_V_RM_MetersPerSec_Actual_UNFILTERED])]))
@@ -4338,11 +4324,11 @@ if __name__ == '__main__':
         PitchAngle_Theta_Deg_Actual = PitchAngle_Theta_Deg_Actual + SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset
         PitchAngle_Theta_Radians_Actual = PitchAngle_Theta_Deg_Actual*math.pi/180.0
 
-        PitchAngle_Theta_Radians_Commanded = PitchAngle_Theta_Deg_Commanded*math.pi/180.0
+
 
         PitchAngularRate_ThetaDot_DegreesPerSecond_Actual = SpatialPrecision333_MostRecentDict_RollPitchYaw_Rate_AbtXYZ_Dict["RollPitchYaw_Rate_AbtXYZ_List_DegreesPerSecond"][1]
         PitchAngularRate_ThetaDot_RadiansPerSec_Actual = PitchAngularRate_ThetaDot_DegreesPerSecond_Actual*math.pi/180.0
-        PitchAngularRate_ThetaDot_RadiansPerSec_Commanded = 0.0
+
 
         YawAngle_Delta_Radians_Actual = -1.0*RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Theta_RL_Radians_Actual - Wheel_Theta_RR_Radians_Actual) / RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters #NOT SURE WHY WE NEED MINUS SIGN TO GET YAW IN CORRECT DIRECTION
         YawAngle_Delta_Deg_Actual = YawAngle_Delta_Radians_Actual * 180.0 / math.pi
@@ -4359,7 +4345,7 @@ if __name__ == '__main__':
         YawAngle_Delta_Radians_Commanded = YawAngle_Delta_Radians_Commanded + YawAngularRate_DeltaDot_RadiansPerSec_Commanded*(1.0/DataStreamingFrequency_CalculatedFromMainThread_Filtered)
 
         if YawAngularRate_DeltaDot_RadiansPerSec_Commanded != 0.0: #So that we're not integrating while commanding nothing via keyboard
-            YawAngle_Delta_Radians_Commanded = LimitNumber_FloatOutputOnly(YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION, YawAngle_Delta_Radians_Actual + YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_LQR_CALCULATION, YawAngle_Delta_Radians_Commanded) #Cap it
+            YawAngle_Delta_Radians_Commanded = LimitNumber_FloatOutputOnly(YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, YawAngle_Delta_Radians_Actual + YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, YawAngle_Delta_Radians_Commanded) #Cap it
 
         YawAngle_Delta_Deg_Commanded = YawAngle_Delta_Radians_Commanded * 180.0 / math.pi
         ######################################################################################################
@@ -4394,66 +4380,62 @@ if __name__ == '__main__':
         ######################################################################################################
         elif ControlAlgorithm == "PID":
 
-            Pitch_PosControl_PID_Error = PitchAngle_Theta_Radians_Commanded - PitchAngle_Theta_Radians_Actual
+            ###################################################################################################### Outer Loop, Position Control
+            ######################################################################################################
 
-            if abs(Pitch_PosControl_PID_ErrorSum + Pitch_PosControl_PID_Error) <= Pitch_PosControl_PID_ErrorSum_Max:
-                Pitch_PosControl_PID_ErrorSum = Pitch_PosControl_PID_ErrorSum + Pitch_PosControl_PID_Error
+            PID_OuterLoopPosControl_Error = Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded
 
-            Pitch_PosControl_PID_ErrorD = (0.0 - PitchAngularRate_ThetaDot_RadiansPerSec_Actual)
+            if abs(PID_OuterLoopPosControl_ErrorSum + PID_OuterLoopPosControl_Error) <= PID_OuterLoopPosControl_ErrorSumMax:
+                PID_OuterLoopPosControl_ErrorSum = PID_OuterLoopPosControl_ErrorSum + PID_OuterLoopPosControl_Error
 
-            Pitch_PosControl_PID_CommandToMotor_Term_1 = -1.0 * Pitch_PosControl_PID_Error * Pitch_PosControl_PID_gain_Kp
-            Pitch_PosControl_PID_CommandToMotor_Term_2 = -1.0 * Pitch_PosControl_PID_ErrorSum * Pitch_PosControl_PID_gain_Ki
-            Pitch_PosControl_PID_CommandToMotor_Term_3 = -1.0 * Pitch_PosControl_PID_ErrorD * Pitch_PosControl_PID_gain_Kd
+            PID_OuterLoopPosControl_ErrorD = Velocity_V_RM_MetersPerSec_Actual - Velocity_V_RMC_MetersPerSec_Commanded
 
-            Pitch_PosControl_PID_CommandToMotor_Term_5 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_0 * (YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded)
-            Pitch_PosControl_PID_CommandToMotor_Term_6 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_1 * (YawAngularRate_DeltaDot_RadiansPerSec_Actual - YawAngularRate_DeltaDot_RadiansPerSec_Commanded)
-
+            PID_OuterLoopPosControl_Kp_Term_1 = -1.0 * PID_gain_Kp_OuterLoopPosControl * PID_OuterLoopPosControl_Error
+            PID_OuterLoopPosControl_Ki_Term_2 = -1.0 * PID_gain_Ki_OuterLoopPosControl * PID_OuterLoopPosControl_ErrorSum
+            PID_OuterLoopPosControl_Kd_Term_3 = -1.0 * PID_gain_Kd_OuterLoopPosControl * PID_OuterLoopPosControl_ErrorD
 
 
-            ### Simple PID
-            Pitch_PosControl_PID_CommandToMotor =  Pitch_PosControl_PID_CommandToMotor_Term_1 + Pitch_PosControl_PID_CommandToMotor_Term_2 + Pitch_PosControl_PID_CommandToMotor_Term_3
-            ''' 
-            TorqueToBeCommanded_Motor0 = Pitch_PosControl_PID_CommandToMotor
-            TorqueToBeCommanded_Motor1 = -1.0*Pitch_PosControl_PID_CommandToMotor #Wheels are mounted opposite, so need a minus sign to get them both spinning in same direction.
-            ###
-            '''
+            PitchAngle_Theta_Radians_Commanded = PID_OuterLoopPosControl_Kp_Term_1 + PID_OuterLoopPosControl_Ki_Term_2 + PID_OuterLoopPosControl_Kd_Term_3
+            PitchAngle_Theta_Degrees_Commanded = PitchAngle_Theta_Radians_Commanded * 180.0/math.pi
 
-            C_Theta = 1.0 * (Pitch_PosControl_PID_CommandToMotor_Term_1 + Pitch_PosControl_PID_CommandToMotor_Term_2 + Pitch_PosControl_PID_CommandToMotor_Term_3)
+            PitchAngularRate_ThetaDot_RadiansPerSec_Commanded = 0.0
+            PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded = PitchAngularRate_ThetaDot_RadiansPerSec_Commanded * 180.0/math.pi
 
-            C_Delta =  1.0 * (Pitch_PosControl_PID_CommandToMotor_Term_5 + Pitch_PosControl_PID_CommandToMotor_Term_6)
-            #C_Delta = 0 #unicorn
+            ######################################################################################################
+            ######################################################################################################
 
-            C_L = 0.5*(C_Theta + C_Delta)
-            C_R = 0.5*(C_Theta - C_Delta)
+            ###################################################################################################### Inner Loop, Pitch Control
+            ######################################################################################################
 
-            TorqueToBeCommanded_Motor0 = 1.0*C_R #Wheels are mounted opposite, so need a minus sign to get them both spinning in same direction.
-            TorqueToBeCommanded_Motor1 = -1.0*C_L
-        ######################################################################################################
-        ######################################################################################################
-        ######################################################################################################
+            PID_InnerLoopPitchControl_Error = PitchAngle_Theta_Radians_Commanded - PitchAngle_Theta_Radians_Actual
 
-        ######################################################################################################
-        ######################################################################################################
-        ######################################################################################################
-        elif ControlAlgorithm == "LQR":
+            PID_InnerLoopPitchControl_ErrorD = (0.0 - PitchAngularRate_ThetaDot_RadiansPerSec_Actual)
 
-            LQR_ControlLaw_Term_1 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_0 * (Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded)
-            LQR_ControlLaw_Term_2 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_1 * (Velocity_V_RM_MetersPerSec_Actual - Velocity_V_RMC_MetersPerSec_Commanded)
-            LQR_ControlLaw_Term_3 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_2 * (PitchAngle_Theta_Radians_Actual - PitchAngle_Theta_Radians_Commanded)
-            LQR_ControlLaw_Term_4 = 1.0*LQR_PitchControl_GainVectorElement_Ktheta_3 * (PitchAngularRate_ThetaDot_RadiansPerSec_Actual - PitchAngularRate_ThetaDot_RadiansPerSec_Commanded)
-            LQR_ControlLaw_Term_5 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_0 * (YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded)
-            LQR_ControlLaw_Term_6 = -1.0*LQR_YawControl_GainVectorElement_Kdelta_1 * (YawAngularRate_DeltaDot_RadiansPerSec_Actual - YawAngularRate_DeltaDot_RadiansPerSec_Commanded)
+            PID_InnerLoopPitchControl_Kp_Term_1 = -1.0 * PID_gain_Kp_InnerLoopPitchControl * PID_InnerLoopPitchControl_Error
+            PID_InnerLoopPitchControl_Kd_Term_2 = -1.0 * PID_gain_Kd_InnerLoopPitchControl * PID_InnerLoopPitchControl_ErrorD
 
-            C_Theta = 1.0 * (LQR_ControlLaw_Term_1 + LQR_ControlLaw_Term_2 + LQR_ControlLaw_Term_3 + LQR_ControlLaw_Term_4)  #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
+            YawControl_Kdelta1_Term_1 = -1.0*YawControl_gain_Kdelta1 * (YawAngle_Delta_Radians_Actual - YawAngle_Delta_Radians_Commanded)
+            YawControl_Kdelta2_Term_2 = -1.0*YawControl_gain_Kdelta2 * (YawAngularRate_DeltaDot_RadiansPerSec_Actual - YawAngularRate_DeltaDot_RadiansPerSec_Commanded)
 
-            C_Delta =  1.0 * (LQR_ControlLaw_Term_5 + LQR_ControlLaw_Term_6) #NOT SURE WHY WE HAD TO REMOVE PAPER'S MINUS SIGN
-            #C_Delta = 0 #unicorn
+            ######################################################################################################
+            ######################################################################################################
+            
+            ######################################################################################################
+            ######################################################################################################
 
-            C_L = 0.5*(C_Theta + C_Delta)
-            C_R = 0.5*(C_Theta - C_Delta)
+            C_Theta = 1.0 * (PID_InnerLoopPitchControl_Kp_Term_1 + PID_InnerLoopPitchControl_Kd_Term_2) #Pitch
+
+            C_Delta =  1.0 * (YawControl_Kdelta1_Term_1 + YawControl_Kdelta2_Term_2) #Yaw
+
+            C_L = 0.5*(C_Theta + C_Delta) #Left Motor
+            C_R = 0.5*(C_Theta - C_Delta) #Right Motor
 
             TorqueToBeCommanded_Motor0 = 1.0*C_R #Wheels are mounted opposite, so need a minus sign to get them both spinning in same direction.
             TorqueToBeCommanded_Motor1 = -1.0*C_L
+
+            ######################################################################################################
+            ######################################################################################################
+        
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
@@ -4476,6 +4458,14 @@ if __name__ == '__main__':
         ######################################################################################################
         TorqueToBeCommanded_Motor0 = LimitNumber_FloatOutputOnly(-1.0*MaxCommandFromControlLaw_Motor0, MaxCommandFromControlLaw_Motor0, TorqueToBeCommanded_Motor0) #defined in ControlLawParameters.json
         TorqueToBeCommanded_Motor1 = LimitNumber_FloatOutputOnly(-1.0*MaxCommandFromControlLaw_Motor1, MaxCommandFromControlLaw_Motor1, TorqueToBeCommanded_Motor1) #defined in ControlLawParameters.json
+
+        '''
+        if RoboteqBLDCcontroller_ControlMode_Starting_0 == "OpenLoop":
+            TorqueToBeCommanded_Motor0 = -1.0 * TorqueToBeCommanded_Motor0
+
+        if RoboteqBLDCcontroller_ControlMode_Starting_1 == "OpenLoop":
+            TorqueToBeCommanded_Motor1 = -1.0 * TorqueToBeCommanded_Motor1
+        '''
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
@@ -4607,25 +4597,49 @@ if __name__ == '__main__':
         ################################################### SETs
         ###################################################
         ###################################################
-        if MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG == 1:
+        if MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG == 1:
 
             ####################################################
-            MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.GetMostRecentDataDict()
+            MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.GetMostRecentDataDict()
 
-            if "StandAlonePlottingProcess_ReadyForWritingFlag" in MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict:
-                MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict["StandAlonePlottingProcess_ReadyForWritingFlag"]
+            if "StandAlonePlottingProcess_ReadyForWritingFlag" in MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict:
+                MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict["StandAlonePlottingProcess_ReadyForWritingFlag"]
 
-                if MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
-                    if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_PLOTTER >= MyPlotterPureTkinterStandAloneProcess_RefreshDurationInSeconds:
-                        #pass
-                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0"], [CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual])
-                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual, PitchAngularRate_ThetaDot_DegreesPerSecond_Actual])
-                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [YawAngle_Delta_Deg_Actual, YawAngularRate_DeltaDot_DegreesPerSecond_Actual])
-                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Wheel_Omega_Theta_RL_RadiansPerSec_Actual, Wheel_Omega_Theta_RR_RadiansPerSec_Actual])
-                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0"], [CurrentTime_CalculatedFromMainThread], [Velocity_V_RM_MetersPerSec_Actual])
-                        MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, Velocity_V_RM_MetersPerSec_Actual])
+                if MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
+                    if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1 >= MyPlotterPureTkinterStandAloneProcess_1_RefreshDurationInSeconds:
 
-                        LastTime_CalculatedFromMainThread_PLOTTER = CurrentTime_CalculatedFromMainThread
+                        #MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Position_X_RM_Meters_Actual", "Velocity_V_RM_MetersPerSec_Actual"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, Velocity_V_RM_MetersPerSec_Actual])
+                        #MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Position_X_RM_Meters_Actual", "Velocity_V_RM_MetersPerSec_Actual"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0])
+                        MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel2", "Channel3"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [TorqueToBeCommanded_Motor0, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0])
+
+
+
+
+                        LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1 = CurrentTime_CalculatedFromMainThread
+            ####################################################
+
+        ###################################################
+        ###################################################
+        ###################################################
+
+        ################################################### SETs
+        ###################################################
+        ###################################################
+        if MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG == 1:
+
+            ####################################################
+            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.GetMostRecentDataDict()
+
+            if "StandAlonePlottingProcess_ReadyForWritingFlag" in MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict:
+                MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict["StandAlonePlottingProcess_ReadyForWritingFlag"]
+
+                if MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
+                    if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2 >= MyPlotterPureTkinterStandAloneProcess_2_RefreshDurationInSeconds:
+
+                        #MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["PitchAngle_Theta_Deg_Actual"], [CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual])
+                        MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel2", "Channel3"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [TorqueToBeCommanded_Motor1, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1])
+
+                        LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2 = CurrentTime_CalculatedFromMainThread
             ####################################################
 
         ###################################################
@@ -4649,9 +4663,11 @@ if __name__ == '__main__':
         Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
         YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
 
+        PID_OuterLoopPosControl_Error_last = PID_OuterLoopPosControl_Error
+        PID_InnerLoopPitchControl_Error_last = PID_InnerLoopPitchControl_Error
+
         UpdateFrequencyCalculation_MainThread_Filtered()
         time.sleep(SelfBalancingRobot1_MainThread_TimeToSleepEachLoop)
-
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
@@ -4713,8 +4729,13 @@ if __name__ == '__main__':
     #################################################
 
     #################################################
-    if MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG == 1:
-        MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExitProgram_Callback()
+    if MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG == 1:
+        MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExitProgram_Callback()
+    #################################################
+
+    #################################################
+    if MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG == 1:
+        MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExitProgram_Callback()
     #################################################
 
     ###################################################
