@@ -1,10 +1,11 @@
 {
     "UseAndShowFlags_Directions": "Values may only be 0 or 1.",
-    "USE_RoboteqBLDCcontroller_FLAG_0":1,
-    "USE_RoboteqBLDCcontroller_FLAG_1":1,
+    "USE_RoboteqBLDCcontroller_FLAG_0":0,
+    "USE_RoboteqBLDCcontroller_FLAG_1":0,
     "USE_WiFiVINTthumbstick_FLAG":0,
     "USE_SpatialPrecision333_FLAG":1,
     "USE_DC30AmpCurrentSensor_FLAG":0,
+    "USE_Phidgets4EncoderAndDInput1047_FLAG":1,
     "USE_EntryListWithBlinking_FLAG": 1,
     "USE_MyPlotterPureTkinterStandAloneProcess_1_FLAG":0,
     "USE_MyPlotterPureTkinterStandAloneProcess_2_FLAG":0,

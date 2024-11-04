@@ -6,6 +6,7 @@
     "SHOW_IN_GUI_WiFiVINTthumbstick_FLAG":1,
     "SHOW_IN_GUI_SpatialPrecision333_FLAG": 1,
     "SHOW_IN_GUI_DC30AmpCurrentSensor_FLAG":1,
+    "SHOW_IN_GUI_Phidgets4EncoderAndDInput1047_FLAG":1,
     "SHOW_IN_GUI_EntryListWithBlinking_FLAG": 1,
     "SHOW_IN_GUI_Keyboard_FLAG":0,
     "SHOW_IN_GUI_BarGraphDisplay_FLAG":1,
@@ -69,6 +70,13 @@
     "GUI_PADY_DC30AmpCurrentSensor": 1,
     "GUI_ROWSPAN_DC30AmpCurrentSensor": 1,
     "GUI_COLUMNSPAN_DC30AmpCurrentSensor": 1,
+
+    "GUI_ROW_Phidgets4EncoderAndDInput1047": 0,
+    "GUI_COLUMN_Phidgets4EncoderAndDInput1047": 0,
+    "GUI_PADX_Phidgets4EncoderAndDInput1047": 1,
+    "GUI_PADY_Phidgets4EncoderAndDInput1047": 1,
+    "GUI_ROWSPAN_Phidgets4EncoderAndDInput1047": 1,
+    "GUI_COLUMNSPAN_Phidgets4EncoderAndDInput1047": 1,
     
     "GUI_ROW_EntryListWithBlinking": 1,
     "GUI_COLUMN_EntryListWithBlinking": 0,

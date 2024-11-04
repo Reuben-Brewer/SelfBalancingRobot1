@@ -1,0 +1,13 @@
+{
+    "Phidgets4EncoderAndDInput1047_Directions": "default",
+    "Phidgets4EncoderAndDInput1047_DesiredSerialNumber":  -1,
+    "Phidgets4EncoderAndDInput1047_WaitForAttached_TimeoutDuration_Milliseconds":  5000,
+    "Phidgets4EncoderAndDInput1047_NameToDisplay_UserSet":  "Phidgets4EncoderAndDInput1047",
+    "Phidgets4EncoderAndDInput1047_UsePhidgetsLoggingInternalToThisClassObjectFlag":  0,
+    "Phidgets4EncoderAndDInput1047_EncoderUpdateDeltaT_ms":  8,
+    "Phidgets4EncoderAndDInput1047_MainThread_TimeToSleepEachLoop":  0.001,
+    "Phidgets4EncoderAndDInput1047_EncodersList_ChannelsBeingWatchedList":  [1, 1, 1, 1],
+    "Phidgets4EncoderAndDInput1047_EncodersList_CPR":  [1000, 1000, 1000, 1000],
+    "Phidgets4EncoderAndDInput1047_EncodersList_SpeedExponentialFilterLambda": [0.8, 0.98, 0.98, 0.98],
+    "Phidgets4EncoderAndDInput1047_DigitalInputsList_ChannelsBeingWatchedList":  [1, 1, 1, 1]
+}

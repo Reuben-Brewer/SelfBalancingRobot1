@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision K, 10/17/2024
+Software Revision L, 11/03/2024
 
 Verified working on: Python 3.12 for Windows 10 64-bit and Raspberry Pi Bullseye.
 '''
@@ -116,6 +116,9 @@ try:
 
     shutil.copy("G:\\My Drive\\CodeReuben\\MyPrint_ReubenPython2and3Class\\MyPrint_ReubenPython2and3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\MyPrint_ReubenPython2and3Class\\test_program_for_MyPrint_ReubenPython2and3Class.py", FileDirectoryToCreate)
+
+    shutil.copy("G:\\My Drive\\CodeReuben\\Phidgets4EncoderAndDInput1047_ReubenPython2and3Class\\Phidgets4EncoderAndDInput1047_ReubenPython2and3Class.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\Phidgets4EncoderAndDInput1047_ReubenPython2and3Class\\test_program_for_Phidgets4EncoderAndDInput1047_ReubenPython2and3Class.py", FileDirectoryToCreate)
 
     shutil.copy("G:\\My Drive\\CodeReuben\\PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class\\PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class\\test_program_for_PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class.py", FileDirectoryToCreate)

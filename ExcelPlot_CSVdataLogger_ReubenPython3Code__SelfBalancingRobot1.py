@@ -6,9 +6,9 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision K, 10/17/2024
+Software Revision L, 11/03/2024
 
-Verified working on: Python 3.12 for Windows 10 64-bit (not yet tested on Raspberry Pi, Ubuntu, or Mac).
+Verified working on: Python 3.12 for Windows 11 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
 '''
 
 __author__ = 'reuben.brewer'
@@ -22,7 +22,6 @@ import datetime
 from collections import OrderedDict
 from copy import deepcopy
 import glob #For getting a list of files in a directory with a certain extension
-import pexpect
 import subprocess
 
 import pandas
@@ -68,6 +67,8 @@ def OpenXLSsndCopyDataToLists(FileName_full_path):
         #print("NumberOfColumns: " + str(NumberOfColumns))
 
         header_variable_name_list = sheet.columns.values.tolist()
+        for index, VariableName in enumerate(header_variable_name_list):
+            header_variable_name_list[index] = VariableName.strip()
         print("Detected the following variable names: " + str(header_variable_name_list))
         ##########################################################################################################
 
@@ -84,19 +85,13 @@ def OpenXLSsndCopyDataToLists(FileName_full_path):
         for row in range(0, NumberOfRows): # Iterate through rows
             for column in range(0, NumberOfColumns):  # Iterate through columns
                 cell_value = sheet.iat[row, column]  # Get cell object by row, col
-
-                try:
-                    ListOfColumnDataLists[column].append(float(cell_value))
-                except:
-                    ListOfColumnDataLists[column].append(str(cell_value))
+                ListOfColumnDataLists[column].append(cell_value)
         ##########################################################################################################
 
         ##########################################################################################################
         for column in range(0, NumberOfColumns):  # Iterate through columns
             DataOrderedDict[header_variable_name_list[column]] = ListOfColumnDataLists[column]
         ##########################################################################################################
-
-        workbook.close()
 
         return DataOrderedDict
 
@@ -113,163 +108,157 @@ def OpenXLSsndCopyDataToLists(FileName_full_path):
 ##########################################################################################################
 def CreateExcelChart(FileName_to_save_full_path, DataOrderedDictToWrite):
 
-    CSVdataLogger_VariableNamesForHeaderList = ["CurrentTime_CalculatedFromMainThread",
-                                                 "RoboteqBLDCcontroller_MostRecentDict_Position_Rev_0",
-                                                 "RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1",
-                                                 "RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_0",
-                                                 "RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_1",
-                                                 "Wheel_Theta_RR_Radians_Actual",
-                                                 "Wheel_Theta_RL_Radians_Actual",
-                                                 "Wheel_Omega_Theta_RR_RadiansPerSec_Actual",
-                                                 "Wheel_Omega_Theta_RL_RadiansPerSec_Actual",
-                                                 "Position_X_RM_Meters_Actual",
-                                                 "Position_X_RMC_Meters_Commanded",
-                                                 "Velocity_V_RM_MetersPerSec_Actual_UNFILTERED",
-                                                 "Velocity_V_RM_MetersPerSec_Actual",
-                                                 "Velocity_V_RMC_MetersPerSec_Commanded",
-                                                 "PitchAngle_Theta_Deg_Actual",
-                                                 "SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset",
-                                                 "PitchAngle_Theta_Radians_Actual",
-                                                 "PitchAngle_Theta_Radians_Commanded",
-                                                 "PitchAngularRate_ThetaDot_DegreesPerSecond_Actual",
-                                                 "PitchAngularRate_ThetaDot_RadiansPerSec_Actual",
-                                                 "PitchAngularRate_ThetaDot_RadiansPerSec_Commanded",
-                                                 "YawAngle_Delta_Deg_Actual",
-                                                 "YawAngle_Delta_Radians_Actual",
-                                                 "YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED",
-                                                 "YawAngularRate_DeltaDot_DegreesPerSecond_Actual",
-                                                 "YawAngularRate_DeltaDot_DegreesPerSecond_Commanded",
-                                                 "YawAngle_Delta_Deg_Commanded",
-                                                 "YawAngle_Delta_Radians_Commanded",
-                                                 "ControlAlgorithm",
-                                                 "Pitch_PosControl_PID_Error",
-                                                 "Pitch_PosControl_PID_ErrorSum",
-                                                 "Pitch_PosControl_PID_ErrorSum_Max",
-                                                 "Pitch_PosControl_PID_ErrorD",
-                                                 "Pitch_PosControl_PID_gain_Kp",
-                                                 "Pitch_PosControl_PID_gain_Ki",
-                                                 "Pitch_PosControl_PID_gain_Kd",
-                                                 "Pitch_PosControl_PID_CommandToMotor_Term_1",
-                                                 "Pitch_PosControl_PID_CommandToMotor_Term_2",
-                                                 "Pitch_PosControl_PID_CommandToMotor_Term_3",
-                                                 "Pitch_PosControl_PID_CommandToMotor",
-                                                 "LQR_PitchControl_GainVectorElement_Ktheta_0",
-                                                 "LQR_PitchControl_GainVectorElement_Ktheta_1",
-                                                 "LQR_PitchControl_GainVectorElement_Ktheta_2",
-                                                 "LQR_PitchControl_GainVectorElement_Ktheta_3",
-                                                 "LQR_YawControl_GainVectorElement_Kdelta_0",
-                                                 "LQR_YawControl_GainVectorElement_Kdelta_1",
-                                                 "LQR_ControlLaw_Term_1",
-                                                 "LQR_ControlLaw_Term_2",
-                                                 "LQR_ControlLaw_Term_3",
-                                                 "LQR_ControlLaw_Term_4",
-                                                 "LQR_ControlLaw_Term_5",
-                                                 "LQR_ControlLaw_Term_6",
-                                                 "C_Theta",
-                                                 "C_Delta",
-                                                 "C_L",
-                                                 "C_R",
-                                                 "TorqueToBeCommanded_Motor0",
-                                                 "TorqueToBeCommanded_Motor1"]
+    try:
+    
+        #print("FileName_to_save_full_path: " + FileName_to_save_full_path)
 
-    workbook = xlsxwriter.Workbook(FileName_to_save_full_path)
-    worksheet = workbook.add_worksheet()
+        CSVdataLogger_VariableNamesForHeaderList = ["CurrentTime_CalculatedFromMainThread",
+                                                  "DataStreamingFrequency_CalculatedFromMainThread_Filtered",
+                                                  "RoboteqBLDCcontroller_MostRecentDict_Position_Rev_0",
+                                                  "RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1",
+                                                  "RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_0",
+                                                  "RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_1",
+                                                  "Wheel_Theta_RR_Radians_Actual",
+                                                  "Wheel_Theta_RL_Radians_Actual",
+                                                  "Wheel_Omega_Theta_RR_RadiansPerSec_Actual",
+                                                  "Wheel_Omega_Theta_RL_RadiansPerSec_Actual",
+                                                  "Position_X_RM_Meters_Actual",
+                                                  "Position_X_RMC_Meters_Commanded",
+                                                  "Velocity_V_RM_MetersPerSec_Actual_UNFILTERED",
+                                                  "Velocity_V_RM_MetersPerSec_Actual",
+                                                  "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda",
+                                                  "Velocity_V_RMC_MetersPerSec_Commanded",
+                                                  "PitchAngle_Theta_Deg_Actual",
+                                                  "SpatialPrecision333_PitchRate_AbtYaxis_DifferentiatedAngularVelocity_DegreesPerSecond_ExponentialSmoothingFilterLambda",
+                                                  "SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset",
+                                                  "PitchAngle_Theta_Radians_Actual",
+                                                  "PitchAngle_Theta_Deg_Actual",
+                                                  "PitchAngle_Theta_Radians_Commanded",
+                                                  "PitchAngle_Theta_Degrees_Commanded",
+                                                  "PitchAngularRate_ThetaDot_RadiansPerSec_Actual",
+                                                  "PitchAngularRate_ThetaDot_DegreesPerSecond_Actual",
+                                                  "PitchAngularRate_ThetaDot_RadiansPerSec_Commanded",
+                                                  "PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded",
+                                                  "YawAngle_Delta_Radians_Actual",
+                                                  "YawAngle_Delta_Deg_Actual",
+                                                  "YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED",
+                                                  "YawAngularRate_DeltaDot_DegreesPerSecond_Actual",
+                                                  "YawAngularRate_DeltaDot_DegreesPerSecond_Commanded",
+                                                  "YawAngle_Delta_Radians_Commanded",
+                                                  "YawAngle_Delta_Deg_Commanded",
+                                                  "ControlAlgorithm",
+                                                  "PID_OuterLoopPosControl_Error",
+                                                  "PID_OuterLoopPosControl_ErrorSum",
+                                                  "PID_OuterLoopPosControl_ErrorD",
+                                                  "PID_gain_Kp_OuterLoopPosControl",
+                                                  "PID_gain_Ki_OuterLoopPosControl",
+                                                  "PID_gain_Kd_OuterLoopPosControl",
+                                                  "PID_OuterLoopPosControl_Kp_Term_1",
+                                                  "PID_OuterLoopPosControl_Ki_Term_2",
+                                                  "PID_OuterLoopPosControl_Kd_Term_3",
+                                                  "PID_InnerLoopPitchControl_Error",
+                                                  "PID_InnerLoopPitchControl_ErrorD",
+                                                  "PID_gain_Kp_InnerLoopPitchControl",
+                                                  "PID_gain_Kd_InnerLoopPitchControl",
+                                                  "PID_InnerLoopPitchControl_Kp_Term_1",
+                                                  "PID_InnerLoopPitchControl_Kd_Term_2",
+                                                  "YawControl_gain_Kdelta1",
+                                                  "YawControl_gain_Kdelta2",
+                                                  "YawControl_Kdelta1_Term_1",
+                                                  "YawControl_Kdelta2_Term_2",
+                                                  "C_Theta",
+                                                  "C_Delta",
+                                                  "C_L",
+                                                  "C_R",
+                                                  "TorqueToBeCommanded_Motor0",
+                                                  "TorqueToBeCommanded_Motor1"]
+    
+        workbook = xlsxwriter.Workbook(FileName_to_save_full_path)
+        worksheet = workbook.add_worksheet()
+    
+        ##########################################################################################################
+        AlphabetStringList = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+                              "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ",
+                              "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ", ]
 
-    ##########################################################################################################
-    AlphabetStringList = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-                          "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ",
-                          "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ",]
-    numerical_index = 0
-    NumberOfDataRows = -1
-    for key in DataOrderedDictToWrite:
-        starting_cell_string_identifier = AlphabetStringList[numerical_index] + "1"
-        #print("DataOrderedDictToWrite[key]: " + str(DataOrderedDictToWrite[key]))
-        worksheet.write_column(starting_cell_string_identifier, [key] + DataOrderedDictToWrite[key]) #
-        NumberOfDataRows = len(DataOrderedDictToWrite[key])
-        worksheet.set_column(numerical_index, numerical_index, 20) #set column width of current column to 20
-        numerical_index = numerical_index + 1
-    ##########################################################################################################
+        numerical_index = 0
+        NumberOfDataRows = -1
+        for key in DataOrderedDictToWrite:
+            starting_cell_string_identifier = AlphabetStringList[numerical_index] + "1"
+            #print("DataOrderedDictToWrite[key]: " + str(DataOrderedDictToWrite[key]))
+            worksheet.write_column(starting_cell_string_identifier, [key] + DataOrderedDictToWrite[key]) #
+            NumberOfDataRows = len(DataOrderedDictToWrite[key])
+            worksheet.set_column(numerical_index, numerical_index, 20) #set column width of current column to 20
+            numerical_index = numerical_index + 1
+        ##########################################################################################################
 
-    ##########################################################################################################
-    VariableNameVsExcelColumnLetterDict = dict()
-    for Index, VariableName in enumerate(CSVdataLogger_VariableNamesForHeaderList):
-        VariableNameVsExcelColumnLetterDict[VariableName] = AlphabetStringList[Index]
-    ##########################################################################################################
+        ###########################################################################################################
+        VariableNameVsExcelColumnLetterDict = dict()
+        for Index, VariableName in enumerate(CSVdataLogger_VariableNamesForHeaderList):
+            VariableNameVsExcelColumnLetterDict[VariableName] = AlphabetStringList[Index]
+        ##########################################################################################################
 
+        ##########################################################################################################
+        ##########################################################################################################
+        ##########################################################################################################
+        VariableNamesListToInludeOnSinglePlotVsTime = ["PitchAngle_Theta_Deg_Actual",
+                                                       "PitchAngle_Theta_Degrees_Commanded"]
 
+        ##########################################################################################################
+        LengthMax = 31 - 10  # Excel worksheet name must be <= 31 chars.
+        VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited = list()
+        SumOfAllVariableNamesAsString = ""
+        for index, VariableName in enumerate(VariableNamesListToInludeOnSinglePlotVsTime):
+            if len(VariableName) >= LengthMax: #Limit each, individual name for when it's printed on the plot
+                VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited.append(VariableName[0:LengthMax])
+            else:
+                VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited.append(VariableName)
 
-    ##########################################################################################################
-    ##########################################################################################################
-    ##########################################################################################################
-    VariableNamesListToInludeOnSinglePlotVsTime = ["PitchAngle_Theta_Deg_Actual",
-                                                   "PitchAngle_Theta_Radians_Commanded"]
+            if index != len(VariableNamesListToInludeOnSinglePlotVsTime) - 1:
+                SumOfAllVariableNamesAsString = SumOfAllVariableNamesAsString + VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited[index] + ", "
+            else:
+                SumOfAllVariableNamesAsString = SumOfAllVariableNamesAsString + VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited[index]
 
-    ##########################################################################################################
-    LengthMax = 31 - 10  # Excel worksheet name must be <= 31 chars.
-    if len(VariableNamesListToInludeOnSinglePlotVsTime[0]) >= LengthMax:
-        VariableName_LengthLimited = VariableNamesListToInludeOnSinglePlotVsTime[0][0:LengthMax]
-    else:
-        VariableName_LengthLimited = VariableName
-    ##########################################################################################################
+        SumOfAllVariableNamesAsString = SumOfAllVariableNamesAsString[0:LengthMax] #Limit the overall Plot title length
+        ##########################################################################################################
 
-    VariableName_vs_Time_Xaxis_Chart_sheet = workbook.add_chartsheet(VariableName_LengthLimited + "_vs_Time")
-    VariableName_vs_Time_Xaxis_Chart = workbook.add_chart({'type': 'scatter'}) #http://xlsxwriter.readthedocs.io/example_chart_scatter.html
+        print("VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited: " + str(VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited))
+        print("SumOfAllVariableNamesAsString: " + str(SumOfAllVariableNamesAsString) + ", Length = " + str(len(SumOfAllVariableNamesAsString)))
 
-    ##########################################################################################################
-    for VariableName in VariableNamesListToInludeOnSinglePlotVsTime:
-        VariableName_vs_Time_Xaxis_Chart.add_series({'name': VariableName_LengthLimited + '_vs_Time','categories': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$2:$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$"+str(NumberOfDataRows+1),'values': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$2:$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$" + str(NumberOfDataRows+1)}) #X VALUES FIRST, THEN Y
-    ##########################################################################################################
+        VariableName_vs_Time_Xaxis_Chart_sheet = workbook.add_chartsheet(SumOfAllVariableNamesAsString + " vs Time")
+        VariableName_vs_Time_Xaxis_Chart = workbook.add_chart({'type': 'scatter'}) #http://xlsxwriter.readthedocs.io/example_chart_scatter.html
 
-    VariableName_vs_Time_Xaxis_Chart.set_title ({'name': VariableName_LengthLimited + ' vs Time'})
-    VariableName_vs_Time_Xaxis_Chart.set_x_axis({'name': 'Time (S)'})
-    VariableName_vs_Time_Xaxis_Chart.set_y_axis({'name': VariableName_LengthLimited})
-    VariableName_vs_Time_Xaxis_Chart_sheet.set_chart(VariableName_vs_Time_Xaxis_Chart)
+        ##########################################################################################################
+        for index, VariableName in enumerate(VariableNamesListToInludeOnSinglePlotVsTime):
+            VariableName_vs_Time_Xaxis_Chart.add_series({'name': VariableNamesListToInludeOnSinglePlotVsTime_NameLengthLimited[index] + ' vs Time','categories': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$2:$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$"+str(NumberOfDataRows+1),'values': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$2:$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$" + str(NumberOfDataRows+1)}) #X VALUES FIRST, THEN Y
+        ##########################################################################################################
 
+        VariableName_vs_Time_Xaxis_Chart.set_title ({'name': SumOfAllVariableNamesAsString + ' vs Time'})
+        VariableName_vs_Time_Xaxis_Chart.set_x_axis({'name': 'Time (S)'})
+        VariableName_vs_Time_Xaxis_Chart.set_y_axis({'name': SumOfAllVariableNamesAsString})
+        VariableName_vs_Time_Xaxis_Chart_sheet.set_chart(VariableName_vs_Time_Xaxis_Chart)
 
-    ##########################################################################################################
-    ##########################################################################################################
-    ##########################################################################################################
+        ##########################################################################################################
+        ##########################################################################################################
+        ##########################################################################################################
+    
+        workbook.close()
+        time.sleep(0.05)
+    
+        pywin32_FileName_xls = FileName_to_save_full_path
+        pywin32_FileName_xls = pywin32_FileName_xls.replace("/", "\\") #This line is needed or else the Excel file will give you an error.
 
-    '''
-    ##########################################################################################################
-    ##########################################################################################################
-    ##########################################################################################################
-    VariableName = "PitchAngle_Theta_Deg_Actual"
-
-    ##########################################################################################################
-    LengthMax = 31 - 10#Excel worksheet name must be <= 31 chars.
-    if len(VariableName) >= LengthMax:
-        VariableName_LengthLimited = VariableName[0:LengthMax]
-    ##########################################################################################################
-
-    VariableName_vs_Time_Xaxis_Chart_sheet = workbook.add_chartsheet(VariableName_LengthLimited + "_vs_Time")
-    VariableName_vs_Time_Xaxis_Chart = workbook.add_chart({'type': 'scatter'}) #http://xlsxwriter.readthedocs.io/example_chart_scatter.html
-    VariableName_vs_Time_Xaxis_Chart.add_series({'name': VariableName_LengthLimited + '_vs_Time','categories': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$2:$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$"+str(NumberOfDataRows+1),'values': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$2:$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$" + str(NumberOfDataRows+1)}) #X VALUES FIRST, THEN Y
-    VariableName_vs_Time_Xaxis_Chart.add_series({'name': VariableName_LengthLimited + '_vs_Time','categories': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$2:$" + VariableNameVsExcelColumnLetterDict["CurrentTime_CalculatedFromMainThread"] + "$"+str(NumberOfDataRows+1),'values': "=Sheet1!$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$2:$" + VariableNameVsExcelColumnLetterDict[VariableName] + "$" + str(NumberOfDataRows+1)}) #X VALUES FIRST, THEN Y
-    VariableName_vs_Time_Xaxis_Chart.set_title ({'name': VariableName_LengthLimited + ' vs Time'})
-    VariableName_vs_Time_Xaxis_Chart.set_x_axis({'name': 'Time (S)'})
-    VariableName_vs_Time_Xaxis_Chart.set_y_axis({'name': VariableName_LengthLimited})
-    VariableName_vs_Time_Xaxis_Chart_sheet.set_chart(VariableName_vs_Time_Xaxis_Chart)
-    ##########################################################################################################
-    ##########################################################################################################
-    ##########################################################################################################
-    '''
-
-    ##########################################################################################################
-    workbook.close()
-    time.sleep(0.05)
-
-    pywin32_FileName_xls = FileName_to_save_full_path
-    pywin32_FileName_xls = pywin32_FileName_xls.replace("/", "\\") #This line is needed or else the Excel file will give you an error.
-
-    xl = win32com.client.Dispatch("Excel.Application")
-    xl.DisplayAlerts = False
-    wb = xl.Workbooks.Open(pywin32_FileName_xls)
-    wb.SaveAs(pywin32_FileName_xls, FileFormat = 56)
-    wb.Close()
-    xl.Quit()
-    ##########################################################################################################
-
+        xl = win32com.client.Dispatch("Excel.Application")
+        xl.DisplayAlerts = False
+        wb = xl.Workbooks.Open(pywin32_FileName_xls)
+        wb.SaveAs(pywin32_FileName_xls, FileFormat = 56)
+        wb.Close()
+        xl.Quit()
+        
+    except:
+        exceptions = sys.exc_info()[0]
+        print("CreateExcelChart, exceptions: %s" % exceptions)
+        traceback.print_exc()
 ##########################################################################################################
 ##########################################################################################################
 
@@ -307,7 +296,7 @@ if __name__ == '__main__':
 
     except:
         exceptions = sys.exc_info()[0]
-        print("Parsing ARGV_1, exceptions: %s" % exceptions, 0)
+        print("Parsing ARGV_1, exceptions: %s" % exceptions)
         traceback.print_exc()
 
     print("Using FileDirectory = " + str(FileDirectory))
@@ -317,7 +306,7 @@ if __name__ == '__main__':
 
     #########################################################
     print("$$$$$$$$$$$$$$$$")
-    print("RUN THIS PROGRAM FROM COMMAND LINE LIKE THIS: 'python ExcelPlot_CSVdataLogger_ReubenPython3Code__SelfBalancingRobot1.py CSV-FILE-DIRECTORY-FULL-PATH'")
+    print("RUN THIS PROGRAM FROM COMMAND LINE LIKE THIS: 'python ExcelPlot_CSVdataLogger_ReubenPython3Code.py CSV-FILE-DIRECTORY-FULL-PATH'")
     print("$$$$$$$$$$$$$$$$")
     #########################################################
 
