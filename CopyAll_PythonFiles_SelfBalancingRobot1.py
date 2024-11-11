@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision L, 11/03/2024
+Software Revision M, 11/10/2024
 
 Verified working on: Python 3.12 for Windows 10 64-bit and Raspberry Pi Bullseye.
 '''
@@ -80,7 +80,6 @@ ParametersToBeLoaded_DirectoryToCopy = FileWorkingDirectory + "\\ParametersToBeL
 #######################
 
 try:
-    shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\__init__.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\SelfBalancingRobot1.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\CopyAll_PythonFiles_SelfBalancingRobot1.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\ExcelPlot_CSVdataLogger_ReubenPython3Code__SelfBalancingRobot1.py", FileDirectoryToCreate)

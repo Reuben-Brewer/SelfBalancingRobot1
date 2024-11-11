@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision L, 11/03/2024
+Software Revision M, 11/10/2024
 
 Verified working on: Python 3.12 for Windows 10 64-bit (not yet tested on Raspberry Pi, Ubuntu, or Mac).
 '''
@@ -63,6 +63,7 @@ import keyboard #"sudo pip install keyboard" https://pypi.org/project/keyboard/,
 import subprocess #for beep command line call
 import numpy
 import re
+import inspect
 from scipy.spatial.transform import Rotation #'sudo pip install scipy' (*AFTER* 'sudo apt install -y python3-scipy' if on Raspberry Pi)
 #########################################################
 
@@ -108,6 +109,21 @@ LogFile_Directory_Mac = os.getcwd().replace("\\", "//") + "//Logs"
 #######################################################################################################################
 #######################################################################################################################
 
+##########################################################################################################
+##########################################################################################################
+def TellWhichFileWereIn():
+    # We used to use this method, but it gave us the root calling file, not the class calling file
+    # absolute_file_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    # filename = absolute_file_path[absolute_file_path.rfind("\\") + 1:]
+
+    frame = inspect.stack()[1]
+    filename = frame[1][frame[1].rfind("\\") + 1:]
+    filename = filename.replace(".py", "")
+
+    return filename
+##########################################################################################################
+##########################################################################################################
+
 #######################################################################################################################
 #######################################################################################################################
 def LoadAndParseJSONfile_UseClassesFlags():
@@ -117,9 +133,7 @@ def LoadAndParseJSONfile_UseClassesFlags():
 
     #################################
     JSONfilepathFull_UseClassesFlags = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_UseClassesFlags.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_UseClassesFlags_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_UseClassesFlags, 1, 1)
+    ParametersToBeLoaded_UseClassesFlags_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_UseClassesFlags, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 1, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
     #################################
@@ -141,9 +155,7 @@ def LoadAndParseJSONfile_GUIsettings():
 
     #################################
     JSONfilepathFull_GUIsettings = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_GUIsettings.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_GUIsettings_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_GUIsettings, 1, 1)
+    ParametersToBeLoaded_GUIsettings_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_GUIsettings, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
 #######################################################################################################################
@@ -158,9 +170,7 @@ def LoadAndParseJSONfile_RoboteqBLDCcontroller_0():
 
     #################################
     JSONfilepathFull_RoboteqBLDCcontroller_0 = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_RoboteqBLDCcontroller_0.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_RoboteqBLDCcontroller_Dict_0 = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_RoboteqBLDCcontroller_0, 1, 1)
+    ParametersToBeLoaded_RoboteqBLDCcontroller_Dict_0 = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_RoboteqBLDCcontroller_0, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
 #######################################################################################################################
@@ -175,9 +185,7 @@ def LoadAndParseJSONfile_RoboteqBLDCcontroller_1():
 
     #################################
     JSONfilepathFull_RoboteqBLDCcontroller_1 = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_RoboteqBLDCcontroller_1.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_RoboteqBLDCcontroller_Dict_1 = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_RoboteqBLDCcontroller_1, 1, 1)
+    ParametersToBeLoaded_RoboteqBLDCcontroller_Dict_1 = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_RoboteqBLDCcontroller_1, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
 #######################################################################################################################
@@ -192,9 +200,7 @@ def LoadAndParseJSONfile_WiFiVINTthumbstick():
 
     #################################
     JSONfilepathFull_WiFiVINTthumbstick = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_WiFiVINTthumbstick.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_WiFiVINTthumbstick_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_WiFiVINTthumbstick, 1, 1)
+    ParametersToBeLoaded_WiFiVINTthumbstick_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_WiFiVINTthumbstick, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
 #######################################################################################################################
@@ -209,9 +215,7 @@ def LoadAndParseJSONfile_SpatialPrecision333():
 
     #################################
     JSONfilepathFull_SpatialPrecision333 = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_SpatialPrecision333.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_SpatialPrecision333_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_SpatialPrecision333, 1, 1)
+    ParametersToBeLoaded_SpatialPrecision333_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_SpatialPrecision333, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
 #######################################################################################################################
@@ -227,9 +231,7 @@ def LoadAndParseJSONfile_DC30AmpCurrentSensor():
 
     #################################
     JSONfilepathFull_DC30AmpCurrentSensor = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_DC30AmpCurrentSensor.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_DC30AmpCurrentSensor_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_DC30AmpCurrentSensor, 1, 1)
+    ParametersToBeLoaded_DC30AmpCurrentSensor_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_DC30AmpCurrentSensor, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
     
 #######################################################################################################################
@@ -240,18 +242,16 @@ def LoadAndParseJSONfile_DC30AmpCurrentSensor():
 def LoadAndParseJSONfile_Phidgets4EncoderAndDInput1047():
     global ParametersToBeLoaded_Phidgets4EncoderAndDInput1047_Dict
     global Phidgets4EncoderAndDInput1047_AxisHatButtonOrBallTo6DOFposeMapping_ListOfDicts_FormattedAsNicelyPrintedString
-    global Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedExponentialFilterLambdaFlag
+    global Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedFilterLambdaFlag
 
     print("Calling LoadAndParseJSONfile_Phidgets4EncoderAndDInput1047().")
 
     #################################
     JSONfilepathFull_Phidgets4EncoderAndDInput1047 = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_Phidgets4EncoderAndDInput1047.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_Phidgets4EncoderAndDInput1047_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_Phidgets4EncoderAndDInput1047, 1, 1)
+    ParametersToBeLoaded_Phidgets4EncoderAndDInput1047_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_Phidgets4EncoderAndDInput1047, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
-    Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedExponentialFilterLambdaFlag = 1
+    Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedFilterLambdaFlag = 1
     
 #######################################################################################################################
 #######################################################################################################################
@@ -265,8 +265,7 @@ def LoadAndParseJSONfile_SavingSettings():
 
     #################################
     JSONfilepathFull_SavingSettings = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_SavingSettings.json"
-
-    ParametersToBeLoaded_SavingSettings_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_SavingSettings, 1, 1)
+    ParametersToBeLoaded_SavingSettings_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_SavingSettings, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
 #######################################################################################################################
@@ -281,9 +280,7 @@ def LoadAndParseJSONfile_MyPlotterPureTkinterStandAloneProcess():
 
     #################################
     JSONfilepathFull_MyPlotterPureTkinterStandAloneProcess = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_MyPlotterPureTkinterStandAloneProcess.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
-    ParametersToBeLoaded_MyPlotterPureTkinterStandAloneProcess_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_MyPlotterPureTkinterStandAloneProcess, 1, 1)
+    ParametersToBeLoaded_MyPlotterPureTkinterStandAloneProcess_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_MyPlotterPureTkinterStandAloneProcess, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 1, PauseForInputOnException = 1)
     #################################
 
 #######################################################################################################################
@@ -300,8 +297,6 @@ def LoadAndParseJSONfile_Keyboard():
 
     #################################
     JSONfilepathFull_Keyboard = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_Keyboard.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
     ParametersToBeLoaded_Keyboard_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_Keyboard, 1, 1)
     #################################
 
@@ -321,8 +316,6 @@ def LoadAndParseJSONfile_ControlLawParameters():
 
     #################################
     JSONfilepathFull_ControlLawParameters = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_ControlLawParameters.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
     ParametersToBeLoaded_ControlLawParameters_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_ControlLawParameters, 1, 1)
     #################################
 
@@ -338,8 +331,6 @@ def LoadAndParseJSONfile_RobotModelParameters():
 
     #################################
     JSONfilepathFull_RobotModelParameters = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_RobotModelParameters.json"
-
-    #def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
     ParametersToBeLoaded_RobotModelParameters_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_RobotModelParameters, 1, 1)
     #################################
 
@@ -348,7 +339,7 @@ def LoadAndParseJSONfile_RobotModelParameters():
 
 #######################################################################################################################
 #######################################################################################################################
-def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0):
+def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull, USE_PassThrough0and1values_ExitProgramOtherwise_FOR_FLAGS = 0, PrintResultsFlag = 0, PauseForInputOnException = 1):
 
     try:
         #################################
@@ -382,8 +373,12 @@ def LoadAndParseJSONfile_AddDictKeysToGlobalsDict(GlobalsDict, JSONfilepathFull,
     except:
         #################################
         exceptions = sys.exc_info()[0]
-        print("LoadAndParseJSONfile_Advanced Error, Exceptions: %s" % exceptions)
+        print("LoadAndParseJSONfile_AddDictKeysToGlobalsDict failed for " + JSONfilepathFull + ", Current Key = " + key + ", exceptions: %s" % exceptions)
         traceback.print_exc()
+
+        if PauseForInputOnException == 1:
+            input("Please press any key to continue")
+
         return dict()
         #################################
 
@@ -673,55 +668,160 @@ def ExitProgram_Callback():
 
 #######################################################################################################################
 #######################################################################################################################
-def PassThrough0and1values_ExitProgramOtherwise(InputNameString, InputNumber):
+#######################################################################################################################
+def PassThrough0and1values_ExitProgramOtherwise(InputNameString, InputNumber, ExitProgramIfFailureFlag = 0):
 
+    #######################################################################################################################
+    #######################################################################################################################
     try:
+
+        #######################################################################################################################
         InputNumber_ConvertedToFloat = float(InputNumber)
-    except:
-        exceptions = sys.exc_info()[0]
-        print("PassThrough0and1values_ExitProgramOtherwise Error. InputNumber for variable_name '" + InputNameString + "' must be a float value, Exceptions: %s" % exceptions)
-        input("Press any key to continue")
-        sys.exit()
+        #######################################################################################################################
 
-    try:
-        if InputNumber_ConvertedToFloat == 0.0 or InputNumber_ConvertedToFloat == 1:
-            return InputNumber_ConvertedToFloat
-        else:
-            input("PassThrough0and1values_ExitProgramOtherwise Error. '" + InputNameString + "' must be 0 or 1 (value was " + str(InputNumber_ConvertedToFloat) + "). Press any key (and enter) to exit.")
+    except:
+
+        #######################################################################################################################
+        exceptions = sys.exc_info()[0]
+        print(TellWhichFileWereIn() + ", PassThrough0and1values_ExitProgramOtherwise Error. InputNumber '" + InputNameString + "' must be a numerical value, Exceptions: %s" % exceptions)
+
+        ##########################
+        if ExitProgramIfFailureFlag == 1:
             sys.exit()
-    except:
-        exceptions = sys.exc_info()[0]
-        print("PassThrough0and1values_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
-        input("Press any key to continue")
-        sys.exit()
+        else:
+            return -1
+        ##########################
 
-#######################################################################################################################
-#######################################################################################################################
+        #######################################################################################################################
 
-#######################################################################################################################
-#######################################################################################################################
-def PassThroughFloatValuesInRange_ExitProgramOtherwise(InputNameString, InputNumber, RangeMinValue, RangeMaxValue):
+    #######################################################################################################################
+    #######################################################################################################################
 
+    #######################################################################################################################
+    #######################################################################################################################
     try:
+
+        #######################################################################################################################
+        if InputNumber_ConvertedToFloat == 0.0 or InputNumber_ConvertedToFloat == 1.0:
+            return InputNumber_ConvertedToFloat
+
+        else:
+
+            print(TellWhichFileWereIn() + ", PassThrough0and1values_ExitProgramOtherwise Error. '" +
+                          str(InputNameString) +
+                          "' must be 0 or 1 (value was " +
+                          str(InputNumber_ConvertedToFloat) +
+                          "). Press any key (and enter) to exit.")
+
+            ##########################
+            if ExitProgramIfFailureFlag == 1:
+                sys.exit()
+
+            else:
+                return -1
+            ##########################
+
+        #######################################################################################################################
+
+    except:
+
+        #######################################################################################################################
+        exceptions = sys.exc_info()[0]
+        print(TellWhichFileWereIn() + ", PassThrough0and1values_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
+
+        ##########################
+        if ExitProgramIfFailureFlag == 1:
+            sys.exit()
+        else:
+            return -1
+        ##########################
+
+        #######################################################################################################################
+
+    #######################################################################################################################
+    #######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+def PassThroughFloatValuesInRange_ExitProgramOtherwise(InputNameString, InputNumber, RangeMinValue, RangeMaxValue, ExitProgramIfFailureFlag = 0):
+
+    #######################################################################################################################
+    #######################################################################################################################
+    try:
+        #######################################################################################################################
         InputNumber_ConvertedToFloat = float(InputNumber)
-    except:
-        exceptions = sys.exc_info()[0]
-        print("PassThroughFloatValuesInRange_ExitProgramOtherwise Error. InputNumber must be a float value, Exceptions: %s" % exceptions)
-        input("Press any key to continue")
-        sys.exit()
+        #######################################################################################################################
 
-    try:
-        if InputNumber_ConvertedToFloat >= RangeMinValue and InputNumber_ConvertedToFloat <= RangeMaxValue:
-            return InputNumber_ConvertedToFloat
-        else:
-            input("PassThroughFloatValuesInRange_ExitProgramOtherwise Error. '" + InputNameString + "' must be in the range [" + str(RangeMinValue) + ", " + str(RangeMaxValue) + "] (value was " + str(InputNumber_ConvertedToFloat) + "). Press any key (and enter) to exit.")
+    except:
+        #######################################################################################################################
+        exceptions = sys.exc_info()[0]
+        print(TellWhichFileWereIn() + ", PassThroughFloatValuesInRange_ExitProgramOtherwise Error. InputNumber '" + InputNameString + "' must be a float value, Exceptions: %s" % exceptions)
+        traceback.print_exc()
+
+        ##########################
+        if ExitProgramIfFailureFlag == 1:
             sys.exit()
-    except:
-        exceptions = sys.exc_info()[0]
-        print("PassThroughFloatValuesInRange_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
-        input("Press any key to continue")
-        sys.exit()
+        else:
+            return -11111.0
+        ##########################
 
+        #######################################################################################################################
+
+    #######################################################################################################################
+    #######################################################################################################################
+
+    #######################################################################################################################
+    #######################################################################################################################
+    try:
+
+        #######################################################################################################################
+        InputNumber_ConvertedToFloat_Limited = LimitNumber_FloatOutputOnly(RangeMinValue, RangeMaxValue, InputNumber_ConvertedToFloat)
+
+        if InputNumber_ConvertedToFloat_Limited != InputNumber_ConvertedToFloat:
+            print(TellWhichFileWereIn() + ", PassThroughFloatValuesInRange_ExitProgramOtherwise Error. '" +
+                  str(InputNameString) +
+                  "' must be in the range [" +
+                  str(RangeMinValue) +
+                  ", " +
+                  str(RangeMaxValue) +
+                  "] (value was " +
+                  str(InputNumber_ConvertedToFloat) + ")")
+
+            ##########################
+            if ExitProgramIfFailureFlag == 1:
+                sys.exit()
+            else:
+                return -11111.0
+            ##########################
+
+        else:
+            return InputNumber_ConvertedToFloat_Limited
+        #######################################################################################################################
+
+    except:
+        #######################################################################################################################
+        exceptions = sys.exc_info()[0]
+        print(TellWhichFileWereIn() + ", PassThroughFloatValuesInRange_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
+        traceback.print_exc()
+
+        ##########################
+        if ExitProgramIfFailureFlag == 1:
+            sys.exit()
+        else:
+            return -11111.0
+        ##########################
+
+        #######################################################################################################################
+
+    #######################################################################################################################
+    #######################################################################################################################
+
+#######################################################################################################################
 #######################################################################################################################
 #######################################################################################################################
 
@@ -1275,8 +1375,8 @@ def GUI_update_clock():
     global Wheel_Theta_RL_Radians_Actual
     global Wheel_Theta_RR_Radians_Actual
 
-    global Wheel_Omega_Theta_RL_RadiansPerSec_Actual
-    global Wheel_Omega_Theta_RL_RadiansPerSec_Actual
+    global Wheel_Omega_RL_RadiansPerSec_Actual
+    global Wheel_Omega_RL_RadiansPerSec_Actual
 
     global Position_X_RM_Meters_Actual
     global Position_X_RMC_Meters_Commanded
@@ -1339,8 +1439,8 @@ def GUI_update_clock():
                             "\nWheel_Theta_RL_Radians_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RL_Radians_Actual, 3, 3) + \
                             "\nWheel_Theta_RR_Radians_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RR_Radians_Actual, 3, 3) + \
                             "\n" +\
-                            "\nWheel_Wheel_Omega_Theta_RL_RadiansPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_Theta_RL_RadiansPerSec_Actual, 3, 3) + \
-                            "\nWheel_Wheel_Omega_Theta_RR_RadiansPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_Theta_RR_RadiansPerSec_Actual, 3, 3) + \
+                            "\nWheel_Wheel_Omega_RL_RadiansPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RL_RadiansPerSec_Actual, 3, 3) + \
+                            "\nWheel_Wheel_Omega_RR_RadiansPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RR_RadiansPerSec_Actual, 3, 3) + \
                             "\n" +\
                             "\nPosition_X_RM_Meters_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Position_X_RM_Meters_Actual, 3, 3) + \
                             "\t\tPosition_X_RMC_Meters_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Position_X_RMC_Meters_Commanded, 3, 3) + \
@@ -2187,6 +2287,7 @@ if __name__ == '__main__':
     global USE_MyPrint_FLAG
     global USE_CSVdataLogger_FLAG
     global USE_Keyboard_FLAG
+    global USE_ExternalEncodersInsteadOfRoboteq_FLAG
     global USE_BarGraphDisplay_FLAG
     global USE_GUI_FLAG
     global SAVE_PROGRAM_LOGS_FLAG
@@ -2475,8 +2576,13 @@ if __name__ == '__main__':
     global Phidgets4EncoderAndDInput1047_MainThread_TimeToSleepEachLoop
     global Phidgets4EncoderAndDInput1047_EncodersList_ChannelsBeingWatchedList
     global Phidgets4EncoderAndDInput1047_EncodersList_CPR
+    global Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseMedianFilterFlag
+    global Phidgets4EncoderAndDInput1047_EncodersList_SpeedMedianFilterKernelSize
+    global Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseExponentialFilterFlag
     global Phidgets4EncoderAndDInput1047_EncodersList_SpeedExponentialFilterLambda
     global Phidgets4EncoderAndDInput1047_DigitalInputsList_ChannelsBeingWatchedList
+    global Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RL
+    global Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RR
 
     LoadAndParseJSONfile_Phidgets4EncoderAndDInput1047()
     #################################################
@@ -2506,6 +2612,13 @@ if __name__ == '__main__':
 
     global YawAngularRate_DeltaDot_RadiansPerSec_Commanded_DeadbandThreshold
     global YawAngularRate_DeltaDot_RadiansPerSec_Commanded_JoystickToRadiansPerSecGain
+
+    global PitchAngle_Theta_Deg_Actual_LowPassFilter_UseMedianFilterFlag
+    global PitchAngle_Theta_Deg_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag
+    global PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
+
+    global PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last # NOT imported from JSON file
+    PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = 1.0
 
     global Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseMedianFilterFlag
     global Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag
@@ -2832,40 +2945,40 @@ if __name__ == '__main__':
     Phidgets4EncoderAndDInput1047_MostRecentDict = dict()
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks = [0.0] * 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev = [0.0] * 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Degrees
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Degrees = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Degrees = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_EncoderTicks
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_EncoderTicks = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_EncoderTicks = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_Rev
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_Rev = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_Rev = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_Degrees
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_Degrees = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_IndexPosition_Degrees = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Raw
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Raw = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Raw = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Raw
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Raw = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Raw = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Raw
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Raw = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Raw = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Filtered
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Filtered = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Filtered = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Filtered
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Filtered = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Filtered = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered
-    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered = [-11111.0] * 4
+    Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered = [0.0]* 4
 
     global Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_ErrorCallbackFiredFlag
     Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_ErrorCallbackFiredFlag = [-1] * 4
@@ -2879,8 +2992,14 @@ if __name__ == '__main__':
     global Phidgets4EncoderAndDInput1047_MostRecentDict_Time
     Phidgets4EncoderAndDInput1047_MostRecentDict_Time = -11111.0
 
-    global Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedExponentialFilterLambdaFlag
-    Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedExponentialFilterLambdaFlag = 0
+    global Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedFilterLambdaFlag
+    Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedFilterLambdaFlag = 0
+
+    global Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_0
+    Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_0 = 0
+
+    global Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_1
+    Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_1 = 0
     #################################################
     #################################################
 
@@ -3079,14 +3198,46 @@ if __name__ == '__main__':
 
     global Wheel_Theta_RR_Radians_Actual
     Wheel_Theta_RR_Radians_Actual = 0.0
+
+
+
+    global Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq
+    Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq = 0.0
+
+    global Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq
+    Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq = 0.0
+
+
+
+    global Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder
+    Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder = 0.0
+
+    global Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder
+    Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder = 0.0
     #################################################
 
     #################################################
-    global Wheel_Omega_Theta_RL_RadiansPerSec_Actual
-    Wheel_Omega_Theta_RL_RadiansPerSec_Actual = 0.0
+    global Wheel_Omega_RL_RadiansPerSec_Actual
+    Wheel_Omega_RL_RadiansPerSec_Actual = 0.0
 
-    global Wheel_Omega_Theta_RR_RadiansPerSec_Actual
-    Wheel_Omega_Theta_RR_RadiansPerSec_Actual = 0.0
+    global Wheel_Omega_RR_RadiansPerSec_Actual
+    Wheel_Omega_RR_RadiansPerSec_Actual = 0.0
+
+
+
+    global Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromRoboteq
+    Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromRoboteq = 0.0
+
+    global Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromRoboteq
+    Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromRoboteq = 0.0
+
+
+
+    global Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder
+    Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder = 0.0
+
+    global Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder
+    Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder = 0.0
     #################################################
 
     #################################################
@@ -3275,8 +3426,9 @@ if __name__ == '__main__':
 
         LowPassFilterForDictsOfLists_DictOfVariableFilterSettings = dict([("DataStreamingFrequency_CalculatedFromMainThread", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda)])),
                                                                           ("DataStreamingFrequency_CalculatedFromGUIthread", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda)])),
-                                                                          ("Velocity_V_RM_MetersPerSec_Actual", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)])),
-                                                                          ("YawAngularRate_DeltaDot_RadiansPerSec_Actual", dict([("UseMedianFilterFlag", 0), ("UseExponentialSmoothingFilterFlag", 1),("ExponentialSmoothingFilterLambda", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)]))])
+                                                                          ("PitchAngle_Theta_Deg_Actual", dict([("UseMedianFilterFlag", PitchAngle_Theta_Deg_Actual_LowPassFilter_UseMedianFilterFlag), ("UseExponentialSmoothingFilterFlag", PitchAngle_Theta_Deg_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag),("ExponentialSmoothingFilterLambda", PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)])),
+                                                                          ("Velocity_V_RM_MetersPerSec_Actual", dict([("UseMedianFilterFlag", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseMedianFilterFlag), ("UseExponentialSmoothingFilterFlag", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag),("ExponentialSmoothingFilterLambda", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)])),
+                                                                          ("YawAngularRate_DeltaDot_RadiansPerSec_Actual", dict([("UseMedianFilterFlag", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag), ("UseExponentialSmoothingFilterFlag", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag),("ExponentialSmoothingFilterLambda", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)]))])
 
         LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject = LowPassFilterForDictsOfLists_ReubenPython2and3Class(dict([("DictOfVariableFilterSettings", LowPassFilterForDictsOfLists_DictOfVariableFilterSettings)]))
         LowPassFilterForDictsOfLists_OPEN_FLAG = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
@@ -3673,6 +3825,9 @@ if __name__ == '__main__':
                                                                                 ("MainThread_TimeToSleepEachLoop", Phidgets4EncoderAndDInput1047_MainThread_TimeToSleepEachLoop),
                                                                                 ("EncodersList_ChannelsBeingWatchedList", Phidgets4EncoderAndDInput1047_EncodersList_ChannelsBeingWatchedList),
                                                                                 ("EncodersList_CPR", Phidgets4EncoderAndDInput1047_EncodersList_CPR),
+                                                                                ("EncodersList_SpeedUseMedianFilterFlag", Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseMedianFilterFlag),
+                                                                                ("EncodersList_SpeedMedianFilterKernelSize", Phidgets4EncoderAndDInput1047_EncodersList_SpeedMedianFilterKernelSize),
+                                                                                ("EncodersList_SpeedUseExponentialFilterFlag", Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseExponentialFilterFlag),
                                                                                 ("EncodersList_SpeedExponentialFilterLambda", Phidgets4EncoderAndDInput1047_EncodersList_SpeedExponentialFilterLambda),
                                                                                 ("DigitalInputsList_ChannelsBeingWatchedList", Phidgets4EncoderAndDInput1047_DigitalInputsList_ChannelsBeingWatchedList)])
 
@@ -3719,7 +3874,9 @@ if __name__ == '__main__':
                                                 dict([("Name", "YawControl_gain_Kdelta2"),("Type", "float"), ("StartingVal", YawControl_gain_Kdelta2), ("MinVal", -1000000.0), ("MaxVal", 0.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
 
                                                 dict([("Name", "SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset"),("Type", "float"), ("StartingVal", SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset), ("MinVal", -10.0), ("MaxVal", 10.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
-                                                dict([("Name", "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", -0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+
+                                                dict([("Name", "PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", 0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
+                                                dict([("Name", "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", 0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)]),
                                                 dict([("Name", "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"),("Type", "float"), ("StartingVal", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda), ("MinVal", 0.0), ("MaxVal", 1.0),("EntryBlinkEnabled", 0), ("EntryWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_EntryWidth), ("LabelWidth", EntryListWithBlinking_ReubenPython2and3ClassObject_LabelWidth)])]
 
     global EntryListWithBlinking_ReubenPython2and3ClassObject_setup_dict
@@ -3986,6 +4143,26 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
+    if RoboteqBLDCcontroller_OPEN_FLAG_0 == 1:
+        RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_0 = 1
+
+    if RoboteqBLDCcontroller_OPEN_FLAG_1 == 1:
+        RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_1 = 1
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
+    if Phidgets4EncoderAndDInput1047_OPEN_FLAG == 1:
+        Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_0 = 1
+
+    if Phidgets4EncoderAndDInput1047_OPEN_FLAG == 1:
+        Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_1 = 1
+    #################################################
+    #################################################
+
+    #################################################
+    #################################################
     StartingTime_CalculatedFromMainThread = getPreciseSecondsTimeStampString()
     #################################################
     #################################################
@@ -4039,6 +4216,8 @@ if __name__ == '__main__':
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("YawControl_gain_Kdelta2", YawControl_gain_Kdelta2)
 
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset", SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset)
+
+                    EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda", PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda", Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)
                     EntryListWithBlinking_ReubenPython2and3ClassObject.SetEntryValue("YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda", YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda)
             ###################################################
@@ -4112,6 +4291,8 @@ if __name__ == '__main__':
                 YawControl_gain_Kdelta2 = EntryListWithBlinking_MostRecentDict["YawControl_gain_Kdelta2"]
 
                 SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset = EntryListWithBlinking_MostRecentDict["SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset"]
+
+                PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda = EntryListWithBlinking_MostRecentDict["PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"]
                 Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda = EntryListWithBlinking_MostRecentDict["Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"]
                 YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda = EntryListWithBlinking_MostRecentDict["YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda"]
 
@@ -4128,25 +4309,29 @@ if __name__ == '__main__':
                 RoboteqBLDCcontroller_MostRecentDict_0 = RoboteqBLDCcontroller_ReubenPython2and3ClassObject_0.GetMostRecentDataDict()
 
                 if "Time" in RoboteqBLDCcontroller_MostRecentDict_0:
+
+                    '''
                     RoboteqBLDCcontroller_MostRecentDict_AbsoluteBrushlessCounter_0 = RoboteqBLDCcontroller_MostRecentDict_0["AbsoluteBrushlessCounter"]
-                    RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_0 = RoboteqBLDCcontroller_MostRecentDict_0["SpeedRPM"]
-                    RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0 = RoboteqBLDCcontroller_MostRecentDict_0["MotorPowerOutputApplied"]
+                    RoboteqBLDCcontroller_MostRecentDict_Position_Rev_0 = RoboteqBLDCcontroller_MostRecentDict_0["Position_Rev"]
+                    RoboteqBLDCcontroller_MostRecentDict_Position_Radians_0 = RoboteqBLDCcontroller_MostRecentDict_0["Position_Radians"]
+                    RoboteqBLDCcontroller_MostRecentDict_Position_Degrees_0 = RoboteqBLDCcontroller_MostRecentDict_0["Position_Degrees"]
+                    '''
 
                     RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_0 = RoboteqBLDCcontroller_MostRecentDict_0["ActualOperationMode_CorrectInt"]
                     RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_0 = RoboteqBLDCcontroller_MostRecentDict_0["ActualOperationMode_EnglishString"]
                     RoboteqBLDCcontroller_MostRecentDict_FaultFlags_0 = RoboteqBLDCcontroller_MostRecentDict_0["FaultFlags"]
-    
-                    RoboteqBLDCcontroller_MostRecentDict_Position_Rev_0 = RoboteqBLDCcontroller_MostRecentDict_0["Position_Rev"]
-                    RoboteqBLDCcontroller_MostRecentDict_Position_Radians_0 = RoboteqBLDCcontroller_MostRecentDict_0["Position_Radians"]
-                    RoboteqBLDCcontroller_MostRecentDict_Position_Degrees_0 = RoboteqBLDCcontroller_MostRecentDict_0["Position_Degrees"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_RPM_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_RPM"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_RPS"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_RadiansPerSec"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_DegreesPerSec"]
-    
+
                     RoboteqBLDCcontroller_MostRecentDict_Time_0 = RoboteqBLDCcontroller_MostRecentDict_0["Time"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedRxThread_0 = RoboteqBLDCcontroller_MostRecentDict_0["DataStreamingFrequency_CalculatedFromDedicatedRxThread"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_0 = RoboteqBLDCcontroller_MostRecentDict_0["DataStreamingFrequency_CalculatedFromDedicatedTxThread"]
+
+                    #RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0 = RoboteqBLDCcontroller_MostRecentDict_0["MotorPowerOutputApplied"]
+
+                    #RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_0 = RoboteqBLDCcontroller_MostRecentDict_0["SpeedRPM"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_RPM_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_RPM"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_RPS"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_RadiansPerSec"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec_0 = RoboteqBLDCcontroller_MostRecentDict_0["Speed_DegreesPerSec"]
 
                     #RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_0 = RoboteqBLDCcontroller_MostRecentDict_0["TorqueTarget"]
                     #RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_0 = RoboteqBLDCcontroller_MostRecentDict_0["BatteryCurrentInAmps"]
@@ -4173,24 +4358,30 @@ if __name__ == '__main__':
                 RoboteqBLDCcontroller_MostRecentDict_1 = RoboteqBLDCcontroller_ReubenPython2and3ClassObject_1.GetMostRecentDataDict()
 
                 if "Time" in RoboteqBLDCcontroller_MostRecentDict_1:
+
+                    '''
                     RoboteqBLDCcontroller_MostRecentDict_AbsoluteBrushlessCounter_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["AbsoluteBrushlessCounter"]
-                    RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["SpeedRPM"]
-                    RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1 = RoboteqBLDCcontroller_MostRecentDict_1["MotorPowerOutputApplied"]
-                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_1 = RoboteqBLDCcontroller_MostRecentDict_1["ActualOperationMode_CorrectInt"]
-                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_1 = RoboteqBLDCcontroller_MostRecentDict_1["ActualOperationMode_EnglishString"]
-                    RoboteqBLDCcontroller_MostRecentDict_FaultFlags_1 = RoboteqBLDCcontroller_MostRecentDict_1["FaultFlags"]
-    
                     RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Position_Rev"]
                     RoboteqBLDCcontroller_MostRecentDict_Position_Radians_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Position_Radians"]
                     RoboteqBLDCcontroller_MostRecentDict_Position_Degrees_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Position_Degrees"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_RPM_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_RPM"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_RPS"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_RadiansPerSec"]
-                    RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_DegreesPerSec"]
-    
+                    '''
+
+                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt_1 = RoboteqBLDCcontroller_MostRecentDict_1["ActualOperationMode_CorrectInt"]
+                    RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString_1 = RoboteqBLDCcontroller_MostRecentDict_1["ActualOperationMode_EnglishString"]
+                    RoboteqBLDCcontroller_MostRecentDict_FaultFlags_1 = RoboteqBLDCcontroller_MostRecentDict_1["FaultFlags"]
+
                     RoboteqBLDCcontroller_MostRecentDict_Time_1 = RoboteqBLDCcontroller_MostRecentDict_1["Time"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedRxThread_1 = RoboteqBLDCcontroller_MostRecentDict_1["DataStreamingFrequency_CalculatedFromDedicatedRxThread"]
                     RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedTxThread_1 = RoboteqBLDCcontroller_MostRecentDict_1["DataStreamingFrequency_CalculatedFromDedicatedTxThread"]
+
+
+                    #RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1 = RoboteqBLDCcontroller_MostRecentDict_1["MotorPowerOutputApplied"]
+
+                    #RoboteqBLDCcontroller_MostRecentDict_SpeedRPM_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["SpeedRPM"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_RPM_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_RPM"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_RPS"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_RadiansPerSec"]
+                    #RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec_1 = -1.0*RoboteqBLDCcontroller_MostRecentDict_1["Speed_DegreesPerSec"]
 
                     #RoboteqBLDCcontroller_MostRecentDict_TorqueTarget_1 = RoboteqBLDCcontroller_MostRecentDict_1["TorqueTarget"]
                     #RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps_1 = RoboteqBLDCcontroller_MostRecentDict_1["BatteryCurrentInAmps"]
@@ -4289,7 +4480,12 @@ if __name__ == '__main__':
                 Phidgets4EncoderAndDInput1047_MostRecentDict_Time = Phidgets4EncoderAndDInput1047_MostRecentDict["Time"]
 
                 #print("Phidgets4EncoderAndDInput1047_MostRecentDict: " + str(Phidgets4EncoderAndDInput1047_MostRecentDict))
-                #print("Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks: " + str(Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks))
+                '''
+                print("Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev: " +
+                      str(Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev) +
+                      ", Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered: " +
+                      str(Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered))
+                '''
         ###################################################
         ###################################################
 
@@ -4319,11 +4515,14 @@ if __name__ == '__main__':
 
             if DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda != DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda_last or \
                 DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda != DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda_last or \
+                PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda != PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last or \
                 Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda != Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last or \
                 YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda != YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last:
 
                 LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["DataStreamingFrequency_CalculatedFromMainThread"]["ExponentialSmoothingFilterLambda"] = DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda
                 LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["DataStreamingFrequency_CalculatedFromGUIthread"]["ExponentialSmoothingFilterLambda"] = DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda
+
+                LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["PitchAngle_Theta_Deg_Actual"]["ExponentialSmoothingFilterLambda"] = PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
                 LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["Velocity_V_RM_MetersPerSec_Actual"]["ExponentialSmoothingFilterLambda"] = Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
                 LowPassFilterForDictsOfLists_DictOfVariableFilterSettings["YawAngularRate_DeltaDot_RadiansPerSec_Actual"]["ExponentialSmoothingFilterLambda"] = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
 
@@ -4504,6 +4703,12 @@ if __name__ == '__main__':
             RoboteqBLDCcontroller_NeedToHomeSoftwareOffsetOnlyFlag_1 = 1 #Sets actual position to 0 during next loop
             RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1 = 0.0
 
+            Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_0 = 1 #Sets actual position to 0 during next loop
+            Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[0] = 0.0
+
+            Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_1 = 1 #Sets actual position to 0 during next loop
+            Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[1] = 0.0
+
             #SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1 #Perform this separatly via its own button.
             #SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1 #Perform this separatly via its own button.
 
@@ -4515,11 +4720,63 @@ if __name__ == '__main__':
         ######################################################################################################
         ######################################################################################################
         ######################################################################################################
-        Wheel_Theta_RL_Radians_Actual = RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1 * 2.0 * math.pi #THE ENCODERS BOTH SHOW POSITIVE DESPITE OPPOSITE MOUNTING
-        Wheel_Theta_RR_Radians_Actual = RoboteqBLDCcontroller_MostRecentDict_Position_Rev_0 * 2.0 * math.pi
 
-        Wheel_Omega_Theta_RL_RadiansPerSec_Actual = RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_1 * 2.0 * math.pi
-        Wheel_Omega_Theta_RR_RadiansPerSec_Actual = RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_0 * 2.0 * math.pi
+        ######################################################################################################
+        ######################################################################################################
+        Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq = RoboteqBLDCcontroller_MostRecentDict_Position_Rev_1 * 2.0 * math.pi  # THE ENCODERS BOTH SHOW POSITIVE DESPITE OPPOSITE MOUNTING
+        Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq = RoboteqBLDCcontroller_MostRecentDict_Position_Rev_0 * 2.0 * math.pi
+
+        Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromRoboteq = RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_1 * 2.0 * math.pi
+        Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromRoboteq = RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_0 * 2.0 * math.pi
+        ######################################################################################################
+        ######################################################################################################
+
+        ######################################################################################################
+        ######################################################################################################
+        Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder = -1.0*Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RL * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[1] * 2.0 * math.pi #The external encoder reverses the sign on the left wheel
+        Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder = Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RR * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[0] * 2.0 * math.pi
+
+        Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder = -1.0*Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RL * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered[1] * 2.0 * math.pi #The external encoder reverses the sign on the left wheel
+        Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder = Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RR * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered[0] * 2.0 * math.pi
+        ######################################################################################################
+        ######################################################################################################
+
+        ######################################################################################################
+        ######################################################################################################
+        '''
+        print("Theta RL-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq, 0, 2) +
+            ", Theta RL-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder, 0, 2) +
+
+              "\t\tTheta RR-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq, 0, 2) +
+                ", Theta RR-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder, 0, 2))
+
+
+              #"\nOmega RL-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromRoboteq, 0, 2) +
+              #", Omega RL-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder, 0, 2) +
+
+              #"\t\tOmega RR-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromRoboteq, 0, 2) +
+              #  ", Omega RR-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder, 0, 2))
+        '''
+        ######################################################################################################
+        ######################################################################################################
+
+        ######################################################################################################
+        ######################################################################################################
+        if USE_ExternalEncodersInsteadOfRoboteq_FLAG == 0:
+            Wheel_Theta_RL_Radians_Actual = Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq
+            Wheel_Theta_RR_Radians_Actual = Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq
+
+            Wheel_Omega_RL_RadiansPerSec_Actual = Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromRoboteq
+            Wheel_Omega_RR_RadiansPerSec_Actual = Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromRoboteq
+            
+        else:
+            Wheel_Theta_RL_Radians_Actual = Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder
+            Wheel_Theta_RR_Radians_Actual = Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder
+
+            Wheel_Omega_RL_RadiansPerSec_Actual = Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder
+            Wheel_Omega_RR_RadiansPerSec_Actual = Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder
+        ######################################################################################################
+        ######################################################################################################
 
         Position_X_RM_Meters_Actual = (RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Theta_RL_Radians_Actual + Wheel_Theta_RR_Radians_Actual) / 2.0)
 
@@ -4529,11 +4786,17 @@ if __name__ == '__main__':
         if Velocity_V_RMC_MetersPerSec_Commanded != 0.0: #So that we're not integrating while commanding nothing via keyboard
             LimitNumber_FloatOutputOnly(Position_X_RM_Meters_Actual - Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, Position_X_RM_Meters_Actual + Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, Position_X_RMC_Meters_Commanded) #Cap it
 
-        Velocity_V_RM_MetersPerSec_Actual_UNFILTERED = RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_Theta_RL_RadiansPerSec_Actual + Wheel_Omega_Theta_RR_RadiansPerSec_Actual) / 2.0
+
+
+        Velocity_V_RM_MetersPerSec_Actual_UNFILTERED = RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_RL_RadiansPerSec_Actual + Wheel_Omega_RR_RadiansPerSec_Actual) / 2.0
         VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("Velocity_V_RM_MetersPerSec_Actual", [Velocity_V_RM_MetersPerSec_Actual_UNFILTERED])]))
         Velocity_V_RM_MetersPerSec_Actual = VariablesDict_Temp["Velocity_V_RM_MetersPerSec_Actual"]["Filtered_MostRecentValuesList"][0]
 
-        PitchAngle_Theta_Deg_Actual = SpatialPrecision333_MostRecentDict_RollPitchYaw_AbtXYZ_Dict["RollPitchYaw_AbtXYZ_List_Degrees"][1]#spatial333_Pitch_AbtYaxis_Degrees_1
+
+
+        PitchAngle_Theta_Deg_Actual_UNFILTERED = SpatialPrecision333_MostRecentDict_RollPitchYaw_AbtXYZ_Dict["RollPitchYaw_AbtXYZ_List_Degrees"][1]
+        VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("PitchAngle_Theta_Deg_Actual", [PitchAngle_Theta_Deg_Actual_UNFILTERED])]))
+        PitchAngle_Theta_Deg_Actual = VariablesDict_Temp["PitchAngle_Theta_Deg_Actual"]["Filtered_MostRecentValuesList"][0]
 
         PitchAngle_Theta_Deg_Actual = PitchAngle_Theta_Deg_Actual + SpatialPrecision333_PitchAngle_Theta_Deg_Actual_Offset
         PitchAngle_Theta_Radians_Actual = PitchAngle_Theta_Deg_Actual*math.pi/180.0
@@ -4547,7 +4810,7 @@ if __name__ == '__main__':
         YawAngle_Delta_Radians_Actual = -1.0*RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Theta_RL_Radians_Actual - Wheel_Theta_RR_Radians_Actual) / RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters #NOT SURE WHY WE NEED MINUS SIGN TO GET YAW IN CORRECT DIRECTION
         YawAngle_Delta_Deg_Actual = YawAngle_Delta_Radians_Actual * 180.0 / math.pi
         
-        YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED = -1.0*RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_Theta_RL_RadiansPerSec_Actual - Wheel_Omega_Theta_RR_RadiansPerSec_Actual) / RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters #NOT SURE WHY WE NEED MINUS SIGN TO GET YAW IN CORRECT DIRECTION
+        YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED = -1.0*RobotModelParameters_R_RadiusOfWheelInMeters * (Wheel_Omega_RL_RadiansPerSec_Actual - Wheel_Omega_RR_RadiansPerSec_Actual) / RobotModelParameters_D_LateralDistanceBetweenWheelContactPatchesInMeters #NOT SURE WHY WE NEED MINUS SIGN TO GET YAW IN CORRECT DIRECTION
         VariablesDict_Temp = LowPassFilterForDictsOfLists_ReubenPython2and3ClassObject.AddDataDictFromExternalProgram(dict([("YawAngularRate_DeltaDot_RadiansPerSec_Actual", [YawAngularRate_DeltaDot_RadiansPerSec_Actual_UNFILTERED])]))
         YawAngularRate_DeltaDot_RadiansPerSec_Actual = VariablesDict_Temp["YawAngularRate_DeltaDot_RadiansPerSec_Actual"]["Filtered_MostRecentValuesList"][0]
 
@@ -4793,10 +5056,37 @@ if __name__ == '__main__':
         ###################################################
         if Phidgets4EncoderAndDInput1047_OPEN_FLAG == 1:
 
-            if Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedExponentialFilterLambdaFlag == 1:
-                Phidgets4EncoderAndDInput1047_ReubenPython2and3ClassObject.Process_EncodersList_SpeedExponentialFilterLambda(Phidgets4EncoderAndDInput1047_EncodersList_SpeedExponentialFilterLambda)
+            ###################################################
+            ###################################################
+            if Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedFilterLambdaFlag == 1:
 
-                Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedExponentialFilterLambdaFlag = 0
+                SpeedFilterDict = dict([("EncodersList_SpeedUseMedianFilterFlag", Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseMedianFilterFlag),
+                                    ("EncodersList_SpeedMedianFilterKernelSize", Phidgets4EncoderAndDInput1047_EncodersList_SpeedMedianFilterKernelSize),
+                                    ("EncodersList_SpeedUseExponentialFilterFlag", Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseExponentialFilterFlag),
+                                    ("EncodersList_SpeedExponentialFilterLambda", Phidgets4EncoderAndDInput1047_EncodersList_SpeedExponentialFilterLambda)])
+
+                Phidgets4EncoderAndDInput1047_ReubenPython2and3ClassObject.UpdateSpeedFilterParameters(SpeedFilterDict)
+
+                Phidgets4EncoderAndDInput1047_NeedToUpdateSpeedFilterLambdaFlag = 0
+            ###################################################
+            ###################################################
+
+            ###################################################
+            ###################################################
+            if Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_0 == 1:
+                Phidgets4EncoderAndDInput1047_ReubenPython2and3ClassObject.HomeEncoder(0)
+                Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_0 = 0
+            ###################################################
+            ###################################################
+
+            ###################################################
+            ###################################################
+            if Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_1 == 1:
+                Phidgets4EncoderAndDInput1047_ReubenPython2and3ClassObject.HomeEncoder(1)
+                Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_1 = 0
+            ###################################################
+            ###################################################
+
         ###################################################
         ###################################################
         ###################################################
@@ -4821,54 +5111,118 @@ if __name__ == '__main__':
         ####################################################
         ###################################################
 
-        ################################################### SETs
-        ###################################################
-        ###################################################
-        if MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG == 1:
-
-            ####################################################
-            MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.GetMostRecentDataDict()
-
-            if "StandAlonePlottingProcess_ReadyForWritingFlag" in MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict:
-                MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict["StandAlonePlottingProcess_ReadyForWritingFlag"]
-
-                if MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
-                    if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1 >= MyPlotterPureTkinterStandAloneProcess_1_RefreshDurationInSeconds:
-
-                        #MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Position_X_RM_Meters_Actual", "Velocity_V_RM_MetersPerSec_Actual"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, Velocity_V_RM_MetersPerSec_Actual])
-                        #MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Position_X_RM_Meters_Actual", "Velocity_V_RM_MetersPerSec_Actual"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Position_X_RM_Meters_Actual, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0])
-                        MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel2", "Channel3"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [TorqueToBeCommanded_Motor0, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0])
-                        #MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel2", "Channel3"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Raw[0], Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPM_Filtered[0]])
-
-
-
-
-                        LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1 = CurrentTime_CalculatedFromMainThread
-            ####################################################
-
         ###################################################
         ###################################################
         ###################################################
+        try:
+            ################################################### SETs
+            ###################################################
+            if MyPlotterPureTkinterStandAloneProcess_1_OPEN_FLAG == 1:
 
-        ################################################### SETs
-        ###################################################
-        ###################################################
-        if MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG == 1:
+                ####################################################
+                MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.GetMostRecentDataDict()
 
-            ####################################################
-            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.GetMostRecentDataDict()
+                if "StandAlonePlottingProcess_ReadyForWritingFlag" in MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict:
+                    MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict["StandAlonePlottingProcess_ReadyForWritingFlag"]
 
-            if "StandAlonePlottingProcess_ReadyForWritingFlag" in MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict:
-                MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict["StandAlonePlottingProcess_ReadyForWritingFlag"]
+                    if MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
+                        if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1 >= MyPlotterPureTkinterStandAloneProcess_1_RefreshDurationInSeconds:
 
-                if MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
-                    if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2 >= MyPlotterPureTkinterStandAloneProcess_2_RefreshDurationInSeconds:
+                            '''
+                            MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel2", "Channel3"],
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread],
+                                                                                                                                      [TorqueToBeCommanded_Motor0, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_0])
+                            '''
 
-                        #MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["PitchAngle_Theta_Deg_Actual"], [CurrentTime_CalculatedFromMainThread], [PitchAngle_Theta_Deg_Actual])
-                        MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel2", "Channel3"], [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread], [TorqueToBeCommanded_Motor1, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1])
+                            #'''
+                            MyPlotterPureTkinterStandAloneProcess_1_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Position_X_RM_Meters_Actual", "Velocity_V_RM_MetersPerSec_Actual"],
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread, CurrentTime_CalculatedFromMainThread],
+                                                                                                                                      [Position_X_RM_Meters_Actual, Velocity_V_RM_MetersPerSec_Actual])
+                            #'''
 
-                        LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2 = CurrentTime_CalculatedFromMainThread
-            ####################################################
+                            LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_1 = CurrentTime_CalculatedFromMainThread
+                ####################################################
+
+            ###################################################
+            ###################################################
+
+            ################################################### SETs
+            ###################################################
+            if MyPlotterPureTkinterStandAloneProcess_2_OPEN_FLAG == 1:
+
+                ####################################################
+                MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.GetMostRecentDataDict()
+
+                if "StandAlonePlottingProcess_ReadyForWritingFlag" in MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict:
+                    MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag = MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict["StandAlonePlottingProcess_ReadyForWritingFlag"]
+
+                    if MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject_MostRecentDict_StandAlonePlottingProcess_ReadyForWritingFlag == 1:
+                        if CurrentTime_CalculatedFromMainThread - LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2 >= MyPlotterPureTkinterStandAloneProcess_2_RefreshDurationInSeconds:
+
+                            #'''
+                            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["PitchAngle_Theta_Deg_Actual"], 
+                                                                                                                                        [CurrentTime_CalculatedFromMainThread]*1, 
+                                                                                                                                        [PitchAngle_Theta_Deg_Actual])
+                            #'''
+
+                            '''
+                            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel2", "Channel3"], 
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread]*2, 
+                                                                                                                                      [TorqueToBeCommanded_Motor1, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied_1])
+                            '''
+
+                            '''
+                            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Roboteq_RL", "Encoder_RL"],
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread]*2,
+                                                                                                                                      [Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq,
+                                                                                                                                       Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder])
+                            '''
+
+                            '''
+                            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Roboteq_RR", "Encoder_RR"],
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread]*2,
+                                                                                                                                      [Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq,
+                                                                                                                                       Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder])
+                            '''
+
+                            '''
+                            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Roboteq_RL", "Encoder_RL", "Roboteq_RR", "Encoder_RR"],
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread]*4,
+                                                                                                                                      [Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq,
+                                                                                                                                       Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder,
+                                                                                                                                       Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq,
+                                                                                                                                       Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder])
+                            '''
+
+                            '''
+                            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Roboteq_RL", "Encoder_RL", "Roboteq_RR", "Encoder_RR"],
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread]*4,
+                                                                                                                                      [Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromRoboteq,
+                                                                                                                                       Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder,
+                                                                                                                                       Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromRoboteq,
+                                                                                                                                       Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder])
+                            '''
+
+                            '''
+                            MyPlotterPureTkinterStandAloneProcess_2_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Roboteq_RL", "Encoder_RL", "Roboteq_RR", "Encoder_RR"],
+                                                                                                                                      [CurrentTime_CalculatedFromMainThread]*4,
+                                                                                                                                      [Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder,
+                                                                                                                                       Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder,
+                                                                                                                                       Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder,
+                                                                                                                                       Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder])
+                            '''
+
+
+                            LastTime_CalculatedFromMainThread_MyPlotterPureTkinterStandAloneProcess_2 = CurrentTime_CalculatedFromMainThread
+                ####################################################
+
+            ###################################################
+            ###################################################
+
+        except:
+            exceptions = sys.exc_info()[0]
+            print("SelfBalancingRobot1, MyPlotterPureTkinterStandAloneProcess SET's, exceptions: %s" % exceptions)
+            traceback.print_exc()
 
         ###################################################
         ###################################################
@@ -4888,6 +5242,8 @@ if __name__ == '__main__':
         #PLACE TO UPDATE LAST_ VARIABLES
         DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda_last = DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda
         DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda_last = DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda
+
+        PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
         Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
         YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda_last = YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda
 

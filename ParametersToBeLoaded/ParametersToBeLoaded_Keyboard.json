@@ -7,13 +7,13 @@
                 {"KeyName":"w",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_FWD_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_FWD_STOP",
-                "CommandedValue_PID": 0.05},
+                "CommandedValue_PID": 0.1},
 
             "REV":
                 {"KeyName":"x",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_REV_START",
                 "OnReleaseCallbackFunctionNameString": "KeyPressResponse_REV_STOP",
-                "CommandedValue_PID": -0.05},
+                "CommandedValue_PID": -0.1},
 
             "RIGHT":
                 {"KeyName":"d",

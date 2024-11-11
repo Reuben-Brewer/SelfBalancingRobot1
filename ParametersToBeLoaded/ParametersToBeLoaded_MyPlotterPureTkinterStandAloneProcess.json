@@ -6,7 +6,7 @@
         "NumberOfPrintLines": 10,
         "GraphCanvasWidth": 900,
         "GraphCanvasHeight": 500,
-        "GraphCanvasWindowStartingX": 20,
+        "GraphCanvasWindowStartingX": 0,
         "GraphCanvasWindowStartingY": 0,
         "GraphCanvasWindowTitle": "Position and Velocity",
         "GUI_RootAfterCallbackInterval_Milliseconds_IndependentOfParentRootGUIloopEvents": 20
@@ -46,7 +46,7 @@
         "NumberOfPrintLines": 10,
         "GraphCanvasWidth": 900,
         "GraphCanvasHeight": 500,
-        "GraphCanvasWindowStartingX": 20,
+        "GraphCanvasWindowStartingX": 0,
         "GraphCanvasWindowStartingY": 500,
         "GraphCanvasWindowTitle": "Pitch and PitchDot",
         "GUI_RootAfterCallbackInterval_Milliseconds_IndependentOfParentRootGUIloopEvents": 20
@@ -58,8 +58,8 @@
         "MarkerSize": 3,
         "CurvesToPlotNamesAndColorsDictOfLists":
             {
-                "NameList": ["PitchAngle_Theta_Deg_Actual", "PitchAngularRate_ThetaDot_DegreesPerSecond_Actual", "Channel2", "Channel3"],
-                "ColorList": ["Red", "Green", "Blue", "Black"]
+                "NameList": ["Roboteq_RL", "Encoder_RL", "Roboteq_RR", "Encoder_RR", "PitchAngle_Theta_Deg_Actual"],
+                "ColorList": ["Red", "Green", "Orange", "Blue", "Black"]
             },
         "NumberOfDataPointToPlot": 25,
         "XaxisNumberOfTickMarks": 10,

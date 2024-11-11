@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision I, 10/17/2024
+Software Revision J, 11/10/2024
 
 Verified working on: Python 2.7, 3.12 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
 '''
@@ -1318,65 +1318,160 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
 
     ##########################################################################################################
     ##########################################################################################################
-    def PassThrough0and1values_ExitProgramOtherwise(self, InputNameString, InputNumber):
+    ##########################################################################################################
+    def PassThrough0and1values_ExitProgramOtherwise(self, InputNameString, InputNumber, ExitProgramIfFailureFlag = 0):
 
+        ##########################################################################################################
+        ##########################################################################################################
         try:
+
+            ##########################################################################################################
             InputNumber_ConvertedToFloat = float(InputNumber)
+            ##########################################################################################################
+
         except:
+
+            ##########################################################################################################
             exceptions = sys.exc_info()[0]
-            print("PassThrough0and1values_ExitProgramOtherwise Error. InputNumber must be a float value, Exceptions: %s" % exceptions)
-            input("Press any key to continue")
-            sys.exit()
+            print(self.TellWhichFileWereIn() + ", PassThrough0and1values_ExitProgramOtherwise Error. InputNumber '" + InputNameString + "' must be a numerical value, Exceptions: %s" % exceptions)
 
-        try:
-            if InputNumber_ConvertedToFloat == 0.0 or InputNumber_ConvertedToFloat == 1:
-                return InputNumber_ConvertedToFloat
-            else:
-                input("PassThrough0and1values_ExitProgramOtherwise Error. '" +
-                          InputNameString +
-                          "' must be 0 or 1 (value was " +
-                          str(InputNumber_ConvertedToFloat) +
-                          "). Press any key (and enter) to exit.")
-
+            ##########################
+            if ExitProgramIfFailureFlag == 1:
                 sys.exit()
+            else:
+                return -1
+            ##########################
+
+            ##########################################################################################################
+
+        ##########################################################################################################
+        ##########################################################################################################
+
+        ##########################################################################################################
+        ##########################################################################################################
+        try:
+
+            ##########################################################################################################
+            if InputNumber_ConvertedToFloat == 0.0 or InputNumber_ConvertedToFloat == 1.0:
+                return InputNumber_ConvertedToFloat
+
+            else:
+
+                print(self.TellWhichFileWereIn() + ", PassThrough0and1values_ExitProgramOtherwise Error. '" +
+                              str(InputNameString) +
+                              "' must be 0 or 1 (value was " +
+                              str(InputNumber_ConvertedToFloat) +
+                              "). Press any key (and enter) to exit.")
+
+                ##########################
+                if ExitProgramIfFailureFlag == 1:
+                    sys.exit()
+
+                else:
+                    return -1
+                ##########################
+
+            ##########################################################################################################
+
         except:
+
+            ##########################################################################################################
             exceptions = sys.exc_info()[0]
-            print("PassThrough0and1values_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
-            input("Press any key to continue")
-            sys.exit()
+            print(self.TellWhichFileWereIn() + ", PassThrough0and1values_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
+
+            ##########################
+            if ExitProgramIfFailureFlag == 1:
+                sys.exit()
+            else:
+                return -1
+            ##########################
+
+            ##########################################################################################################
+
+        ##########################################################################################################
+        ##########################################################################################################
+
+    ##########################################################################################################
     ##########################################################################################################
     ##########################################################################################################
 
     ##########################################################################################################
     ##########################################################################################################
-    def PassThroughFloatValuesInRange_ExitProgramOtherwise(self, InputNameString, InputNumber, RangeMinValue, RangeMaxValue):
+    ##########################################################################################################
+    def PassThroughFloatValuesInRange_ExitProgramOtherwise(self, InputNameString, InputNumber, RangeMinValue, RangeMaxValue, ExitProgramIfFailureFlag = 0):
+
+        ##########################################################################################################
+        ##########################################################################################################
         try:
+            ##########################################################################################################
             InputNumber_ConvertedToFloat = float(InputNumber)
+            ##########################################################################################################
+
         except:
+            ##########################################################################################################
             exceptions = sys.exc_info()[0]
-            print("PassThroughFloatValuesInRange_ExitProgramOtherwise Error. InputNumber must be a float value, Exceptions: %s" % exceptions)
-            input("Press any key to continue")
-            sys.exit()
+            print(self.TellWhichFileWereIn() + ", PassThroughFloatValuesInRange_ExitProgramOtherwise Error. InputNumber '" + InputNameString + "' must be a float value, Exceptions: %s" % exceptions)
+            traceback.print_exc()
 
-        try:
-            if InputNumber_ConvertedToFloat >= RangeMinValue and InputNumber_ConvertedToFloat <= RangeMaxValue:
-                return InputNumber_ConvertedToFloat
-            else:
-                input("PassThroughFloatValuesInRange_ExitProgramOtherwise Error. '" +
-                          InputNameString +
-                          "' must be in the range [" +
-                          str(RangeMinValue) +
-                          ", " +
-                          str(RangeMaxValue) +
-                          "] (value was " +
-                          str(InputNumber_ConvertedToFloat) + "). Press any key (and enter) to exit.")
-
+            ##########################
+            if ExitProgramIfFailureFlag == 1:
                 sys.exit()
+            else:
+                return -11111.0
+            ##########################
+
+            ##########################################################################################################
+
+        ##########################################################################################################
+        ##########################################################################################################
+
+        ##########################################################################################################
+        ##########################################################################################################
+        try:
+
+            ##########################################################################################################
+            InputNumber_ConvertedToFloat_Limited = self.LimitNumber_FloatOutputOnly(RangeMinValue, RangeMaxValue, InputNumber_ConvertedToFloat)
+
+            if InputNumber_ConvertedToFloat_Limited != InputNumber_ConvertedToFloat:
+                print(self.TellWhichFileWereIn() + ", PassThroughFloatValuesInRange_ExitProgramOtherwise Error. '" +
+                      str(InputNameString) +
+                      "' must be in the range [" +
+                      str(RangeMinValue) +
+                      ", " +
+                      str(RangeMaxValue) +
+                      "] (value was " +
+                      str(InputNumber_ConvertedToFloat) + ")")
+
+                ##########################
+                if ExitProgramIfFailureFlag == 1:
+                    sys.exit()
+                else:
+                    return -11111.0
+                ##########################
+
+            else:
+                return InputNumber_ConvertedToFloat_Limited
+            ##########################################################################################################
+
         except:
+            ##########################################################################################################
             exceptions = sys.exc_info()[0]
-            print("PassThroughFloatValuesInRange_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
-            input("Press any key to continue")
-            sys.exit()
+            print(self.TellWhichFileWereIn() + ", PassThroughFloatValuesInRange_ExitProgramOtherwise Error, Exceptions: %s" % exceptions)
+            traceback.print_exc()
+
+            ##########################
+            if ExitProgramIfFailureFlag == 1:
+                sys.exit()
+            else:
+                return -11111.0
+            ##########################
+
+            ##########################################################################################################
+
+        ##########################################################################################################
+        ##########################################################################################################
+
+    ##########################################################################################################
     ##########################################################################################################
     ##########################################################################################################
 
@@ -1673,14 +1768,20 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                 #### Longer set
 
                 #### Medium set
-                self.VariableNamesToStartStreamingList = ["CB 0", "BS", "P", "AOM", "FF"]
-                self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "MotorPowerOutputApplied", "ActualOperationMode", "FaultFlags"]
+                #Was using this prior to 11/09/24 when we were relying on the position/velocity reports from the Roboteq (before switching to Phidgets External Encoder)
+                #self.VariableNamesToStartStreamingList = ["CB 0", "BS", "P", "AOM", "FF"]
+                #self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "MotorPowerOutputApplied", "ActualOperationMode", "FaultFlags"]
                 #### Medium set
 
-                #### Shorter set
-                #self.VariableNamesToStartStreamingList = ["CB 0", "BS", "FF"]
-                #self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "SpeedRPM", "FaultFlags"]
-                #### Shorter set
+                #### Shorter set WITH POSITION DEBUGGING
+                #self.VariableNamesToStartStreamingList = ["CB 0", "AOM", "FF"]
+                #self.VariableNamesEnglishList = ["AbsoluteBrushlessCounter", "ActualOperationMode", "FaultFlags"]
+                #### Shorter set WITH POSITION DEBUGGING
+
+                #### Shortest set
+                self.VariableNamesToStartStreamingList = ["AOM", "FF"]
+                self.VariableNamesEnglishList = ["ActualOperationMode", "FaultFlags"]
+                #### Shortest set
 
                 StringToTx = "/" + self.QuoteString + self.PrefixOfReturnedMessages + self.QuoteString + "," + self.QuoteString + self.DelimiterOfReturnedMessages + self.QuoteString
 
@@ -3169,14 +3270,17 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             self.MostRecentDataDict["ControlMode_EnglishString"] = self.ControlMode_EnlishString
 
                             #print("self.MostRecentDataDict: " + str(self.MostRecentDataDict))
-                            self.MostRecentDataDict["Position_Rev"] = (self.MostRecentDataDict["AbsoluteBrushlessCounter"] - self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet)/(self.NumberOfMagnetsInMotor*3.0)
-                            self.MostRecentDataDict["Position_Radians"] = self.MostRecentDataDict["Position_Rev"]*2.0*math.pi
-                            self.MostRecentDataDict["Position_Degrees"] = self.MostRecentDataDict["Position_Rev"]*360.0
 
-                            self.MostRecentDataDict["Speed_RPM"] = self.MostRecentDataDict["SpeedRPM"]
-                            self.MostRecentDataDict["Speed_RPS"] = self.MostRecentDataDict["Speed_RPM"]/60.0
-                            self.MostRecentDataDict["Speed_RadiansPerSec"] = self.MostRecentDataDict["Speed_RPS"]/(self.NumberOfMagnetsInMotor*3.0)
-                            self.MostRecentDataDict["Speed_DegreesPerSec"] = self.MostRecentDataDict["Speed_RadiansPerSec"]*360.0
+                            if "AbsoluteBrushlessCounter" in self.MostRecentDataDict:
+                                self.MostRecentDataDict["Position_Rev"] = (self.MostRecentDataDict["AbsoluteBrushlessCounter"] - self.HomeOrBrushlessCounterSoftwareOffsetOnly_AbsoluteBrushlessCounter_ToBeSet)/(self.NumberOfMagnetsInMotor*3.0)
+                                self.MostRecentDataDict["Position_Radians"] = self.MostRecentDataDict["Position_Rev"]*2.0*math.pi
+                                self.MostRecentDataDict["Position_Degrees"] = self.MostRecentDataDict["Position_Rev"]*360.0
+
+                            if "SpeedRPM" in self.MostRecentDataDict:
+                                self.MostRecentDataDict["Speed_RPM"] = self.MostRecentDataDict["SpeedRPM"]
+                                self.MostRecentDataDict["Speed_RPS"] = self.MostRecentDataDict["Speed_RPM"]/60.0
+                                self.MostRecentDataDict["Speed_RadiansPerSec"] = self.MostRecentDataDict["Speed_RPS"]/(self.NumberOfMagnetsInMotor*3.0)
+                                self.MostRecentDataDict["Speed_DegreesPerSec"] = self.MostRecentDataDict["Speed_RadiansPerSec"]*360.0
 
                             self.MostRecentDataDict["RxMessage"]  = RxMessage
                             self.MostRecentDataDict["RxMessage_length"] = len(RxMessage)
@@ -3184,13 +3288,14 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             self.MostRecentDataDict["Motor_Target_ToBeSet"] = self.Motor_Target_ToBeSet
 
                             if self.DataStreamingDeltaT_CalculatedFromDedicatedRxThread > 0.0:
-                                Speed_RPM_Calculated_Raw = (self.MostRecentDataDict["Position_Rev"] - self.Position_Rev_Last)/self.DataStreamingDeltaT_CalculatedFromDedicatedRxThread
-                                Speed_RPM_Calculated_Raw = 0.5*Speed_RPM_Calculated_Raw #WHY DO WE HAVE TO DIVIDE BY 2 HERE????
-                                self.MostRecentDataDict["Speed_RPS_Calculated"] = self.Speed_RPS_Calculated_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(Speed_RPM_Calculated_Raw)["SignalOutSmoothed"]
+                                if "Position_Rev" in self.MostRecentDataDict:
+                                    Speed_RPM_Calculated_Raw = (self.MostRecentDataDict["Position_Rev"] - self.Position_Rev_Last)/self.DataStreamingDeltaT_CalculatedFromDedicatedRxThread
+                                    Speed_RPM_Calculated_Raw = 0.5*Speed_RPM_Calculated_Raw #WHY DO WE HAVE TO DIVIDE BY 2 HERE????
+                                    self.MostRecentDataDict["Speed_RPS_Calculated"] = self.Speed_RPS_Calculated_LowPassFilter_ReubenPython2and3ClassObject.AddDataPointFromExternalProgram(Speed_RPM_Calculated_Raw)["SignalOutSmoothed"]
 
-                                self.MostRecentDataDict["Speed_RPM_Calculated"] = self.MostRecentDataDict["Speed_RPS_Calculated"]*60.0
-                                self.MostRecentDataDict["Speed_RadiansPerSec_Calculated"] = self.MostRecentDataDict["Speed_RPS_Calculated"]/(self.NumberOfMagnetsInMotor*3.0)
-                                self.MostRecentDataDict["Speed_DegreesPerSec_Calculated"] = self.MostRecentDataDict["Speed_RadiansPerSec_Calculated"]*360.0
+                                    self.MostRecentDataDict["Speed_RPM_Calculated"] = self.MostRecentDataDict["Speed_RPS_Calculated"]*60.0
+                                    self.MostRecentDataDict["Speed_RadiansPerSec_Calculated"] = self.MostRecentDataDict["Speed_RPS_Calculated"]/(self.NumberOfMagnetsInMotor*3.0)
+                                    self.MostRecentDataDict["Speed_DegreesPerSec_Calculated"] = self.MostRecentDataDict["Speed_RadiansPerSec_Calculated"]*360.0
 
                             '''
                             #IMPLMENT THIS CONVERSION OF THE RECEIVED FAULT FLAG
@@ -3212,7 +3317,8 @@ class RoboteqBLDCcontroller_ReubenPython2and3Class(Frame): #Subclass the Tkinter
                             ##########################################
 
                             ##########################################
-                            self.Position_Rev_Last = self.MostRecentDataDict["Position_Rev"]
+                            if "Position_Rev" in self.MostRecentDataDict:
+                                self.Position_Rev_Last = self.MostRecentDataDict["Position_Rev"]
                             ##########################################
 
                             ##########################################

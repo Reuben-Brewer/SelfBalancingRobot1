@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision I, 10/17/2024
+Software Revision J, 11/10/2024
 
 Verified working on: Python 2.7, 3.12 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (may work on Mac in non-GUI mode, but haven't tested yet).
 '''
@@ -715,7 +715,7 @@ if __name__ == '__main__':
                                                                                 ("Current_Amps_Starting", 10.0),
                                                                                 ("DedicatedRxThread_TimeToSleepEachLoop", 0.002),
                                                                                 ("DedicatedTxThread_TimeToSleepEachLoop", 0.002),
-                                                                                ("SerialRxBufferSize", 17),
+                                                                                ("SerialRxBufferSize", 6),
                                                                                 ("SerialTxBufferSize", 15),
                                                                                 ("DedicatedTxThread_TxMessageToSend_Queue_MaxSize", 1),
                                                                                 ("HeartbeatTimeIntervalMilliseconds", 1000.00), #0 turns the Heartbeat off, reset to 1000.00
@@ -885,28 +885,32 @@ if __name__ == '__main__':
 
             if "Time" in RoboteqBLDCcontroller_MostRecentDict:
                 RoboteqBLDCcontroller_MostRecentDict_AbsoluteBrushlessCounter = RoboteqBLDCcontroller_MostRecentDict["AbsoluteBrushlessCounter"]
-                RoboteqBLDCcontroller_MostRecentDict_SpeedRPM = RoboteqBLDCcontroller_MostRecentDict["SpeedRPM"]
-                RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied = RoboteqBLDCcontroller_MostRecentDict["MotorPowerOutputApplied"]
+                #RoboteqBLDCcontroller_MostRecentDict_SpeedRPM = RoboteqBLDCcontroller_MostRecentDict["SpeedRPM"]
+                #RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied = RoboteqBLDCcontroller_MostRecentDict["MotorPowerOutputApplied"]
+
+                RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_CorrectInt = RoboteqBLDCcontroller_MostRecentDict["ActualOperationMode_CorrectInt"]
+                RoboteqBLDCcontroller_MostRecentDict_ActualOperationMode_EnglishString = RoboteqBLDCcontroller_MostRecentDict["ActualOperationMode_EnglishString"]
+                RoboteqBLDCcontroller_MostRecentDict_FaultFlags = RoboteqBLDCcontroller_MostRecentDict["FaultFlags"]
+
                 #RoboteqBLDCcontroller_MostRecentDict_TorqueTarget = RoboteqBLDCcontroller_MostRecentDict["TorqueTarget"]
                 #RoboteqBLDCcontroller_MostRecentDict_MotorCurrentRMSamps = RoboteqBLDCcontroller_MostRecentDict["MotorCurrentRMSamps"]
                 #RoboteqBLDCcontroller_MostRecentDict_MotorCurrentPeakAmps = RoboteqBLDCcontroller_MostRecentDict["MotorCurrentPeakAmps"]
                 #RoboteqBLDCcontroller_MostRecentDict_BatteryCurrentInAmps = RoboteqBLDCcontroller_MostRecentDict["BatteryCurrentInAmps"]
                 #RoboteqBLDCcontroller_MostRecentDict_BatteryVoltsX10 = RoboteqBLDCcontroller_MostRecentDict["BatteryVoltsX10"]
-                RoboteqBLDCcontroller_MostRecentDict_FaultFlags = RoboteqBLDCcontroller_MostRecentDict["FaultFlags"]
 
                 RoboteqBLDCcontroller_MostRecentDict_Position_Rev = RoboteqBLDCcontroller_MostRecentDict["Position_Rev"]
                 RoboteqBLDCcontroller_MostRecentDict_Position_Radians = RoboteqBLDCcontroller_MostRecentDict["Position_Radians"]
                 RoboteqBLDCcontroller_MostRecentDict_Position_Degrees = RoboteqBLDCcontroller_MostRecentDict["Position_Degrees"]
 
-                RoboteqBLDCcontroller_MostRecentDict_Speed_RPM = RoboteqBLDCcontroller_MostRecentDict["Speed_RPM"]
-                RoboteqBLDCcontroller_MostRecentDict_Speed_RPS = RoboteqBLDCcontroller_MostRecentDict["Speed_RPS"]
-                RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec = RoboteqBLDCcontroller_MostRecentDict["Speed_RadiansPerSec"]
-                RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec = RoboteqBLDCcontroller_MostRecentDict["Speed_DegreesPerSec"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_RPM = RoboteqBLDCcontroller_MostRecentDict["Speed_RPM"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_RPS = RoboteqBLDCcontroller_MostRecentDict["Speed_RPS"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec = RoboteqBLDCcontroller_MostRecentDict["Speed_RadiansPerSec"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec = RoboteqBLDCcontroller_MostRecentDict["Speed_DegreesPerSec"]
 
-                RoboteqBLDCcontroller_MostRecentDict_Speed_RPM_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_RPM_Calculated"]
-                RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_RPS_Calculated"]
-                RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_RadiansPerSec_Calculated"]
-                RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_DegreesPerSec_Calculated"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_RPM_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_RPM_Calculated"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_RPS_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_RPS_Calculated"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_RadiansPerSec_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_RadiansPerSec_Calculated"]
+                #RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec_Calculated = RoboteqBLDCcontroller_MostRecentDict["Speed_DegreesPerSec_Calculated"]
 
                 RoboteqBLDCcontroller_MostRecentDict_Time = RoboteqBLDCcontroller_MostRecentDict["Time"]
                 RoboteqBLDCcontroller_MostRecentDict_DataStreamingFrequency_CalculatedFromDedicatedRxThread = RoboteqBLDCcontroller_MostRecentDict["DataStreamingFrequency_CalculatedFromDedicatedRxThread"]
@@ -949,7 +953,7 @@ if __name__ == '__main__':
                     if CurrentTime_MainLoopThread - LastTime_MainLoopThread_PLOTTER >= 0.030:
                         #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1", "Channel2"], [CurrentTime_MainLoopThread]*3, [RoboteqBLDCcontroller_MostRecentDict_Position_Rev, RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec, RoboteqBLDCcontroller_MostRecentDict_Speed_DegreesPerSec_Calculated])
 
-                        MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_MainLoopThread]*2, [SINUSOIDAL_INPUT_TO_COMMAND, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied])
+                        #MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExternalAddPointOrListOfPointsToPlot(["Channel0", "Channel1"], [CurrentTime_MainLoopThread]*2, [SINUSOIDAL_INPUT_TO_COMMAND, RoboteqBLDCcontroller_MostRecentDict_MotorPowerOutputApplied])
 
 
                         LastTime_MainLoopThread_PLOTTER = CurrentTime_MainLoopThread

@@ -1,5 +1,5 @@
 {
-    "RoboteqBLDCcontroller_Directions_0": "self.Acceleration_Target_Max_MotorHardLimit = 500000.",
+    "RoboteqBLDCcontroller_Directions_0": "self.Acceleration_Target_Max_MotorHardLimit = 500000. SerialRxBufferSize_0 = 17 before switching to external encoder.",
     "RoboteqBLDCcontroller_NameToDisplay_UserSet_0": "Motor 0",
     "RoboteqBLDCcontroller_DesiredSerialNumber_USBtoSerialConverter_0": "FT5ALD6OA",
     "RoboteqBLDCcontroller_ControlMode_Starting_0": "OpenLoop",
@@ -15,7 +15,7 @@
     "RoboteqBLDCcontroller_VariableStreamingSendDataEveryDeltaT_MillisecondsInt_0": 8,
     "RoboteqBLDCcontroller_DedicatedRxThread_TimeToSleepEachLoop_0": 0.001,
     "RoboteqBLDCcontroller_DedicatedTxThread_TimeToSleepEachLoop_0": 0.002,
-    "RoboteqBLDCcontroller_SerialRxBufferSize_0": 17,
+    "RoboteqBLDCcontroller_SerialRxBufferSize_0": 6,
     "RoboteqBLDCcontroller_SerialTxBufferSize_0": 15,
     "RoboteqBLDCcontroller_DedicatedTxThread_TxMessageToSend_Queue_MaxSize_0": 1,
     "RoboteqBLDCcontroller_HeartbeatTimeIntervalMilliseconds_0": 2000.00,

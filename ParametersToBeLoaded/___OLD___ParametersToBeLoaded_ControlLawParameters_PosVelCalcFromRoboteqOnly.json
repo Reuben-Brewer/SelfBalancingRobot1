@@ -10,23 +10,19 @@
     "ENABLE_MOTORS_AT_STARTUP_FLAG":0,
 
     "SelfBalancingRobot1_MainThread_TimeToSleepEachLoop": 0.001,
-    "DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda": 0.90,
-    "DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda": 0.90,
-
-    "PitchAngle_Theta_Deg_Actual_LowPassFilter_UseMedianFilterFlag": 1,
-    "PitchAngle_Theta_Deg_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
-    "PitchAngle_Theta_Deg_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.95,
+    "DataStreamingFrequency_CalculatedFromMainThread_LowPassFilter_ExponentialSmoothingFilterLambda": 0.98,
+    "DataStreamingFrequency_CalculatedFromGUIthread_LowPassFilter_ExponentialSmoothingFilterLambda": 0.98,
 
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 1,
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
-    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.99,
+    "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.5,
 
     "Velocity_V_RMC_MetersPerSec_Commanded_DeadbandThreshold": 0.050,
     "Velocity_V_RMC_MetersPerSec_Commanded_JoystickToMetersPerSecGain": 1.000,
 
-    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 1,
+    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 0,
     "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
-    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.99,
+    "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.9,
 
     "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_DeadbandThreshold": 0.050,
     "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_JoystickToRadiansPerSecGain": 0.400,
@@ -36,13 +32,13 @@
 
     "Pitch_ParametersToBeLoaded_Directions": "Pitch -User sets ... (-11111 = Derived).",
     
-    "PID_gain_Kp_OuterLoopPosControl": -0.6,
-    "PID_gain_Ki_OuterLoopPosControl": -0.99,
-    "PID_gain_Kd_OuterLoopPosControl": -0.09,
-    "PID_ErrorSumMax_OuterLoopPosControl": -1.5,
+    "PID_gain_Kp_OuterLoopPosControl": -0.5,
+    "PID_gain_Ki_OuterLoopPosControl": -0.1,
+    "PID_gain_Kd_OuterLoopPosControl": -0.12,
+    "PID_ErrorSumMax_OuterLoopPosControl": -0.5,
     
-    "PID_gain_Kp_InnerLoopPitchControl": -15000.0,
-    "PID_gain_Kd_InnerLoopPitchControl": -800.0,
+    "PID_gain_Kp_InnerLoopPitchControl": -5000.0,
+    "PID_gain_Kd_InnerLoopPitchControl": -10.0,
 
     "YawControl_gain_Kdelta1": -1000.0,
     "YawControl_gain_Kdelta2": 0.0,
