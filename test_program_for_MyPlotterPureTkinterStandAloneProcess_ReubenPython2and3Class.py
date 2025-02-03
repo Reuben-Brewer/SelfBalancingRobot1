@@ -6,9 +6,9 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision O, 11/03/2024
+Software Revision P, 02/02/2025
 
-Verified working on: Python 3.12 for Windows 8.1, 10, and 11 64-bit, Ubuntu 20.04, and Raspberry Pi Buster (no Mac testing yet).
+Verified working on: Python 3.12 for Windows 11 64-bit, Ubuntu 20.04, and Raspberry Pi Buster.
 THE SEPARATE-PROCESS-SPAWNING COMPONENT OF THIS CLASS IS NOT AVAILABLE IN PYTHON 2 DUE TO LIMITATION OF
 "multiprocessing.set_start_method('spawn')" ONLY BEING AVAILABLE IN PYTHON 3. PLOTTING WITHIN A SINGLE PROCESS STILL WORKS.
 '''
@@ -31,6 +31,7 @@ import collections
 import math
 import traceback
 import re
+import keyboard
 #########################################################
 
 #########################################################
@@ -65,10 +66,10 @@ def getPreciseSecondsTimeStampString():
 ##########################################################################################################
 def TestButtonResponse():
     global MyPrint_ReubenPython2and3ClassObject
-    global USE_MYPRINT_FLAG
+    global USE_MyPrint_FLAG
     global TestButton_EventNeedsToBeHandledFlag
 
-    if USE_MYPRINT_FLAG == 1:
+    if USE_MyPrint_FLAG == 1:
         TestButton_EventNeedsToBeHandledFlag = 1
         MyPrint_ReubenPython2and3ClassObject.my_print("Test Button was Pressed!")
     else:
@@ -85,12 +86,12 @@ def GUI_update_clock():
     global USE_GUI_FLAG
 
     global MyPrint_ReubenPython2and3ClassObject
-    global MYPRINT_OPEN_FLAG
+    global MyPrint_OPEN_FLAG
 
     global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject
-    global USE_PLOTTER_FLAG
-    global PLOTTER_OPEN_FLAG
-    global SHOW_IN_GUI_PLOTTER_FLAG
+    global USE_MyPlotterPureTkinterStandAloneProcess_FLAG
+    global MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG
+    global SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG
 
     global PARENT_GUI_COUNTER
 
@@ -103,12 +104,12 @@ def GUI_update_clock():
             #MyPrint_ReubenPython2and3ClassObject.my_print("PID = " + str(os.getpid()) + ", PARENT_GUI_COUNTER: " + str(PARENT_GUI_COUNTER))
 
             #########################################################
-            if MYPRINT_OPEN_FLAG == 1:
+            if MyPrint_OPEN_FLAG == 1:
                 MyPrint_ReubenPython2and3ClassObject.GUI_update_clock()
             #########################################################
 
             #########################################################
-            #if USE_PLOTTER_FLAG == 1 and PLOTTER_OPEN_FLAG == 1 and SHOW_IN_GUI_PLOTTER_FLAG == 1:
+            #if USE_MyPlotterPureTkinterStandAloneProcess_FLAG == 1 and MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG == 1 and SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG == 1:
                 #pass #DO NOT CALL MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.GUI_update_clock() as the plotter is firing its own, internal root.after callbacks faster than in this parent root GUI loop.
             #########################################################
 
@@ -123,13 +124,12 @@ def GUI_update_clock():
 
 ##########################################################################################################
 ##########################################################################################################
-def ExitProgram_Callback():
+def ExitProgram_Callback(OptionalArugment = 0):
     global EXIT_PROGRAM_FLAG
 
     print("Exiting all threads in test_program_for_MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class.")
 
     EXIT_PROGRAM_FLAG = 1
-
 ##########################################################################################################
 ##########################################################################################################
 
@@ -194,15 +194,18 @@ if __name__ == '__main__':
 
     ################################################
     ################################################
-    global USE_PLOTTER_FLAG
-    USE_PLOTTER_FLAG = 1
+    global USE_MyPlotterPureTkinterStandAloneProcess_FLAG
+    USE_MyPlotterPureTkinterStandAloneProcess_FLAG = 1
 
-    global USE_MYPRINT_FLAG
-    USE_MYPRINT_FLAG = 1
+    global USE_MyPrint_FLAG
+    USE_MyPrint_FLAG = 1
 
     global USE_GUI_FLAG
     USE_GUI_FLAG = 1
-    
+
+    global USE_KEYBOARD_FLAG
+    USE_KEYBOARD_FLAG = 1
+
     global USE_SINUSOIDAL_TEST_FLAG
     USE_SINUSOIDAL_TEST_FLAG = 1
     ################################################
@@ -210,29 +213,29 @@ if __name__ == '__main__':
 
     ################################################
     ################################################
-    global SHOW_IN_GUI_PLOTTER_FLAG
-    SHOW_IN_GUI_PLOTTER_FLAG = 1
+    global SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG
+    SHOW_IN_GUI_MyPlotterPureTkinterStandAloneProcess_FLAG = 1
 
-    global SHOW_IN_GUI_MYPRINT_FLAG
-    SHOW_IN_GUI_MYPRINT_FLAG = 1
+    global SHOW_IN_GUI_MyPrint_FLAG
+    SHOW_IN_GUI_MyPrint_FLAG = 1
     ################################################
     ################################################
 
     ################################################
     ################################################
-    global GUI_ROW_MYPRINT
-    global GUI_COLUMN_MYPRINT
-    global GUI_PADX_MYPRINT
-    global GUI_PADY_MYPRINT
-    global GUI_ROWSPAN_MYPRINT
-    global GUI_COLUMNSPAN_MYPRINT
-    GUI_ROW_MYPRINT = 2
+    global GUI_ROW_MyPrint
+    global GUI_COLUMN_MyPrint
+    global GUI_PADX_MyPrint
+    global GUI_PADY_MyPrint
+    global GUI_ROWSPAN_MyPrint
+    global GUI_COLUMNSPAN_MyPrint
+    GUI_ROW_MyPrint = 2
 
-    GUI_COLUMN_MYPRINT = 0
-    GUI_PADX_MYPRINT = 1
-    GUI_PADY_MYPRINT = 10
-    GUI_ROWSPAN_MYPRINT = 1
-    GUI_COLUMNSPAN_MYPRINT = 1
+    GUI_COLUMN_MyPrint = 0
+    GUI_PADX_MyPrint = 1
+    GUI_PADY_MyPrint = 10
+    GUI_ROWSPAN_MyPrint = 1
+    GUI_COLUMNSPAN_MyPrint = 1
     #################################################
     #################################################
 
@@ -248,13 +251,13 @@ if __name__ == '__main__':
 
     global MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject
 
-    global PLOTTER_OPEN_FLAG
-    PLOTTER_OPEN_FLAG = -1
+    global MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG
+    MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG = -1
 
     global MyPrint_ReubenPython2and3ClassObject
 
-    global MYPRINT_OPEN_FLAG
-    MYPRINT_OPEN_FLAG = -1
+    global MyPrint_OPEN_FLAG
+    MyPrint_OPEN_FLAG = -1
     
     global PARENT_GUI_COUNTER
     PARENT_GUI_COUNTER = 0
@@ -333,11 +336,17 @@ if __name__ == '__main__':
                                                                                         ("YaxisLabelString", "Y-units (units)"),
                                                                                         ("ShowLegendFlag", 1)])
     
-    if USE_PLOTTER_FLAG == 1:
+    if USE_MyPlotterPureTkinterStandAloneProcess_FLAG == 1 and EXIT_PROGRAM_FLAG == 0:
         try:
             MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class(MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_setup_dict)
-            PLOTTER_OPEN_FLAG = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+            MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
 
+            #################################################
+            if MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG != 1:
+                print("Failed to open MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.")
+                ExitProgram_Callback()
+            #################################################
+            
         except:
             exceptions = sys.exc_info()[0]
             print("MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject, exceptions: %s" % exceptions)
@@ -347,29 +356,35 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    if USE_MYPRINT_FLAG == 1:
+    global MyPrint_ReubenPython2and3ClassObject_GUIparametersDict
+    MyPrint_ReubenPython2and3ClassObject_GUIparametersDict = dict([("USE_GUI_FLAG", USE_GUI_FLAG and SHOW_IN_GUI_MyPrint_FLAG),
+                                                                    ("root", root),
+                                                                    ("UseBorderAroundThisGuiObjectFlag", 0),
+                                                                    ("GUI_ROW", GUI_ROW_MyPrint),
+                                                                    ("GUI_COLUMN", GUI_COLUMN_MyPrint),
+                                                                    ("GUI_PADX", GUI_PADX_MyPrint),
+                                                                    ("GUI_PADY", GUI_PADY_MyPrint),
+                                                                    ("GUI_ROWSPAN", GUI_ROWSPAN_MyPrint),
+                                                                    ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_MyPrint)])
 
-        MyPrint_ReubenPython2and3ClassObject_GUIparametersDict = dict([("USE_GUI_FLAG", USE_GUI_FLAG and SHOW_IN_GUI_MYPRINT_FLAG),
-                                                                        ("root", root),
-                                                                        ("UseBorderAroundThisGuiObjectFlag", 0),
-                                                                        ("GUI_ROW", GUI_ROW_MYPRINT),
-                                                                        ("GUI_COLUMN", GUI_COLUMN_MYPRINT),
-                                                                        ("GUI_PADX", GUI_PADX_MYPRINT),
-                                                                        ("GUI_PADY", GUI_PADY_MYPRINT),
-                                                                        ("GUI_ROWSPAN", GUI_ROWSPAN_MYPRINT),
-                                                                        ("GUI_COLUMNSPAN", GUI_COLUMNSPAN_MYPRINT)])
+    global MyPrint_ReubenPython2and3ClassObject_setup_dict
+    MyPrint_ReubenPython2and3ClassObject_setup_dict = dict([("NumberOfPrintLines", 10),
+                                                            ("WidthOfPrintingLabel", 200),
+                                                            ("PrintToConsoleFlag", 1),
+                                                            ("LogFileNameFullPath", os.getcwd() + "//TestLog.txt"),
+                                                            ("GUIparametersDict", MyPrint_ReubenPython2and3ClassObject_GUIparametersDict)])
 
-        MyPrint_ReubenPython2and3ClassObject_setup_dict = dict([("NumberOfPrintLines", 10),
-                                                                ("WidthOfPrintingLabel", 200),
-                                                                ("PrintToConsoleFlag", 1),
-                                                                ("LogFileNameFullPath", os.getcwd() + "//TestLog.txt"),
-                                                                ("GUIparametersDict", MyPrint_ReubenPython2and3ClassObject_GUIparametersDict)])
-
+    if USE_MyPrint_FLAG == 1 and EXIT_PROGRAM_FLAG == 0:
         try:
             MyPrint_ReubenPython2and3ClassObject = MyPrint_ReubenPython2and3Class(MyPrint_ReubenPython2and3ClassObject_setup_dict)
-            time.sleep(0.25)
-            MYPRINT_OPEN_FLAG = MyPrint_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
+            MyPrint_OPEN_FLAG = MyPrint_ReubenPython2and3ClassObject.OBJECT_CREATED_SUCCESSFULLY_FLAG
 
+            #################################################
+            if MyPrint_OPEN_FLAG != 1:
+                print("Failed to open MyPrint_ReubenPython2and3ClassObject.")
+                ExitProgram_Callback()
+            #################################################
+        
         except:
             exceptions = sys.exc_info()[0]
             print("MyPrint_ReubenPython2and3ClassObject __init__: Exceptions: %s" % exceptions)
@@ -379,22 +394,18 @@ if __name__ == '__main__':
 
     #################################################
     #################################################
-    if USE_PLOTTER_FLAG == 1 and PLOTTER_OPEN_FLAG != 1:
-        print("Failed to open MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.")
-        ExitProgram_Callback()
+    if USE_KEYBOARD_FLAG == 1 and EXIT_PROGRAM_FLAG == 0:
+        keyboard.on_press_key("esc", ExitProgram_Callback)
     #################################################
     #################################################
 
     #################################################
     #################################################
-    if USE_MYPRINT_FLAG == 1 and MYPRINT_OPEN_FLAG != 1:
-        print("Failed to open MyPrint_ReubenPython2and3ClassObject.")
-        ExitProgram_Callback()
+    if EXIT_PROGRAM_FLAG == 0:
+        MyPrint_ReubenPython2and3ClassObject.my_print("$$$$$$$$$$$$$$ STARTING MAIN LOOP $$$$$$$$$$$$$$")
+        StartingTime_MainLoopThread = getPreciseSecondsTimeStampString()
     #################################################
     #################################################
-
-    MyPrint_ReubenPython2and3ClassObject.my_print("$$$$$$$$$$$$$$ STARTING MAIN LOOP $$$$$$$$$$$$$$")
-    StartingTime_MainLoopThread = getPreciseSecondsTimeStampString()
 
     while(EXIT_PROGRAM_FLAG == 0):
 
@@ -409,7 +420,7 @@ if __name__ == '__main__':
 
         #################################################
         #################################################
-        if PLOTTER_OPEN_FLAG == 1:
+        if MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG == 1:
 
             #################################################
             MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject_MostRecentDict = MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.GetMostRecentDataDict()
@@ -461,12 +472,12 @@ if __name__ == '__main__':
     print("MAIN LEADER PROGRAM Exiting main program 'test_program_for_MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class_NoParallelGUIprocess.")
 
     #################################################
-    if MYPRINT_OPEN_FLAG == 1:
+    if MyPrint_OPEN_FLAG == 1:
         MyPrint_ReubenPython2and3ClassObject.ExitProgram_Callback()
     #################################################
 
     #################################################
-    if PLOTTER_OPEN_FLAG == 1:
+    if MyPlotterPureTkinterStandAloneProcess_OPEN_FLAG == 1:
         MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3ClassObject.ExitProgram_Callback()
     #################################################
 

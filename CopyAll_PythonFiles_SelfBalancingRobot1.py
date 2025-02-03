@@ -6,9 +6,9 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision M, 11/10/2024
+Software Revision N, 02/02/2025
 
-Verified working on: Python 3.12 for Windows 10 64-bit and Raspberry Pi Bullseye.
+Verified working on: Python 3.12 for Windows 11 64-bit and Raspberry Pi Bullseye.
 '''
 
 __author__ = 'reuben.brewer'
@@ -81,6 +81,7 @@ ParametersToBeLoaded_DirectoryToCopy = FileWorkingDirectory + "\\ParametersToBeL
 
 try:
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\SelfBalancingRobot1.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\SelfBalancingRobot1_NonAdmin.bat", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\CopyAll_PythonFiles_SelfBalancingRobot1.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\ExcelPlot_CSVdataLogger_ReubenPython3Code__SelfBalancingRobot1.py", FileDirectoryToCreate)
 
@@ -90,8 +91,14 @@ try:
     CopyEntireDirectoryWithContents("G:\\My Drive\\CodeReuben\\SelfBalancingRobot1\\IconDesktopAndRClocalFiles", FileDirectoryToCreate + "\\IconDesktopAndRClocalFiles") #Copies the entire directory
     CreateNewDirectoryIfItDoesntExist(FileDirectoryToCreate + "\\LogFiles")
 
+    #shutil.copy("G:\\My Drive\\CodeReuben\\ArucoTagDetectionFromCameraFeed_ReubenPython3Class\\ArucoTagDetectionFromCameraFeed_ReubenPython3Class.py", FileDirectoryToCreate)
+    #shutil.copy("G:\\My Drive\\CodeReuben\\ArucoTagDetectionFromCameraFeed_ReubenPython3Class\\test_program_for_ArucoTagDetectionFromCameraFeed_ReubenPython3Class.py", FileDirectoryToCreate)
+
     shutil.copy("G:\\My Drive\\CodeReuben\\BarGraphDisplay_ReubenPython3Class\\BarGraphDisplay_ReubenPython3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\BarGraphDisplay_ReubenPython3Class\\test_program_for_BarGraphDisplay_ReubenPython3Class.py", FileDirectoryToCreate)
+
+    #shutil.copy("G:\\My Drive\\CodeReuben\\CameraStreamerClass_ReubenPython2and3Class\\CameraStreamerClass_ReubenPython2and3Class.py", FileDirectoryToCreate)
+    #shutil.copy("G:\\My Drive\\CodeReuben\\CameraStreamerClass_ReubenPython2and3Class\\test_program_for_ReubenPython2and3Class.py", FileDirectoryToCreate)
 
     shutil.copy("G:\\My Drive\\CodeReuben\\CSVdataLogger_ReubenPython3Class\\CSVdataLogger_ReubenPython3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\CSVdataLogger_ReubenPython3Class\\test_program_for_CSVdataLogger_ReubenPython3Class.py", FileDirectoryToCreate)
@@ -130,6 +137,18 @@ try:
 
     shutil.copy("G:\\My Drive\\CodeReuben\\RoboteqBLDCcontroller_ReubenPython2and3Class\\RoboteqBLDCcontroller_ReubenPython2and3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\RoboteqBLDCcontroller_ReubenPython2and3Class\\test_program_for_RoboteqBLDCcontroller_ReubenPython2and3Class.py", FileDirectoryToCreate)
+
+    shutil.copy("G:\\My Drive\\CodeReuben\\RoboteqBLDCcontroller_ReubenPython2and3Class\\RoboteqBLDCcontroller_ReubenPython2and3Class.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\RoboteqBLDCcontroller_ReubenPython2and3Class\\test_program_for_RoboteqBLDCcontroller_ReubenPython2and3Class.py", FileDirectoryToCreate)
+
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\UDPdataExchanger_ReubenPython3Class.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\test_program_for_UDPdataExchanger_ReubenPython3Class.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\Rx_BareBonesUDPtest_ReubenPython3.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\Tx_BareBonesUDPtest_ReubenPython3.py", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\Tx___INTERNAL_test_program_for_UDPdataExchanger_ReubenPython3Class_NonAdmin.bat", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\Rx___INTERNAL_test_program_for_UDPdataExchanger_ReubenPython3Class_NonAdmin.bat", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\Tx___EXTERNAL_test_program_for_UDPdataExchanger_ReubenPython3Class_NonAdmin.bat", FileDirectoryToCreate)
+    shutil.copy("G:\\My Drive\\CodeReuben\\UDPdataExchanger_ReubenPython3Class\\Rx___EXTERNAL_test_program_for_UDPdataExchanger_ReubenPython3Class_NonAdmin.bat", FileDirectoryToCreate)
 
     shutil.copy("G:\\My Drive\\CodeReuben\\ZeroAndSnapshotData_ReubenPython2and3Class\\ZeroAndSnapshotData_ReubenPython2and3Class.py", FileDirectoryToCreate)
     shutil.copy("G:\\My Drive\\CodeReuben\\ZeroAndSnapshotData_ReubenPython2and3Class\\test_program_for_ZeroAndSnapshotData_ReubenPython2and3Class.py", FileDirectoryToCreate)

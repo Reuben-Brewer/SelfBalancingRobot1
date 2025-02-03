@@ -2,10 +2,10 @@
     "ControlLawParameters_UserNotes": "new_filtered_value = k * raw_sensor_value + (1 - k) * old_filtered_value",
 
     "ControlInput_StartingValue": "KeyboardControl",
-    "ControlInput_AcceptableValues": ["JoystickControl", "KeyboardControl" ,"GUIsliderOnly"],
+    "ControlInput_AcceptableValues": ["JoystickControl", "KeyboardControl", "SinusoidalTest", "UDP", "GUIsliderOnly"],
 
     "ControlAlgorithm_StartingValue": "PID",
-    "ControlAlgorithm_AcceptableValues": ["PID", "SinusoidalTest"],
+    "ControlAlgorithm_AcceptableValues": ["PID"],
 
     "ENABLE_MOTORS_AT_STARTUP_FLAG":0,
 
@@ -21,25 +21,25 @@
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
     "Velocity_V_RM_MetersPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.99,
 
-    "Velocity_V_RMC_MetersPerSec_Commanded_DeadbandThreshold": 0.050,
+    "Velocity_V_RMC_MetersPerSec_Commanded_JoystickDeadbandThreshold": 0.050,
     "Velocity_V_RMC_MetersPerSec_Commanded_JoystickToMetersPerSecGain": 1.000,
 
     "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseMedianFilterFlag": 1,
     "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_UseExponentialSmoothingFilterFlag": 1,
     "YawAngularRate_DeltaDot_RadiansPerSec_Actual_LowPassFilter_ExponentialSmoothingFilterLambda": 0.99,
 
-    "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_DeadbandThreshold": 0.050,
+    "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_JoystickDeadbandThreshold": 0.050,
     "YawAngularRate_DeltaDot_RadiansPerSec_Commanded_JoystickToRadiansPerSecGain": 0.400,
 
     "Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION": 1000.25,
-    "YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION": 0.05,
+    "YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION": 1000.05,
 
     "Pitch_ParametersToBeLoaded_Directions": "Pitch -User sets ... (-11111 = Derived).",
     
     "PID_gain_Kp_OuterLoopPosControl": -0.6,
     "PID_gain_Ki_OuterLoopPosControl": -0.99,
     "PID_gain_Kd_OuterLoopPosControl": -0.09,
-    "PID_ErrorSumMax_OuterLoopPosControl": -1.5,
+    "PID_ErrorSumMax_OuterLoopPosControl": -1000.5,
     
     "PID_gain_Kp_InnerLoopPitchControl": -15000.0,
     "PID_gain_Kd_InnerLoopPitchControl": -800.0,
@@ -50,8 +50,15 @@
     "MaxCommandFromControlLaw_Motor0": 250.0,
     "MaxCommandFromControlLaw_Motor1": 250.0,
 
-    "SINUSOIDAL_MOTION_INPUT_ROMtestTimeToPeakAngle": 2.0,
-    "SINUSOIDAL_MOTION_INPUT_MinValue": -50.0,
-    "SINUSOIDAL_MOTION_INPUT_MaxValue": 50.0
+    "SinusoidalMotionInput_ROMtestTimeToPeakAngle": 10.0,
+    "SinusoidalMotionInput_MinValue_PositionControl": -0.2,
+    "SinusoidalMotionInput_MaxValue_PositionControl": 0.2,
+
+    "UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit": 0.1,
+    "UDP_Velocity_V_RMC_Kgain": -0.0005,
+    "UDP_ArucoTagZdistanceTarget": 500.0,
+    "UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit": 0.2,
+    "UDP_YawAngularRate_Kgain": -0.003,
+    "UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm_BadDataCounter_Threshold": 1
 }
 

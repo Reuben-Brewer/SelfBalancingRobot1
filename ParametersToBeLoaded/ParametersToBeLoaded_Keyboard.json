@@ -35,6 +35,16 @@
             "ZeroLQR":
                 {"KeyName":"z",
                 "OnPressCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_STOP"}
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_STOP"},
+
+            "ToggleThroughControlModes":
+                {"KeyName":"c",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_ToggleThroughControlModes_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ToggleThroughControlModes_STOP"},
+
+            "ExitProgram":
+                {"KeyName":"esc",
+                "OnPressCallbackFunctionNameString": "KeyPressResponse_ExitProgram_START",
+                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ExitProgram_STOP"}
     }
 }

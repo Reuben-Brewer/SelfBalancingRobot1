@@ -58,8 +58,8 @@
         "MarkerSize": 3,
         "CurvesToPlotNamesAndColorsDictOfLists":
             {
-                "NameList": ["Roboteq_RL", "Encoder_RL", "Roboteq_RR", "Encoder_RR", "PitchAngle_Theta_Deg_Actual"],
-                "ColorList": ["Red", "Green", "Orange", "Blue", "Black"]
+                "NameList": ["Roboteq_RL", "Encoder_RL", "Roboteq_RR", "Encoder_RR", "PitchAngle_Theta_Deg_Actual", "Channel6", "Channel7"],
+                "ColorList": ["Red", "Green", "Orange", "Blue", "Black", "Red", "Green"]
             },
         "NumberOfDataPointToPlot": 25,
         "XaxisNumberOfTickMarks": 10,

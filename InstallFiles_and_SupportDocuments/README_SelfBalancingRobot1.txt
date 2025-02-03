@@ -13,13 +13,13 @@ www.reubotics.com
 
 Apache 2 License
 
-Software Revision M, 11/10/2024
+Software Revision N, 02/02/2025
 
 SelfBalancingRobot1.py verified working on:
 
 Python 3.12
 
-Windows  10 64-bit
+Windows  11 64-bit
 
 Raspberry Pi Bullseye
 
@@ -33,11 +33,11 @@ Raspberry Pi Bullseye
 
 SelfBalancingRobot1.py, ListOfModuleDependencies:
 
-SelfBalancingRobot1.py, ListOfModuleDependencies: ['BarGraphDisplay_ReubenPython3Class', 'CSVdataLogger_ReubenPython3Class', 'EntryListWithBlinking_ReubenPython2and3Class', 'keyboard', 'LowPassFilterForDictsOfLists_ReubenPython2and3Class', 'MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class', 'MyPrint_ReubenPython2and3Class', 'numpy', 'Phidgets4EncoderAndDInput1047_ReubenPython2and3Class', 'PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class', 'PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class', 'PhidgetsWirelessVINThubWithThumbstick_ReubenPython2and3Class', 'RoboteqBLDCcontroller_ReubenPython2and3Class', 'scipy.spatial.transform']
+SelfBalancingRobot1.py, ListOfModuleDependencies: ['BarGraphDisplay_ReubenPython3Class', 'CSVdataLogger_ReubenPython3Class', 'EntryListWithBlinking_ReubenPython2and3Class', 'keyboard', 'LowPassFilterForDictsOfLists_ReubenPython2and3Class', 'MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class', 'MyPrint_ReubenPython2and3Class', 'numpy', 'Phidgets4EncoderAndDInput1047_ReubenPython2and3Class', 'PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class', 'PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class', 'PhidgetsWirelessVINThubWithThumbstick_ReubenPython2and3Class', 'RoboteqBLDCcontroller_ReubenPython2and3Class', 'scipy.spatial.transform', 'UDPdataExchanger_ReubenPython3Class']
 
 SelfBalancingRobot1.py, ListOfModuleDependencies_NestedLayers: ['EntryListWithBlinking_ReubenPython2and3Class', 'ftd2xx', 'future.builtins', 'Joystick2DdotDisplay_ReubenPython2and3Class', 'LowPassFilter_ReubenPython2and3Class', 'LowPassFilterForDictsOfLists_ReubenPython2and3Class', 'numpy', 'pexpect', 'Phidget22', 'psutil', 'scipy.spatial.transform', 'serial', 'serial.tools', 'ZeroAndSnapshotData_ReubenPython2and3Class']
 
-SelfBalancingRobot1.py, ListOfModuleDependencies_All:['BarGraphDisplay_ReubenPython3Class', 'CSVdataLogger_ReubenPython3Class', 'EntryListWithBlinking_ReubenPython2and3Class', 'ftd2xx', 'future.builtins', 'Joystick2DdotDisplay_ReubenPython2and3Class', 'keyboard', 'LowPassFilter_ReubenPython2and3Class', 'LowPassFilterForDictsOfLists_ReubenPython2and3Class', 'MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class', 'MyPrint_ReubenPython2and3Class', 'numpy', 'pexpect', 'Phidget22', 'Phidgets4EncoderAndDInput1047_ReubenPython2and3Class', 'PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class', 'PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class', 'PhidgetsWirelessVINThubWithThumbstick_ReubenPython2and3Class', 'psutil', 'RoboteqBLDCcontroller_ReubenPython2and3Class', 'scipy.spatial.transform', 'serial', 'serial.tools', 'ZeroAndSnapshotData_ReubenPython2and3Class']
+SelfBalancingRobot1.py, ListOfModuleDependencies_All:['BarGraphDisplay_ReubenPython3Class', 'CSVdataLogger_ReubenPython3Class', 'EntryListWithBlinking_ReubenPython2and3Class', 'ftd2xx', 'future.builtins', 'Joystick2DdotDisplay_ReubenPython2and3Class', 'keyboard', 'LowPassFilter_ReubenPython2and3Class', 'LowPassFilterForDictsOfLists_ReubenPython2and3Class', 'MyPlotterPureTkinterStandAloneProcess_ReubenPython2and3Class', 'MyPrint_ReubenPython2and3Class', 'numpy', 'pexpect', 'Phidget22', 'Phidgets4EncoderAndDInput1047_ReubenPython2and3Class', 'PhidgetsCurrentSensor30ampDConlyVCP1100_ReubenPython2and3Class', 'PhidgetsSpatialPrecision333AccelGyroCompass_ReubenPython2and3Class', 'PhidgetsWirelessVINThubWithThumbstick_ReubenPython2and3Class', 'psutil', 'RoboteqBLDCcontroller_ReubenPython2and3Class', 'scipy.spatial.transform', 'serial', 'serial.tools', 'UDPdataExchanger_ReubenPython3Class', 'ZeroAndSnapshotData_ReubenPython2and3Class']
 
 sudo pip install pygame
 

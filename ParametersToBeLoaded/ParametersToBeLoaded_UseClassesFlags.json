@@ -3,6 +3,7 @@
     "USE_RoboteqBLDCcontroller_FLAG_0":1,
     "USE_RoboteqBLDCcontroller_FLAG_1":1,
     "USE_WiFiVINTthumbstick_FLAG":0,
+    "USE_UDPdataExchanger_FLAG":1,
     "USE_SpatialPrecision333_FLAG":1,
     "USE_DC30AmpCurrentSensor_FLAG":0,
     "USE_Phidgets4EncoderAndDInput1047_FLAG":1,

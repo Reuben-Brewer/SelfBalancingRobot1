@@ -4,6 +4,7 @@
     "SHOW_IN_GUI_RoboteqBLDCcontroller_FLAG_0":1,
     "SHOW_IN_GUI_RoboteqBLDCcontroller_FLAG_1":1,
     "SHOW_IN_GUI_WiFiVINTthumbstick_FLAG":1,
+    "SHOW_IN_GUI_UDPdataExchanger_FLAG":1,
     "SHOW_IN_GUI_SpatialPrecision333_FLAG": 1,
     "SHOW_IN_GUI_DC30AmpCurrentSensor_FLAG":1,
     "SHOW_IN_GUI_Phidgets4EncoderAndDInput1047_FLAG":1,
@@ -35,7 +36,14 @@
     "GUI_PADY_ExtraProgramControlGuiFrame": 1,
     "GUI_ROWSPAN_ExtraProgramControlGuiFrame": 1,
     "GUI_COLUMNSPAN_ExtraProgramControlGuiFrame": 10,
-  
+
+    "GUI_ROW_UDP_HigherLevelControlGuiFrame": 3,
+    "GUI_COLUMN_UDP_HigherLevelControlGuiFrame": 0,
+    "GUI_PADX_UDP_HigherLevelControlGuiFrame": 1,
+    "GUI_PADY_UDP_HigherLevelControlGuiFrame": 1,
+    "GUI_ROWSPAN_UDP_HigherLevelControlGuiFrame": 1,
+    "GUI_COLUMNSPAN_UDP_HigherLevelControlGuiFrame": 10,
+
     "GUI_ROW_RoboteqBLDCcontroller_0": 0,
     "GUI_COLUMN_RoboteqBLDCcontroller_0": 0,
     "GUI_PADX_RoboteqBLDCcontroller_0": 1,
@@ -57,6 +65,13 @@
     "GUI_ROWSPAN_WiFiVINTthumbstick": 1,
     "GUI_COLUMNSPAN_WiFiVINTthumbstick": 1,
 
+    "GUI_ROW_UDPdataExchanger": 0,
+    "GUI_COLUMN_UDPdataExchanger": 0,
+    "GUI_PADX_UDPdataExchanger": 1,
+    "GUI_PADY_UDPdataExchanger": 1,
+    "GUI_ROWSPAN_UDPdataExchanger": 1,
+    "GUI_COLUMNSPAN_UDPdataExchanger": 1,
+    
     "GUI_ROW_SpatialPrecision333": 0,
     "GUI_COLUMN_SpatialPrecision333": 0,
     "GUI_PADX_SpatialPrecision333": 1,
