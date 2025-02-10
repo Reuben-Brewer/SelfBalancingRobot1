@@ -37,13 +37,6 @@
     "GUI_ROWSPAN_ExtraProgramControlGuiFrame": 1,
     "GUI_COLUMNSPAN_ExtraProgramControlGuiFrame": 10,
 
-    "GUI_ROW_UDP_HigherLevelControlGuiFrame": 3,
-    "GUI_COLUMN_UDP_HigherLevelControlGuiFrame": 0,
-    "GUI_PADX_UDP_HigherLevelControlGuiFrame": 1,
-    "GUI_PADY_UDP_HigherLevelControlGuiFrame": 1,
-    "GUI_ROWSPAN_UDP_HigherLevelControlGuiFrame": 1,
-    "GUI_COLUMNSPAN_UDP_HigherLevelControlGuiFrame": 10,
-
     "GUI_ROW_RoboteqBLDCcontroller_0": 0,
     "GUI_COLUMN_RoboteqBLDCcontroller_0": 0,
     "GUI_PADX_RoboteqBLDCcontroller_0": 1,

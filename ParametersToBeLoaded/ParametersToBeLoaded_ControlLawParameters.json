@@ -7,6 +7,9 @@
     "ControlAlgorithm_StartingValue": "PID",
     "ControlAlgorithm_AcceptableValues": ["PID"],
 
+    "FloorType_AcceptableValues": ["SmoothFloor", "RoughFloor"],
+    "FloorType_StartingValue": "SmoothFloor",
+
     "ENABLE_MOTORS_AT_STARTUP_FLAG":0,
 
     "SelfBalancingRobot1_MainThread_TimeToSleepEachLoop": 0.001,
@@ -35,30 +38,60 @@
     "YawAngle_Delta_Radians_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION": 1000.05,
 
     "Pitch_ParametersToBeLoaded_Directions": "Pitch -User sets ... (-11111 = Derived).",
-    
-    "PID_gain_Kp_OuterLoopPosControl": -0.6,
-    "PID_gain_Ki_OuterLoopPosControl": -0.99,
-    "PID_gain_Kd_OuterLoopPosControl": -0.09,
-    "PID_ErrorSumMax_OuterLoopPosControl": -1000.5,
-    
-    "PID_gain_Kp_InnerLoopPitchControl": -15000.0,
-    "PID_gain_Kd_InnerLoopPitchControl": -800.0,
 
-    "YawControl_gain_Kdelta1": -1000.0,
-    "YawControl_gain_Kdelta2": 0.0,
+    "RoughFloorInsteadOfSmoothFloorFlag": 1,
 
-    "MaxCommandFromControlLaw_Motor0": 250.0,
-    "MaxCommandFromControlLaw_Motor1": 250.0,
+    "SmoothFloor_DictOfGains":
+    {
+        "PID_gain_Kp_OuterLoopPosControl": -0.6,
+        "PID_gain_Ki_OuterLoopPosControl": -0.99,
+        "PID_gain_Kd_OuterLoopPosControl": -0.09,
+        "PID_ErrorSumMax_OuterLoopPosControl": -1000.5,
+
+        "PID_gain_Kp_InnerLoopPitchControl": -15000.0,
+        "PID_gain_Kd_InnerLoopPitchControl": -800.0,
+
+        "YawControl_gain_Kdelta1": -1000.0,
+        "YawControl_gain_Kdelta2": 0.0,
+
+        "MaxCommandFromControlLaw_Motor0": 250.0,
+        "MaxCommandFromControlLaw_Motor1": 250.0,
+
+        "UDP_Velocity_V_RMC_Kgain": -0.0005,
+        "UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit": 0.1,
+
+        "UDP_YawAngularRate_Kgain": -0.003,
+        "UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit": 0.2
+    },
+
+    "RoughFloor_DictOfGains":
+    {
+        "PID_gain_Kp_OuterLoopPosControl": -0.61,
+        "PID_gain_Ki_OuterLoopPosControl": -0.99,
+        "PID_gain_Kd_OuterLoopPosControl": -0.09,
+        "PID_ErrorSumMax_OuterLoopPosControl": -1000.5,
+
+        "PID_gain_Kp_InnerLoopPitchControl": -16000.0,
+        "PID_gain_Kd_InnerLoopPitchControl": -800.0,
+
+        "YawControl_gain_Kdelta1": -1000.0,
+        "YawControl_gain_Kdelta2": 0.0,
+
+        "MaxCommandFromControlLaw_Motor0": 250.0,
+        "MaxCommandFromControlLaw_Motor1": 250.0,
+
+        "UDP_Velocity_V_RMC_Kgain": -0.0005,
+        "UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit": 0.1,
+
+        "UDP_YawAngularRate_Kgain": -0.003,
+        "UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit": 0.2
+    },
 
     "SinusoidalMotionInput_ROMtestTimeToPeakAngle": 10.0,
     "SinusoidalMotionInput_MinValue_PositionControl": -0.2,
     "SinusoidalMotionInput_MaxValue_PositionControl": 0.2,
 
-    "UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit": 0.1,
-    "UDP_Velocity_V_RMC_Kgain": -0.0005,
     "UDP_ArucoTagZdistanceTarget": 500.0,
-    "UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit": 0.2,
-    "UDP_YawAngularRate_Kgain": -0.003,
     "UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm_BadDataCounter_Threshold": 1
 }
 

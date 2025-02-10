@@ -13,6 +13,6 @@
     "Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseExponentialFilterFlag":  [1, 1, 1, 1],
     "Phidgets4EncoderAndDInput1047_EncodersList_SpeedExponentialFilterLambda": [0.98, 0.98, 1.00, 1.00],
     "Phidgets4EncoderAndDInput1047_DigitalInputsList_ChannelsBeingWatchedList":  [1, 1, 1, 1],
-    "Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RL": 0.6512414601461146,
-    "Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RR": 0.6334785983524856
+    "Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel1_RL": 6287.0,
+    "Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel0_RR": 6185.0
 }

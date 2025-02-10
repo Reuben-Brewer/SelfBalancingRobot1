@@ -1,50 +1,94 @@
 {
     "Keyboard_Directions": "up arrow",
+
     "Keyboard_KeysToTeleopControlsMapping_DictOfDicts":
     {
             "FWD":
-
-                {"KeyName":"w",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_FWD_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_FWD_STOP",
-                "CommandedValue_PID": 0.1},
+            {
+                  "KeyName":"w",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_FWD_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_FWD_STOP",
+                  "CommandedValue_PID":
+                  {
+                      "SmoothFloor": 0.10,
+                      "RoughFloor": 0.30
+                  }
+            },
 
             "REV":
-                {"KeyName":"x",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_REV_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_REV_STOP",
-                "CommandedValue_PID": -0.1},
+            {
+                  "KeyName":"x",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_REV_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_REV_STOP",
+                  "CommandedValue_PID":
+                  {
+                      "SmoothFloor": -0.10,
+                      "RoughFloor": -0.30
+                  }
+            },
 
             "RIGHT":
-                {"KeyName":"d",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_RIGHT_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_RIGHT_STOP",
-                "CommandedValue_PID": 0.2},
+            {
+                  "KeyName":"d",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_RIGHT_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_RIGHT_STOP",
+                  "CommandedValue_PID":
+                  {
+                      "SmoothFloor": 0.40,
+                      "RoughFloor": 0.60
+                  }
+            },
 
             "LEFT":
-                {"KeyName":"a",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_LEFT_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_LEFT_STOP",
-                "CommandedValue_PID": -0.2},
+            {
+                  "KeyName":"a",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_LEFT_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_LEFT_STOP",
+                  "CommandedValue_PID":
+                  {
+                      "SmoothFloor": -0.40,
+                      "RoughFloor": -0.60
+                  }
+            },
 
             "TorqueEnable":
-                {"KeyName":"t",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_TorqueEnable_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_TorqueEnable_STOP"},
+            {
+                  "KeyName":"t",
+                  "OnHotkeyComboPressCallbackFunctionNameString": "HotkeyComboKeyPressResponse_TorqueEnable_START"
+            },
 
-            "ZeroLQR":
-                {"KeyName":"z",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_STOP"},
+            "ZeroController":
+            {
+                  "KeyName":"z",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ZeroControlLoop_STOP"
+            },
 
             "ToggleThroughControlModes":
-                {"KeyName":"c",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_ToggleThroughControlModes_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ToggleThroughControlModes_STOP"},
+            {
+                  "KeyName":"c",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_ToggleThroughControlModes_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ToggleThroughControlModes_STOP"
+            },
+      
+            "ToggleThroughFloorTypes":
+            {
+                  "KeyName":"f",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_ToggleThroughFloorTypes_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ToggleThroughFloorTypes_STOP"
+            },
 
             "ExitProgram":
-                {"KeyName":"esc",
-                "OnPressCallbackFunctionNameString": "KeyPressResponse_ExitProgram_START",
-                "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ExitProgram_STOP"}
+            {
+                  "KeyName":"esc",
+                  "OnPressCallbackFunctionNameString": "KeyPressResponse_ExitProgram_START",
+                  "OnReleaseCallbackFunctionNameString": "KeyPressResponse_ExitProgram_STOP"
+            },
+
+            "KeyboardTestCallbackFunction":
+            {
+                  "KeyName":"n+m",
+                  "OnHotkeyComboPressCallbackFunctionNameString": "HotkeyComboKeyPressResponse_KeyboardTestCallbackFunction_START"
+            }
     }
 }

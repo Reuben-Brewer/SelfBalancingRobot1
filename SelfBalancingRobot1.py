@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision N, 02/02/2025
+Software Revision O, 02/09/2025
 
 Verified working on: Python 3.12 for Windows 11 64-bit and Raspberry Pi Bullseye.
 '''
@@ -361,12 +361,106 @@ def LoadAndParseJSONfile_Keyboard():
 def LoadAndParseJSONfile_ControlLawParameters():
     global ParametersToBeLoaded_ControlLawParameters_Dict
 
-    print("Calling LoadAndParseJSONfile_ControlLawParameters().")
+    global SmoothFloor_DictOfGains
+    global RoughtFloor_DictOfGains
 
-    ######################################################################################################
-    JSONfilepathFull_ControlLawParameters = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_ControlLawParameters.json"
-    ParametersToBeLoaded_ControlLawParameters_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_ControlLawParameters, 1, 1)
-    ######################################################################################################
+    global PID_gain_Kp_OuterLoopPosControl
+    global PID_gain_Ki_OuterLoopPosControl
+    global PID_gain_Kd_OuterLoopPosControl
+    global PID_ErrorSumMax_OuterLoopPosControl
+
+    global PID_gain_Kp_InnerLoopPitchControl
+    global PID_gain_Kd_InnerLoopPitchControl
+
+    global YawControl_gain_Kdelta1
+    global YawControl_gain_Kdelta2
+
+    global MaxCommandFromControlLaw_Motor0
+    global MaxCommandFromControlLaw_Motor1
+
+    global UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit
+    global UDP_Velocity_V_RMC_Kgain
+
+    global UDP_YawAngularRate_Kgain
+    global UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit
+
+    global ControlInput
+    global ControlInput_StartingValue
+    global ControlInput_AcceptableValues
+
+    global ControlAlgorithm
+    global ControlAlgorithm_StartingValue
+    global ControlAlgorithm_AcceptableValues
+
+    global FloorType
+    global FloorType_StartingValue
+    global FloorType_AcceptableValues
+
+    try:
+        print("Calling LoadAndParseJSONfile_ControlLawParameters().")
+
+        ######################################################################################################
+        JSONfilepathFull_ControlLawParameters = ParametersToBeLoaded_Directory_TO_BE_USED + "//ParametersToBeLoaded_ControlLawParameters.json"
+        ParametersToBeLoaded_ControlLawParameters_Dict = LoadAndParseJSONfile_AddDictKeysToGlobalsDict(globals(), JSONfilepathFull_ControlLawParameters, 1, 1)
+        ######################################################################################################
+
+        ######################################################################################################
+        if ControlInput_StartingValue not in ControlInput_AcceptableValues:
+            print("LoadAndParseJSONfile_ControlLawParameters, Error: ControlInput_StartingValue but be in " + str(ControlInput_AcceptableValues))
+            return
+
+        if ControlAlgorithm_StartingValue not in ControlAlgorithm_AcceptableValues:
+            print("LoadAndParseJSONfile_ControlLawParameters, Error: ControlAlgorithm_StartingValue but be in " + str(ControlAlgorithm_AcceptableValues))
+            return
+
+        if FloorType_StartingValue not in FloorType_AcceptableValues:
+            print("LoadAndParseJSONfile_ControlLawParameters, Error: FloorType_StartingValue but be in " + str(FloorType_AcceptableValues))
+            return
+        ######################################################################################################
+
+        ######################################################################################################
+        if FloorType == "UnknownFloor":
+            FloorType = FloorType_StartingValue
+        ######################################################################################################
+
+        ######################################################################################################
+        if FloorType == "RoughFloor":
+            DictFromWhichToPullGains = RoughFloor_DictOfGains
+
+        elif FloorType == "SmoothFloor":
+            DictFromWhichToPullGains = SmoothFloor_DictOfGains
+
+        else:
+            print("LoadAndParseJSONfile_ControlLawParameters, Error: FloorType isn't recgonized. Returning.")
+            return
+        ######################################################################################################
+
+        ######################################################################################################
+        PID_gain_Kp_OuterLoopPosControl = DictFromWhichToPullGains["PID_gain_Kp_OuterLoopPosControl"]
+        PID_gain_Ki_OuterLoopPosControl = DictFromWhichToPullGains["PID_gain_Ki_OuterLoopPosControl"]
+        PID_gain_Kd_OuterLoopPosControl = DictFromWhichToPullGains["PID_gain_Kd_OuterLoopPosControl"]
+        PID_ErrorSumMax_OuterLoopPosControl = DictFromWhichToPullGains["PID_ErrorSumMax_OuterLoopPosControl"]
+
+        PID_gain_Kp_InnerLoopPitchControl = DictFromWhichToPullGains["PID_gain_Kp_InnerLoopPitchControl"]
+        PID_gain_Kd_InnerLoopPitchControl = DictFromWhichToPullGains["PID_gain_Kd_InnerLoopPitchControl"]
+
+        YawControl_gain_Kdelta1 = DictFromWhichToPullGains["YawControl_gain_Kdelta1"]
+        YawControl_gain_Kdelta2 = DictFromWhichToPullGains["YawControl_gain_Kdelta2"]
+
+        MaxCommandFromControlLaw_Motor0 = DictFromWhichToPullGains["MaxCommandFromControlLaw_Motor0"]
+        MaxCommandFromControlLaw_Motor1 = DictFromWhichToPullGains["MaxCommandFromControlLaw_Motor1"]
+
+        UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit = DictFromWhichToPullGains["UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit"]
+        UDP_Velocity_V_RMC_Kgain = DictFromWhichToPullGains["UDP_Velocity_V_RMC_Kgain"]
+
+        UDP_YawAngularRate_Kgain = DictFromWhichToPullGains["UDP_YawAngularRate_Kgain"]
+        UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit = DictFromWhichToPullGains["UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit"]
+        ######################################################################################################
+
+    except:
+        exceptions = sys.exc_info()[0]
+        print("LoadAndParseJSONfile_ControlLawParameters, Exceptions: %s" % exceptions)
+        traceback.print_exc()
 
 ######################################################################################################
 ######################################################################################################
@@ -1101,27 +1195,65 @@ def IsTheTimeCurrentlyAM():
 
 ######################################################################################################
 ######################################################################################################
+######################################################################################################
+######################################################################################################
 def KeyboardMapKeysToCallbackFunctions():
 
-    keyboard.unhook_all() #Remove all current mappings
+    try:
+        keyboard.unhook_all() #Remove all current mappings
 
-    ######################################################################################################
-    for AxisNameAsKey in Keyboard_KeysToTeleopControlsMapping_DictOfDicts:
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        for AxisNameAsKey in Keyboard_KeysToTeleopControlsMapping_DictOfDicts:
 
             KeyToTeleopControlsMappingDict = Keyboard_KeysToTeleopControlsMapping_DictOfDicts[AxisNameAsKey]
 
             KeyName = KeyToTeleopControlsMappingDict["KeyName"]
-            OnPressCallbackFunctionNameString = KeyToTeleopControlsMappingDict["OnPressCallbackFunctionNameString"]
-            OnReleaseCallbackFunctionNameString = KeyToTeleopControlsMappingDict["OnReleaseCallbackFunctionNameString"]
 
-            if OnPressCallbackFunctionNameString in globals():
-                keyboard.on_press_key(KeyName, globals()[OnPressCallbackFunctionNameString])
+            ######################################################################################################
+            ######################################################################################################
+            if "OnPressCallbackFunctionNameString" in KeyToTeleopControlsMappingDict and "OnReleaseCallbackFunctionNameString" in KeyToTeleopControlsMappingDict and "OnHotkeyComboPressCallbackFunctionNameString" not in KeyToTeleopControlsMappingDict:
+                OnPressCallbackFunctionNameString = KeyToTeleopControlsMappingDict["OnPressCallbackFunctionNameString"]
+                OnReleaseCallbackFunctionNameString = KeyToTeleopControlsMappingDict["OnReleaseCallbackFunctionNameString"]
 
-            if OnReleaseCallbackFunctionNameString in globals():
-                keyboard.on_release_key(KeyName, globals()[OnReleaseCallbackFunctionNameString])
+                ######################################################################################################
+                if OnPressCallbackFunctionNameString in globals():
+                    keyboard.on_press_key(KeyName, globals()[OnPressCallbackFunctionNameString])
+                ######################################################################################################
 
-    ######################################################################################################
+                ######################################################################################################
+                if OnReleaseCallbackFunctionNameString in globals():
+                    keyboard.on_release_key(KeyName, globals()[OnReleaseCallbackFunctionNameString])
+                ######################################################################################################
 
+            ######################################################################################################
+            ######################################################################################################
+
+            ######################################################################################################
+            ######################################################################################################
+            if "OnHotkeyComboPressCallbackFunctionNameString" in KeyToTeleopControlsMappingDict and "OnPressCallbackFunctionNameString" not in KeyToTeleopControlsMappingDict and "OnReleaseCallbackFunctionNameString" not in KeyToTeleopControlsMappingDict:
+                OnHotkeyComboPressCallbackFunctionNameString = KeyToTeleopControlsMappingDict["OnHotkeyComboPressCallbackFunctionNameString"]
+
+                ######################################################################################################
+                if OnHotkeyComboPressCallbackFunctionNameString in globals():
+                    keyboard.add_hotkey(KeyName, globals()[OnHotkeyComboPressCallbackFunctionNameString])
+                ######################################################################################################
+
+            ######################################################################################################
+            ######################################################################################################
+
+            ######################################################################################################
+            ######################################################################################################
+            ######################################################################################################
+
+    except:
+        exceptions = sys.exc_info()[0]
+        print("KeyboardMapKeysToCallbackFunctions, Exceptions: %s" % exceptions)
+        traceback.print_exc()
+
+######################################################################################################
+######################################################################################################
 ######################################################################################################
 ######################################################################################################
 
@@ -1149,7 +1281,9 @@ def DedicatedKeyboardListeningThread():
     global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
     global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
     global KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag
+    global KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag
     global KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag
+    global KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag
 
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts_FormattedAsNicelyPrintedString
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts
@@ -1192,7 +1326,7 @@ def DedicatedKeyboardListeningThread():
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_FWD_START(event):
+def KeyPressResponse_FWD_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_FWD_NeedsToBeChangedFlag
 
     KeyPressResponse_FWD_NeedsToBeChangedFlag = 1
@@ -1203,7 +1337,7 @@ def KeyPressResponse_FWD_START(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_FWD_STOP(event):
+def KeyPressResponse_FWD_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_FWD_NeedsToBeChangedFlag
 
     KeyPressResponse_FWD_NeedsToBeChangedFlag = 0
@@ -1214,7 +1348,7 @@ def KeyPressResponse_FWD_STOP(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_REV_START(event):
+def KeyPressResponse_REV_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_REV_NeedsToBeChangedFlag
 
     KeyPressResponse_REV_NeedsToBeChangedFlag = 1
@@ -1225,7 +1359,7 @@ def KeyPressResponse_REV_START(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_REV_STOP(event):
+def KeyPressResponse_REV_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_REV_NeedsToBeChangedFlag
 
     KeyPressResponse_REV_NeedsToBeChangedFlag = 0
@@ -1236,7 +1370,7 @@ def KeyPressResponse_REV_STOP(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_RIGHT_START(event):
+def KeyPressResponse_RIGHT_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
 
     KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 1
@@ -1247,7 +1381,7 @@ def KeyPressResponse_RIGHT_START(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_RIGHT_STOP(event):
+def KeyPressResponse_RIGHT_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
 
     KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 0
@@ -1258,7 +1392,7 @@ def KeyPressResponse_RIGHT_STOP(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_LEFT_START(event):
+def KeyPressResponse_LEFT_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
 
     KeyPressResponse_LEFT_NeedsToBeChangedFlag = 1
@@ -1269,7 +1403,7 @@ def KeyPressResponse_LEFT_START(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_LEFT_STOP(event):
+def KeyPressResponse_LEFT_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
 
     KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0
@@ -1280,30 +1414,18 @@ def KeyPressResponse_LEFT_STOP(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_TorqueEnable_START(event):
+def HotkeyComboKeyPressResponse_TorqueEnable_START(): #An "add_hotkey" callback has an OPTIONAL argument.
     global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
 
     KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag = 1
 
-    #print("KeyPressResponse_TorqueEnable_START event fired!")
+    #print("HotkeyComboKeyPressResponse_TorqueEnable_START event fired!")
 ######################################################################################################
 ######################################################################################################
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_TorqueEnable_STOP(event):
-    global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
-
-    dummy = 0
-    #KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag = 0
-
-    #print("KeyPressResponse_TorqueEnable_STOP event fired!")
-######################################################################################################
-######################################################################################################
-
-######################################################################################################
-######################################################################################################
-def KeyPressResponse_ZeroControlLoop_START(event):
+def KeyPressResponse_ZeroControlLoop_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
 
     KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag = 1
@@ -1314,7 +1436,7 @@ def KeyPressResponse_ZeroControlLoop_START(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_ZeroControlLoop_STOP(event):
+def KeyPressResponse_ZeroControlLoop_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
 
     dummy = 0
@@ -1326,7 +1448,7 @@ def KeyPressResponse_ZeroControlLoop_STOP(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_ToggleThroughControlModes_START(event):
+def KeyPressResponse_ToggleThroughControlModes_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag
 
     KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag = 1
@@ -1337,7 +1459,7 @@ def KeyPressResponse_ToggleThroughControlModes_START(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_ToggleThroughControlModes_STOP(event):
+def KeyPressResponse_ToggleThroughControlModes_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag
 
     dummy = 0
@@ -1349,7 +1471,30 @@ def KeyPressResponse_ToggleThroughControlModes_STOP(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_ExitProgram_START(event):
+def KeyPressResponse_ToggleThroughFloorTypes_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
+    global KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag
+
+    KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag = 1
+
+    #print("KeyPressResponse_ToggleThroughFloorTypes_START event fired!")
+######################################################################################################
+######################################################################################################
+
+######################################################################################################
+######################################################################################################
+def KeyPressResponse_ToggleThroughFloorTypes_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
+    global KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag
+
+    dummy = 0
+    #KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag = 0
+
+    #print("KeyPressResponse_ToggleThroughFloorTypes_STOP event fired!")
+######################################################################################################
+######################################################################################################
+
+######################################################################################################
+######################################################################################################
+def KeyPressResponse_ExitProgram_START(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag
 
     KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag = 1
@@ -1360,13 +1505,26 @@ def KeyPressResponse_ExitProgram_START(event):
 
 ######################################################################################################
 ######################################################################################################
-def KeyPressResponse_ExitProgram_STOP(event):
+def KeyPressResponse_ExitProgram_STOP(event): #An "on_press_key" or "on_release_key" callback requires "event" as an argument.
     global KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag
 
     dummy = 0
     #KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag = 0
 
     #print("KeyPressResponse_ExitProgram_STOP event fired!")
+######################################################################################################
+######################################################################################################
+
+######################################################################################################
+######################################################################################################
+def HotkeyComboKeyPressResponse_KeyboardTestCallbackFunction_START(): #An "add_hotkey" callback has an OPTIONAL argument.
+    global Keyboard_KeysToTeleopControlsMapping_DictOfDicts
+    global KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag
+
+    if 1:#keyboard.is_pressed(Keyboard_KeysToTeleopControlsMapping_DictOfDicts["KeyboardTestCallbackFunction"]["SecondaryKeyName"]) == 1:
+        KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag = 1
+
+    #print("HotkeyComboKeyPressResponse_KeyboardTestCallbackFunction_START event fired!")
 ######################################################################################################
 ######################################################################################################
 
@@ -1441,14 +1599,20 @@ def GUI_update_clock():
     global KeyboardInfo_Label
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts_FormattedAsNicelyPrintedString
     global Keyboard_KeysToTeleopControlsMapping_DictOfDicts
+    global KeyPressResponse_FWD_CommandedValue_PID
     global KeyPressResponse_FWD_NeedsToBeChangedFlag
+    global KeyPressResponse_REV_CommandedValue_PID
     global KeyPressResponse_REV_NeedsToBeChangedFlag
-    global KeyPressResponse_LEFT_NeedsToBeChangedFlag
+    global KeyPressResponse_RIGHT_CommandedValue_PID
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
+    global KeyPressResponse_LEFT_CommandedValue_PID
+    global KeyPressResponse_LEFT_NeedsToBeChangedFlag
     global KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag
     global KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag
     global KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag
+    global KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag
     global KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag
+    global KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag
 
     global DebuggingInfo_Label
 
@@ -1464,10 +1628,12 @@ def GUI_update_clock():
     global ControlAlgorithm
     global ControlAlgorithm_StartingValue
     global ControlAlgorithm_AcceptableValues
-    
-    #global SharedGlobals_SelfBalancingRobot1_MainThread_TimeToSleepEachLoop
-    #global WiFiVINTthumbstick_PositionList_ScalingFactorList
-    #global WiFiVINTthumbstick_RollPitchYaw_AbtXYZ_List_ScalingFactorList
+
+    global FloorType
+    global FloorType_StartingValue
+    global FloorType_AcceptableValues
+    global FloorType_RadioButtonObjectsList_NeedsToBeChangedFlag
+    global FloorType_RadioButtonObjectsList
 
     global LoopCounter_CalculatedFromGUIthread
     global CurrentTime_CalculatedFromGUIthread
@@ -1559,11 +1725,16 @@ def GUI_update_clock():
             ######################################################################################################
             DebuggingInfo_Label["text"] = "MainThread, Time: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(CurrentTime_CalculatedFromMainThread, 0, 3) +\
                             "\t\t\tFrequency: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(DataStreamingFrequency_CalculatedFromMainThread_Filtered, 0, 3) +\
-                            "\nGUIthread, Time: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(CurrentTime_CalculatedFromGUIthread, 0, 3) +\
+                            "\t\t\tGUIthread, Time: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(CurrentTime_CalculatedFromGUIthread, 0, 3) +\
                             "\t\t\tFrequency: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(DataStreamingFrequency_CalculatedFromGUIthread_Filtered, 0, 3) +\
                             "\nControlInput: " + ControlInput + \
-                            "\nControlAlgorithm: " + ControlAlgorithm + \
-                            "\n" +\
+                            "\tControlAlgorithm: " + ControlAlgorithm + \
+                            "\n" + \
+                            "Key FWD: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(KeyPressResponse_FWD_CommandedValue_PID, 0, 3) +\
+                            "\t\t\tKey REV: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(KeyPressResponse_REV_CommandedValue_PID, 0, 3) +\
+                            "\t\t\tKey RIGHT: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(KeyPressResponse_RIGHT_CommandedValue_PID, 0, 3) +\
+                            "\t\t\tKey LEFT: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(KeyPressResponse_LEFT_CommandedValue_PID, 0, 3) +\
+                            "\n" + \
                             "\nWheel_Theta_RL_Radians_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RL_Radians_Actual, 3, 3) + \
                             "\nWheel_Theta_RR_Radians_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RR_Radians_Actual, 3, 3) + \
                             "\n" +\
@@ -1574,16 +1745,15 @@ def GUI_update_clock():
                             "\t\tPosition_X_RMC_Meters_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Position_X_RMC_Meters_Commanded, 3, 3) + \
                             "\n" +\
                             "\nVelocity_V_RM_MetersPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Velocity_V_RM_MetersPerSec_Actual, 3, 3) + \
-                            "\t\t\t\tVelocity_V_RMC_MetersPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Velocity_V_RMC_MetersPerSec_Commanded, 3, 3) + \
+                            "\t\tVelocity_V_RMC_MetersPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Velocity_V_RMC_MetersPerSec_Commanded, 3, 3) + \
                             "\n" +\
                             "\nPitchAngle_Theta_Deg_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Deg_Actual, number_of_leading_numbers=3, number_of_decimal_places=3) + \
                             "\t\tPitchAngle_Theta_Degrees_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Degrees_Commanded, number_of_leading_numbers=3, number_of_decimal_places=3) + \
-                            "\n" +\
-                            "\nPitchAngularRate_ThetaDot_DegreesPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_DegreesPerSecond_Actual, 3, 3) + \
-                            "\n" +\
                             "\nPitchAngle_Theta_Radians_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Radians_Actual, number_of_leading_numbers=3, number_of_decimal_places=3) + \
                             "\t\tPitchAngle_Theta_Radians_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngle_Theta_Radians_Commanded, number_of_leading_numbers=3, number_of_decimal_places=3) + \
                             "\n" +\
+                            "\nPitchAngularRate_ThetaDot_DegreesPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_DegreesPerSecond_Actual, 3, 3) + \
+                            "\t\tPitchAngularRate_ThetaDot_DegreesPerSecond_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_DegreesPerSecond_Commanded, 3, 3) + \
                             "\nPitchAngularRate_ThetaDot_RadiansPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_RadiansPerSec_Actual, 3, 3) + \
                             "\t\tPitchAngularRate_ThetaDot_RadiansPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(PitchAngularRate_ThetaDot_RadiansPerSec_Commanded, 3, 3) + \
                             "\n" +\
@@ -1592,13 +1762,12 @@ def GUI_update_clock():
                             "\n" +\
                             "\nYawAngularRate_DeltaDot_DegreesPerSecond_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegreesPerSecond_Actual, 3, 3) + \
                             "\t\tYawAngularRate_DeltaDot_DegreesPerSecond_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_DegreesPerSecond_Commanded, 3, 3) + \
-                            "\n" +\
                             "\nYawAngularRate_DeltaDot_RadiansPerSec_Actual: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_RadiansPerSec_Actual, 3, 3) + \
                             "\t\tYawAngularRate_DeltaDot_RadiansPerSec_Commanded: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(YawAngularRate_DeltaDot_RadiansPerSec_Commanded, 3, 3) + \
                             "\n" +\
                             "\nPosition_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Position_X_RMC_Meters_Commanded_MAX_ERROR_DISTANCE_LIMIT_FOR_PID_CALCULATION, 3, 3) + \
                             "\nTorqueToBeCommanded_Motor0: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(TorqueToBeCommanded_Motor0, 0, 3) + \
-                            "\nTorqueToBeCommanded_Motor1: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(TorqueToBeCommanded_Motor1, 0, 3)
+                            "\t\t\tTorqueToBeCommanded_Motor1: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(TorqueToBeCommanded_Motor1, 0, 3)
             ######################################################################################################
             ######################################################################################################
 
@@ -1611,6 +1780,18 @@ def GUI_update_clock():
                         ControlInput_RadioButtonObjectsList[Index].select()
 
                 ControlInput_RadioButtonObjectsList_NeedsToBeChangedFlag = 0
+            ######################################################################################################
+            ######################################################################################################
+
+            ######################################################################################################
+            ######################################################################################################
+            if FloorType_RadioButtonObjectsList_NeedsToBeChangedFlag == 1:
+
+                for Index, Value in enumerate(FloorType_AcceptableValues):
+                    if Value == FloorType:
+                        FloorType_RadioButtonObjectsList[Index].select()
+
+                FloorType_RadioButtonObjectsList_NeedsToBeChangedFlag = 0
             ######################################################################################################
             ######################################################################################################
 
@@ -1658,7 +1839,9 @@ def GUI_update_clock():
                                                                     KeyPressResponse_TorqueEnable_NeedsToBeChangedFlag,
                                                                     KeyPressResponse_ZeroControlLoop_NeedsToBeChangedFlag,
                                                                     KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag,
-                                                                    KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag]) + \
+                                                                    KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag,
+                                                                    KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag,
+                                                                    KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag]) + \
                             "\nKeyboard_KeysToTeleopControlsMapping_DictOfDicts: " + \
                             "\n" + Keyboard_KeysToTeleopControlsMapping_DictOfDicts_FormattedAsNicelyPrintedString
             ######################################################################################################
@@ -1828,13 +2011,6 @@ def GUI_Thread():
     global GUI_ROWSPAN_ExtraProgramControlGuiFrame
     global GUI_COLUMNSPAN_ExtraProgramControlGuiFrame
 
-    global GUI_ROW_UDP_HigherLevelControlGuiFrame
-    global GUI_COLUMN_UDP_HigherLevelControlGuiFrame
-    global GUI_PADX_UDP_HigherLevelControlGuiFrame
-    global GUI_PADY_UDP_HigherLevelControlGuiFrame
-    global GUI_ROWSPAN_UDP_HigherLevelControlGuiFrame
-    global GUI_COLUMNSPAN_UDP_HigherLevelControlGuiFrame
-
     ###################################################################################################### KEY GUI LINE
     ######################################################################################################
     root = Tk()
@@ -1927,8 +2103,16 @@ def GUI_Thread():
 
     ######################################################################################################
     ######################################################################################################
+    global AllButtonsGuiFrame
+    AllButtonsGuiFrame = Frame(ExtraProgramControlGuiFrame)
+    AllButtonsGuiFrame.grid(row=0, column=0, padx=1, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
+    ######################################################################################################
+    ######################################################################################################
+
+    ######################################################################################################
+    ######################################################################################################
     global ExitProgramButton
-    ExitProgramButton = Button(ExtraProgramControlGuiFrame, text="Exit Program", state="normal", width=GUIbuttonWidth, command=lambda i=1: ExitProgram_Callback())
+    ExitProgramButton = Button(AllButtonsGuiFrame, text="Exit Program", state="normal", width=GUIbuttonWidth, command=lambda i=1: ExitProgram_Callback())
     ExitProgramButton.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ExitProgramButton.config(font=("Helvetica", GUIbuttonFontSize))
     ######################################################################################################
@@ -1937,7 +2121,7 @@ def GUI_Thread():
     ######################################################################################################
     ######################################################################################################
     global ZeroSpatialPrecision333Gyros_Button
-    ZeroSpatialPrecision333Gyros_Button = Button(ExtraProgramControlGuiFrame, text="Zero Spatial Gyros", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroSpatialPrecision333Gyros_ButtonResponse())
+    ZeroSpatialPrecision333Gyros_Button = Button(AllButtonsGuiFrame, text="Zero Spatial Gyros", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroSpatialPrecision333Gyros_ButtonResponse())
     ZeroSpatialPrecision333Gyros_Button.grid(row=0, column=1, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ZeroSpatialPrecision333Gyros_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ######################################################################################################
@@ -1946,7 +2130,7 @@ def GUI_Thread():
     ######################################################################################################
     ######################################################################################################
     global ZeroSpatialPrecision333Algorithm_Button
-    ZeroSpatialPrecision333Algorithm_Button = Button(ExtraProgramControlGuiFrame, text="Zero Spatial Alg", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroSpatialPrecision333Algorithm_ButtonResponse())
+    ZeroSpatialPrecision333Algorithm_Button = Button(AllButtonsGuiFrame, text="Zero Spatial Alg", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroSpatialPrecision333Algorithm_ButtonResponse())
     ZeroSpatialPrecision333Algorithm_Button.grid(row=0, column=2, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ZeroSpatialPrecision333Algorithm_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ######################################################################################################
@@ -1955,27 +2139,16 @@ def GUI_Thread():
     ######################################################################################################
     ######################################################################################################
     global ZeroControlLoop_Button
-    ZeroControlLoop_Button = Button(ExtraProgramControlGuiFrame, text="ZeroController", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroControlLoop_ButtonResponse())
+    ZeroControlLoop_Button = Button(AllButtonsGuiFrame, text="ZeroController", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroControlLoop_ButtonResponse())
     ZeroControlLoop_Button.grid(row=0, column=3, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ZeroControlLoop_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ######################################################################################################
     ######################################################################################################
 
-    '''
-    ######################################################################################################
-    ######################################################################################################
-    global ZeroPitch_Button
-    ZeroPitch_Button = Button(ExtraProgramControlGuiFrame, text="ZeroPitch", state="normal", width=GUIbuttonWidth, command=lambda i=1: ZeroPitch_ButtonResponse())
-    ZeroPitch_Button.grid(row=0, column=4, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
-    ZeroPitch_Button.config(font=("Helvetica", GUIbuttonFontSize))
-    ######################################################################################################
-    ######################################################################################################
-    '''
-
     ######################################################################################################
     ######################################################################################################
     global JSONfiles_NeedsToBeLoadedFlagButton
-    JSONfiles_NeedsToBeLoadedFlagButton = Button(ExtraProgramControlGuiFrame, text="Load JSON files", state="normal", width=GUIbuttonWidth, command=lambda i=1: JSONfiles_NeedsToBeLoadedFlag_ButtonResponse())
+    JSONfiles_NeedsToBeLoadedFlagButton = Button(AllButtonsGuiFrame, text="Load JSON files", state="normal", width=GUIbuttonWidth, command=lambda i=1: JSONfiles_NeedsToBeLoadedFlag_ButtonResponse())
     JSONfiles_NeedsToBeLoadedFlagButton.grid(row=1, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     JSONfiles_NeedsToBeLoadedFlagButton.config(font=("Helvetica", GUIbuttonFontSize))
     ######################################################################################################
@@ -1984,7 +2157,7 @@ def GUI_Thread():
     ######################################################################################################
     ######################################################################################################
     global EnableMotors_Button
-    EnableMotors_Button = Button(ExtraProgramControlGuiFrame, text="Enable Motors", state="normal", width=GUIbuttonWidth, command=lambda i=1: EnableMotors_ButtonResponse())
+    EnableMotors_Button = Button(AllButtonsGuiFrame, text="Enable Motors", state="normal", width=GUIbuttonWidth, command=lambda i=1: EnableMotors_ButtonResponse())
     EnableMotors_Button.grid(row=1, column=1, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     EnableMotors_Button.config(font=("Helvetica", GUIbuttonFontSize))
     ######################################################################################################
@@ -1992,9 +2165,19 @@ def GUI_Thread():
 
     ######################################################################################################
     ######################################################################################################
-    global ControlGuiFrame
-    ControlGuiFrame = Frame(ExtraProgramControlGuiFrame)
-    ControlGuiFrame.grid(row=2, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, rowspan=1, columnspan=2, sticky='w')
+    global AllControlRadioButtonsGuiFrame
+    AllControlRadioButtonsGuiFrame = Frame(ExtraProgramControlGuiFrame)
+    AllControlRadioButtonsGuiFrame.grid(row=2, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
+    ######################################################################################################
+    ######################################################################################################
+
+    ######################################################################################################
+    ######################################################################################################
+    global ControlInputGuiFrame
+    ControlInputGuiFrame = Frame(AllControlRadioButtonsGuiFrame)
+    #ControlInputGuiFrame["borderwidth"] = 2
+    #ControlInputGuiFrame["relief"] = "ridge"
+    ControlInputGuiFrame.grid(row=0, column=0, padx=1, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
     ######################################################################################################
     ######################################################################################################
 
@@ -2002,19 +2185,14 @@ def GUI_Thread():
     ######################################################################################################
     global ControlInput_Radiobutton_SelectionVar
     ControlInput_Radiobutton_SelectionVar = StringVar()
-
     ControlInput_Radiobutton_SelectionVar.set(ControlInput_StartingValue)
-    ######################################################################################################
-    ######################################################################################################
 
-    ######################################################################################################
-    ######################################################################################################
     global ControlInput_AcceptableValues
 
     global ControlInput_RadioButtonObjectsList
     ControlInput_RadioButtonObjectsList = list()
     for Index, ControlInputString in enumerate(ControlInput_AcceptableValues):
-        ControlInput_RadioButtonObjectsList.append(Radiobutton(ControlGuiFrame,
+        ControlInput_RadioButtonObjectsList.append(Radiobutton(ControlInputGuiFrame,
                                                       text=ControlInputString,
                                                       state="normal",
                                                       width=15,
@@ -2023,8 +2201,16 @@ def GUI_Thread():
                                                       value=ControlInputString,
                                                       command=lambda name=ControlInputString: ControlInput_Radiobutton_Response(name)))
         ControlInput_RadioButtonObjectsList[Index].grid(row=0, column=Index, padx=1, pady=1, columnspan=1, rowspan=1)
-        #if ControlInput_StartingValue == "ControlInputString":
-        #    ControlInput_RadioButtonObjectsList[Index].select()
+    ######################################################################################################
+    ######################################################################################################
+
+    ######################################################################################################
+    ######################################################################################################
+    global ControlAlgorithmGuiFrame
+    ControlAlgorithmGuiFrame = Frame(AllControlRadioButtonsGuiFrame)
+    #ControlAlgorithmGuiFrame["borderwidth"] = 2
+    #ControlAlgorithmGuiFrame["relief"] = "ridge"
+    ControlAlgorithmGuiFrame.grid(row=0, column=1, padx=50, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
     ######################################################################################################
     ######################################################################################################
 
@@ -2032,29 +2218,53 @@ def GUI_Thread():
     ######################################################################################################
     global ControlAlgorithm_Radiobutton_SelectionVar
     ControlAlgorithm_Radiobutton_SelectionVar = StringVar()
-
     ControlAlgorithm_Radiobutton_SelectionVar.set(ControlAlgorithm_StartingValue)
-    ######################################################################################################
-    ######################################################################################################
 
-    ######################################################################################################
-    ######################################################################################################
     global ControlAlgorithm_AcceptableValues
 
     global ControlAlgorithm_RadioButtonObjectsList
     ControlAlgorithm_RadioButtonObjectsList = list()
     for Index, ControlAlgorithmString in enumerate(ControlAlgorithm_AcceptableValues):
-        ControlAlgorithm_RadioButtonObjectsList.append(Radiobutton(ControlGuiFrame,
+        ControlAlgorithm_RadioButtonObjectsList.append(Radiobutton(ControlAlgorithmGuiFrame,
                                                       text=ControlAlgorithmString,
                                                       state="normal",
-                                                      width=15,
+                                                      width=3,
                                                       anchor="w",
                                                       variable=ControlAlgorithm_Radiobutton_SelectionVar,
                                                       value=ControlAlgorithmString,
                                                       command=lambda name=ControlAlgorithmString: ControlAlgorithm_Radiobutton_Response(name)))
-        ControlAlgorithm_RadioButtonObjectsList[Index].grid(row=1, column=Index, padx=1, pady=1, columnspan=1, rowspan=1)
-        #if ControlAlgorithm_StartingValue == "ControlAlgorithmString":
-        #    ControlAlgorithm_RadioButtonObjectsList[Index].select()
+        ControlAlgorithm_RadioButtonObjectsList[Index].grid(row=0, column=Index, padx=50, pady=1, columnspan=1, rowspan=1)
+    ######################################################################################################
+    ######################################################################################################
+
+    ######################################################################################################
+    ######################################################################################################
+    global FloorTypeGuiFrame
+    FloorTypeGuiFrame = Frame(AllControlRadioButtonsGuiFrame)
+    #FloorTypeGuiFrame["borderwidth"] = 2
+    #FloorTypeGuiFrame["relief"] = "ridge"
+    FloorTypeGuiFrame.grid(row=1, column=0, padx=1, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
+    ######################################################################################################
+    ######################################################################################################
+
+    ######################################################################################################
+    ######################################################################################################
+    global FloorType_Radiobutton_SelectionVar
+    FloorType_Radiobutton_SelectionVar = StringVar()
+    FloorType_Radiobutton_SelectionVar.set(FloorType_StartingValue)
+
+    global FloorType_RadioButtonObjectsList
+    FloorType_RadioButtonObjectsList = list()
+    for Index, FloorTypeString in enumerate(FloorType_AcceptableValues):
+        FloorType_RadioButtonObjectsList.append(Radiobutton(FloorTypeGuiFrame,
+                                                      text=FloorTypeString,
+                                                      state="normal",
+                                                      width=12,
+                                                      anchor="w",
+                                                      variable=FloorType_Radiobutton_SelectionVar,
+                                                      value=FloorTypeString,
+                                                      command=lambda name=FloorTypeString: FloorType_Radiobutton_Response(name)))
+        FloorType_RadioButtonObjectsList[Index].grid(row=0, column=Index, padx=50, pady=1, columnspan=1, rowspan=1, sticky='w')
     ######################################################################################################
     ######################################################################################################
 
@@ -2062,13 +2272,7 @@ def GUI_Thread():
     ######################################################################################################
     global UDP_HigherLevelControlGuiFrame
     UDP_HigherLevelControlGuiFrame = Frame(ExtraProgramControlGuiFrame)
-    UDP_HigherLevelControlGuiFrame.grid(row=GUI_ROW_UDP_HigherLevelControlGuiFrame,
-                                     column=GUI_COLUMN_UDP_HigherLevelControlGuiFrame,
-                                     padx=GUI_PADX_UDP_HigherLevelControlGuiFrame,
-                                     pady=GUI_PADY_UDP_HigherLevelControlGuiFrame,
-                                     rowspan=GUI_ROWSPAN_UDP_HigherLevelControlGuiFrame,
-                                     columnspan=GUI_COLUMNSPAN_UDP_HigherLevelControlGuiFrame,
-                                     sticky='w')
+    UDP_HigherLevelControlGuiFrame.grid(row=3, column=0, padx=1, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
     ######################################################################################################
     ######################################################################################################
 
@@ -2091,9 +2295,17 @@ def GUI_Thread():
 
     ######################################################################################################
     ######################################################################################################
+    global AllLabelsGuiFrame
+    AllLabelsGuiFrame = Frame(ExtraProgramControlGuiFrame)
+    AllLabelsGuiFrame.grid(row=4, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, rowspan=1, columnspan=1, sticky='w')
+    ######################################################################################################
+    ######################################################################################################
+
+    ######################################################################################################
+    ######################################################################################################
     global DebuggingInfo_Label
-    DebuggingInfo_Label = Label(ExtraProgramControlGuiFrame, text="DebuggingInfo_Label", width=120, font=("Helvetica", 10))  #
-    DebuggingInfo_Label.grid(row=4, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
+    DebuggingInfo_Label = Label(AllLabelsGuiFrame, text="DebuggingInfo_Label", width=120, font=("Helvetica", 10))
+    DebuggingInfo_Label.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ######################################################################################################
     ######################################################################################################
 
@@ -2102,7 +2314,7 @@ def GUI_Thread():
     global KeyboardInfo_Label
     KeyboardInfo_Label = Label(GUItabObjectsOrderedDict["Keyboard"]["TabObject"], text="KeyboardInfo_Label", width=120, font=("Helvetica", 10))
     if USE_Keyboard_FLAG == 1:
-        KeyboardInfo_Label.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
+        KeyboardInfo_Label.grid(row=0, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ######################################################################################################
     ######################################################################################################
 
@@ -2111,7 +2323,7 @@ def GUI_Thread():
     global WiFiVINTthumbstick_Label
     WiFiVINTthumbstick_Label = Label(GUItabObjectsOrderedDict["WiFiVINTthumbstick"]["TabObject"], text="WiFiVINTthumbstick_Label", width=120, font=("Helvetica", 10))
     if USE_WiFiVINTthumbstick_FLAG == 1:
-        WiFiVINTthumbstick_Label.grid(row=1, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=10, rowspan=1)
+        WiFiVINTthumbstick_Label.grid(row=1, column=0, padx=GUIbuttonPadX, pady=GUIbuttonPadY, columnspan=1, rowspan=1)
     ######################################################################################################
     ######################################################################################################
 
@@ -2163,6 +2375,21 @@ def ControlAlgorithm_Radiobutton_Response(name):
     ControlAlgorithm = ControlAlgorithm_Radiobutton_SelectionVar.get()
     ControlAlgorithm_NeedsToBeChangedFlag = 1
     print("ControlAlgorithm set to: " + ControlAlgorithm)
+######################################################################################################
+######################################################################################################
+
+######################################################################################################
+######################################################################################################
+def FloorType_Radiobutton_Response(name):
+    global FloorType_Radiobutton_SelectionVar
+    global FloorType
+    global FloorType_NeedsToBeChangedFlag
+
+    #print("name: " + name)
+
+    FloorType = FloorType_Radiobutton_SelectionVar.get()
+    FloorType_NeedsToBeChangedFlag = 1
+    print("FloorType set to: " + FloorType)
 ######################################################################################################
 ######################################################################################################
 
@@ -2285,20 +2512,6 @@ def ZeroUDPinput_ButtonResponse():
     ZeroUDPinput_EventNeedsToBeFiredFlag = 1
 
     #MyPrint_ReubenPython2and3ClassObject.my_print("ZeroUDPinput_ButtonResponse event fired!")
-######################################################################################################
-######################################################################################################
-
-######################################################################################################
-######################################################################################################
-def ZeroPitch_ButtonResponse():
-    global SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag
-    global SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag
-
-    #SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1
-    #SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1
-    pass
-
-    #MyPrint_ReubenPython2and3ClassObject.my_print("ZeroPitch_ButtonResponse event fired!")
 ######################################################################################################
 ######################################################################################################
 
@@ -2569,13 +2782,6 @@ if __name__ == '__main__':
     global GUI_PADY_ExtraProgramControlGuiFrame
     global GUI_ROWSPAN_ExtraProgramControlGuiFrame
     global GUI_COLUMNSPAN_ExtraProgramControlGuiFrame
-
-    global GUI_ROW_UDP_HigherLevelControlGuiFrame
-    global GUI_COLUMN_UDP_HigherLevelControlGuiFrame
-    global GUI_PADX_UDP_HigherLevelControlGuiFrame
-    global GUI_PADY_UDP_HigherLevelControlGuiFrame
-    global GUI_ROWSPAN_UDP_HigherLevelControlGuiFrame
-    global GUI_COLUMNSPAN_UDP_HigherLevelControlGuiFrame
 
     global GUI_ROW_RoboteqBLDCcontroller_0
     global GUI_COLUMN_RoboteqBLDCcontroller_0
@@ -2865,8 +3071,8 @@ if __name__ == '__main__':
     global Phidgets4EncoderAndDInput1047_EncodersList_SpeedUseExponentialFilterFlag
     global Phidgets4EncoderAndDInput1047_EncodersList_SpeedExponentialFilterLambda
     global Phidgets4EncoderAndDInput1047_DigitalInputsList_ChannelsBeingWatchedList
-    global Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RL
-    global Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RR
+    global Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel1_RL
+    global Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel0_RR
 
     LoadAndParseJSONfile_Phidgets4EncoderAndDInput1047()
     ######################################################################################################
@@ -2879,6 +3085,12 @@ if __name__ == '__main__':
     
     global ControlAlgorithm_StartingValue
     global ControlAlgorithm_AcceptableValues
+
+    global FloorType
+    FloorType = "UnknownFloor"
+
+    global FloorType_StartingValue
+    global FloorType_AcceptableValues
     
     global ENABLE_MOTORS_AT_STARTUP_FLAG
 
@@ -2925,6 +3137,9 @@ if __name__ == '__main__':
 
     global Pitch_ParametersToBeLoaded_Directions
 
+    global SmoothFloor_DictOfGains
+    global RoughFloor_DictOfGains
+
     global PID_gain_Kp_OuterLoopPosControl
     global PID_gain_Ki_OuterLoopPosControl
     global PID_gain_Kd_OuterLoopPosControl
@@ -2932,6 +3147,7 @@ if __name__ == '__main__':
 
     global PID_gain_Kp_InnerLoopPitchControl
     global PID_gain_Kd_InnerLoopPitchControl
+    global RoughFloorInsteadOfSmoothFloorFlag
 
     global YawControl_gain_Kdelta1
     global YawControl_gain_Kdelta2
@@ -2939,24 +3155,19 @@ if __name__ == '__main__':
     global MaxCommandFromControlLaw_Motor0
     global MaxCommandFromControlLaw_Motor1
 
+    global UDP_Velocity_V_RMC_Kgain
+    global UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit
+    global UDP_YawAngularRate_Kgain
+    global UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit
+
     global SinusoidalMotionInput_ROMtestTimeToPeakAngle
     global SinusoidalMotionInput_MinValue_PositionControl
     global SinusoidalMotionInput_MaxValue_PositionControl
 
-    global UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit
-    global UDP_Velocity_V_RMC_Kgain
     global UDP_ArucoTagZdistanceTarget
-    global UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit
-    global UDP_YawAngularRate_Kgain
     global UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm_BadDataCounter_Threshold
 
     LoadAndParseJSONfile_ControlLawParameters()
-
-    if ControlInput_StartingValue not in ControlInput_AcceptableValues:
-        print("ERROR: ControlInput_StartingValue but be in " + str(ControlInput_AcceptableValues))
-        
-    if ControlAlgorithm_StartingValue not in ControlAlgorithm_AcceptableValues:
-        print("ERROR: ControlAlgorithm_StartingValue but be in " + str(ControlAlgorithm_AcceptableValues))
     ######################################################################################################
     ######################################################################################################
 
@@ -2979,6 +3190,8 @@ if __name__ == '__main__':
     global root
     root = None
 
+
+
     global ControlInput
     ControlInput = ControlInput_StartingValue
 
@@ -2990,12 +3203,32 @@ if __name__ == '__main__':
 
     global ControlInput_CurrentTimeOfInputChange_CalculatedFromMainThread
     ControlInput_CurrentTimeOfInputChange_CalculatedFromMainThread = 0
-    
+
+
+
     global ControlAlgorithm
     ControlAlgorithm = ControlAlgorithm_StartingValue
 
     global ControlAlgorithm_NeedsToBeChangedFlag
     ControlAlgorithm_NeedsToBeChangedFlag = 0
+
+    global ControlAlgorithm_RadioButtonObjectsList_NeedsToBeChangedFlag
+    ControlAlgorithm_RadioButtonObjectsList_NeedsToBeChangedFlag = 0
+
+    global ControlAlgorithm_CurrentTimeOfInputChange_CalculatedFromMainThread
+    ControlAlgorithm_CurrentTimeOfInputChange_CalculatedFromMainThread = 0
+
+
+
+    
+    global FloorType_NeedsToBeChangedFlag
+    FloorType_NeedsToBeChangedFlag = 0
+    
+    global FloorType_RadioButtonObjectsList_NeedsToBeChangedFlag
+    FloorType_RadioButtonObjectsList_NeedsToBeChangedFlag = 0
+    
+    global FloorType_CurrentTimeOfInputChange_CalculatedFromMainThread
+    FloorType_CurrentTimeOfInputChange_CalculatedFromMainThread = 0
     ######################################################################################################
     ######################################################################################################
 
@@ -3450,14 +3683,26 @@ if __name__ == '__main__':
     global DedicatedKeyboardListeningThread_TimeToSleepEachLoop
     DedicatedKeyboardListeningThread_TimeToSleepEachLoop = 0.020
 
+    global KeyPressResponse_FWD_CommandedValue_PID
+    KeyPressResponse_FWD_CommandedValue_PID = 0.0
+
     global KeyPressResponse_FWD_NeedsToBeChangedFlag
     KeyPressResponse_FWD_NeedsToBeChangedFlag = 0
+
+    global KeyPressResponse_REV_CommandedValue_PID
+    KeyPressResponse_REV_CommandedValue_PID = 0.0
 
     global KeyPressResponse_REV_NeedsToBeChangedFlag
     KeyPressResponse_REV_NeedsToBeChangedFlag = 0
 
+    global KeyPressResponse_RIGHT_CommandedValue_PID
+    KeyPressResponse_RIGHT_CommandedValue_PID = 0.0
+
     global KeyPressResponse_RIGHT_NeedsToBeChangedFlag
     KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 0
+
+    global KeyPressResponse_LEFT_CommandedValue_PID
+    KeyPressResponse_LEFT_CommandedValue_PID = 0.0
 
     global KeyPressResponse_LEFT_NeedsToBeChangedFlag
     KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0
@@ -3471,8 +3716,14 @@ if __name__ == '__main__':
     global KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag
     KeyPressResponse_ToggleThroughControlModes_NeedsToBeChangedFlag = 0
 
+    global KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag
+    KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag = 0
+
     global KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag
     KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag = 0
+
+    global KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag
+    KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag = 0
     ######################################################################################################
     ######################################################################################################
 
@@ -4692,9 +4943,39 @@ if __name__ == '__main__':
 
         ######################################################################################################
         ######################################################################################################
+        if KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag == 1:
+
+            ######################################################################################################
+            if FloorType == "SmoothFloor":
+                FloorType = "RoughFloor"
+
+            elif FloorType == "RoughFloor":
+                FloorType = "SmoothFloor"
+                
+            else:
+                FloorType = "SmoothFloor"
+            ######################################################################################################
+
+            FloorType_NeedsToBeChangedFlag = 1
+            FloorType_RadioButtonObjectsList_NeedsToBeChangedFlag = 1
+
+            KeyPressResponse_ToggleThroughFloorTypes_NeedsToBeChangedFlag = 0
+        ######################################################################################################
+        ######################################################################################################
+
+        ######################################################################################################
+        ######################################################################################################
         if KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag == 1:
             ExitProgram_Callback()
             KeyPressResponse_ExitProgram_EventNeedsToBeFiredFlag = 0
+        ######################################################################################################
+        ######################################################################################################
+
+        ######################################################################################################
+        ######################################################################################################
+        if KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag == 1:
+            print("Hello World, KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag event fired!")
+            KeyPressResponse_KeyboardTestCallbackFunction_EventNeedsToBeFiredFlag = 0
         ######################################################################################################
         ######################################################################################################
 
@@ -5053,6 +5334,44 @@ if __name__ == '__main__':
         ######################################################################################################
         ######################################################################################################
 
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        if ControlAlgorithm_NeedsToBeChangedFlag == 1:
+
+            #Not doing anything real here yet because the only ControlAlgorithm that we're using is cascading/nested PID loops.
+
+            print("Changed ControlAlgorithm to " + ControlAlgorithm)
+
+            ControlAlgorithm_CurrentTimeOfAlgorithmChange_CalculatedFromMainThread = CurrentTime_CalculatedFromMainThread
+            ControlAlgorithm_NeedsToBeChangedFlag = 0
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        if FloorType_NeedsToBeChangedFlag == 1:
+
+            Velocity_V_RMC_MetersPerSec_Commanded = 0.0
+            YawAngularRate_DeltaDot_RadiansPerSec_Commanded = 0.0
+
+            JSONfiles_NeedsToBeLoadedFlag = 1 #We want to reload the JSON file.
+
+            #ZeroControlLoop_EventNeedsToBeFiredFlag = 1 DO NOT ISSUE THIS, WILL CAUSE THE ROBOT TO JUMP
+            print("Changed FloorType to " + FloorType)
+
+            FloorType_CurrentTimeOfInputChange_CalculatedFromMainThread = CurrentTime_CalculatedFromMainThread
+            FloorType_NeedsToBeChangedFlag = 0
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+        ######################################################################################################
+
         ###################################################################################################### Start ControlInput section
         ######################################################################################################
         ######################################################################################################
@@ -5070,23 +5389,28 @@ if __name__ == '__main__':
                 Velocity_V_RMC_MetersPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
                 YawAngularRate_DeltaDot_RadiansPerSec_Commanded = 0.0 #Default to 0 and only change if a key is depressed.
 
+                KeyPressResponse_FWD_CommandedValue_PID = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue_PID"][FloorType]
+                KeyPressResponse_REV_CommandedValue_PID = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue_PID"][FloorType]
+                KeyPressResponse_RIGHT_CommandedValue_PID = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue_PID"][FloorType]
+                KeyPressResponse_LEFT_CommandedValue_PID = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue_PID"][FloorType]
+
                 if KeyPressResponse_FWD_NeedsToBeChangedFlag == 1:
-                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["FWD"]["CommandedValue_PID"]
+                    Velocity_V_RMC_MetersPerSec_Commanded = KeyPressResponse_FWD_CommandedValue_PID
                     #print("Velocity_V_RMC_MetersPerSec_Commanded FWD")
                     #KeyPressResponse_FWD_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_REV_NeedsToBeChangedFlag == 1:
-                    Velocity_V_RMC_MetersPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["REV"]["CommandedValue_PID"]
+                    Velocity_V_RMC_MetersPerSec_Commanded = KeyPressResponse_REV_CommandedValue_PID
                     #print("Velocity_V_RMC_MetersPerSec_Commanded REV")
                     #KeyPressResponse_REV_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_RIGHT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["RIGHT"]["CommandedValue_PID"]
+                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = KeyPressResponse_RIGHT_CommandedValue_PID
                     #print("Velocity_V_RMC_MetersPerSec_Commanded RIGHT")
                     #KeyPressResponse_RIGHT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
                 if KeyPressResponse_LEFT_NeedsToBeChangedFlag == 1:
-                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = Keyboard_KeysToTeleopControlsMapping_DictOfDicts["LEFT"]["CommandedValue_PID"]
+                    YawAngularRate_DeltaDot_RadiansPerSec_Commanded = KeyPressResponse_LEFT_CommandedValue_PID
                     #print("Velocity_V_RMC_MetersPerSec_Commanded LEFT")
                     #KeyPressResponse_LEFT_NeedsToBeChangedFlag = 0 #HANDLED INSTEAD BY THE REVERSE KEY-PRESS
 
@@ -5155,15 +5479,36 @@ if __name__ == '__main__':
                         if UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm[2] != -11111.0:
 
                             ##################################################### FWD/BACK
-                            Velocity_V_RMC_MetersPerSec_Commanded = UDP_Velocity_V_RMC_Kgain*(UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm[2] - UDP_ArucoTagZdistanceTarget)
-                            Velocity_V_RMC_MetersPerSec_Commanded = LimitNumber_FloatOutputOnly(-1.0*UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit, UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit, Velocity_V_RMC_MetersPerSec_Commanded)
+                            VelocityComponentFromUDPdataExchanger = UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm[2] - UDP_ArucoTagZdistanceTarget
+
+                            Velocity_V_RMC_MetersPerSec_Commanded = UDP_Velocity_V_RMC_Kgain*VelocityComponentFromUDPdataExchanger
+
+                            Velocity_V_RMC_MetersPerSec_Commanded = LimitNumber_FloatOutputOnly(-1.0*UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit,
+                                                                                                UDP_Velocity_V_RMC_MetersPerSec_Commanded_Limit,
+                                                                                                Velocity_V_RMC_MetersPerSec_Commanded)
+
                             #Print("Velocity_V_RMC_MetersPerSec_Commanded: " + str(Velocity_V_RMC_MetersPerSec_Commanded))
                             #####################################################
 
                             ##################################################### LEFT/RIGHT
-                            YawAngularRate_DeltaDot_RadiansPerSec_Commanded = UDP_YawAngularRate_Kgain*UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm[0]
-                            YawAngularRate_DeltaDot_RadiansPerSec_Commanded = LimitNumber_FloatOutputOnly(-1.0*UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit, UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit, YawAngularRate_DeltaDot_RadiansPerSec_Commanded)
+                            YawAngularRateComponentFromUDPdataExchanger = UDPdataExchanger_MostRecentDict_PrimaryMarkerXYZmm[0]
+
+                            YawAngularRate_DeltaDot_RadiansPerSec_Commanded = UDP_YawAngularRate_Kgain*YawAngularRateComponentFromUDPdataExchanger
+
+                            YawAngularRate_DeltaDot_RadiansPerSec_Commanded = LimitNumber_FloatOutputOnly(-1.0*UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit,
+                                                                                                          UDP_YawAngularRate_DeltaDot_RadiansPerSec_Commanded_Limit,
+                                                                                                          YawAngularRate_DeltaDot_RadiansPerSec_Commanded)
+
                             #print("YawAngularRate_DeltaDot_RadiansPerSec_Commanded: " + str(YawAngularRate_DeltaDot_RadiansPerSec_Commanded))
+                            #####################################################
+
+                            ##################################################### ONLY ALLOW EITHER TURNING OR DRIVING FWD/REV AT ANY GIVEN TIME, NEVER BOTH TOGETHER SIMULTANEOUSLY.
+                            if abs(YawAngularRateComponentFromUDPdataExchanger) >= abs(VelocityComponentFromUDPdataExchanger):
+                                Velocity_V_RMC_MetersPerSec_Commanded = 0
+                                #print("Turn")
+                            else:
+                                YawAngularRate_DeltaDot_RadiansPerSec_Commanded = 0
+                                #print("Drive")
                             #####################################################
 
                             #####################################################
@@ -5251,9 +5596,11 @@ if __name__ == '__main__':
 
             Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_0 = 1 #Sets actual position to 0 during next loop
             Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[0] = 0.0
+            Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks[0] = 0.0
 
             Phidgets4EncoderAndDInput1047_NeedToHomeSoftwareOffsetOnlyFlag_1 = 1 #Sets actual position to 0 during next loop
             Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[1] = 0.0
+            Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks[1] = 0.0
 
             #SpatialPrecision333_ZeroGyros_NeedsToBeChangedFlag = 1 #Perform this separatley via its own button.
             #SpatialPrecision333_ZeroAlgorithm_NeedsToBeChangedFlag = 1 #Perform this separatley via its own button.
@@ -5279,32 +5626,11 @@ if __name__ == '__main__':
 
         ######################################################################################################
         ######################################################################################################
-        Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder = -1.0*Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RL * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[1] * 2.0 * math.pi #The external encoder reverses the sign on the left wheel
-        Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder = Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RR * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_Rev[0] * 2.0 * math.pi
+        Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder = -1.0*(Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks[1]/Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel1_RL) * 2.0 * math.pi #The external encoder reverses the sign on the left wheel
+        Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder = (Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Position_EncoderTicks[0]/Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel0_RR) * 2.0 * math.pi
 
-        Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder = -1.0*Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RL * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered[1] * 2.0 * math.pi #The external encoder reverses the sign on the left wheel
-        Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder = Phidgets4EncoderAndDInput1047_GearRatioBetweenEncoderWheelAndRobotWheel_RR * Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_RPS_Filtered[0] * 2.0 * math.pi
-        ######################################################################################################
-        ######################################################################################################
-
-        ######################################################################################################
-        ######################################################################################################
-        '''
-        #ONLY FOR DEBUGGING AND CALIBRATING THE ENCODER-PER-WHEEL-REVOLUTION
-        print("Theta RL-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RL_Radians_Actual_MeasuredFromRoboteq, 0, 2) +
-            ", Theta RL-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RL_Radians_Actual_MeasuredFromExternalEncoder, 0, 2) +
-
-              "\t\tTheta RR-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RR_Radians_Actual_MeasuredFromRoboteq, 0, 2) +
-                ", Theta RR-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Theta_RR_Radians_Actual_MeasuredFromExternalEncoder, 0, 2))
-
-
-              #"\nOmega RL-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromRoboteq, 0, 2) +
-              #", Omega RL-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder, 0, 2) +
-
-              #"\t\tOmega RR-Roboteq: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromRoboteq, 0, 2) +
-              #  ", Omega RR-Encoder: " + ConvertFloatToStringWithNumberOfLeadingNumbersAndDecimalPlaces_NumberOrListInput(Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder, 0, 2))
-        #ONLY FOR DEBUGGING AND CALIBRATING THE ENCODER-PER-WHEEL-REVOLUTION
-        '''
+        Wheel_Omega_RL_RadiansPerSec_Actual_MeasuredFromExternalEncoder = -1.0*(Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Filtered[1]/Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel1_RL) * 2.0 * math.pi #The external encoder reverses the sign on the left wheel
+        Wheel_Omega_RR_RadiansPerSec_Actual_MeasuredFromExternalEncoder = (Phidgets4EncoderAndDInput1047_MostRecentDict_EncodersList_Speed_EncoderTicksPerSecond_Filtered[0]/Phidgets4EncoderAndDInput1047_NumberOfEncoderTicksPerWheelRevolution_Channel0_RR) * 2.0 * math.pi
         ######################################################################################################
         ######################################################################################################
 
