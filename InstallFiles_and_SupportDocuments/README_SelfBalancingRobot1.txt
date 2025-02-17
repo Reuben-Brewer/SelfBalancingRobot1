@@ -13,7 +13,7 @@ www.reubotics.com
 
 Apache 2 License
 
-Software Revision O, 02/09/2025
+Software Revision P, 02/16/2025
 
 SelfBalancingRobot1.py verified working on:
 
@@ -21,7 +21,8 @@ Python 3.12
 
 Windows  11 64-bit
 
-Raspberry Pi Bullseye
+Note: The ArUco reading code is here:
+https://github.com/Reuben-Brewer/ArucoTagDetectionFromCameraFeed_ReubenPython3Class/blob/main/test_program_for_ArucoTagDetectionFromCameraFeed_ReubenPython3Class.py
 
 ######################################################
 ######################################################
