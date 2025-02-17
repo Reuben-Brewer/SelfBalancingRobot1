@@ -13,7 +13,7 @@ www.reubotics.com
 
 Apache 2 License
 
-Software Revision O, 02/09/2025
+Software Revision P, 02/16/2025
 
 SelfBalancingRobot1.py verified working on:
 
@@ -21,7 +21,9 @@ Python 3.12
 
 Windows  11 64-bit
 
-Raspberry Pi Bullseye
+Note: The ArUco reading code is here:
+
+https://github.com/Reuben-Brewer/ArucoTagDetectionFromCameraFeed_ReubenPython3Class/blob/main/test_program_for_ArucoTagDetectionFromCameraFeed_ReubenPython3Class.py
 
 ######################################################
 ######################################################
@@ -101,6 +103,7 @@ sudo ./LatencyTimer_Set_LinuxScript.sh 1
 ########################## ftd2xx installation on Windows:
 
 If the required driver is already on your Windows machine, then it will be installed automatically when the U2D2 is first plugged-in (note that this installation will occur separately for EACH separate USB port, and that the latency_timer will need to be set for EACH separate USB port.
+
 However, if you don't see a new USB-Serial device appearing with a new "COM" number in Device Manger after Windows says it's done installing your new device, then you'll need to install the driver separately using Windows_FTDI_USBserial_driver_061020-->CDM21228_Setup.exe
 
 To install the Python module:
@@ -134,6 +137,7 @@ Alternatively, you can copy Reuben's version of this file (ftd2xx_ReubenModified
 To install the driver:
 
 Download the 1.4.6 ARMv6 hard-float (suits Raspberry Pi) source code from ftdi (http://www.ftdichip.com/Drivers/D2XX.htm) or use the included file.
+
 Install following these instructions (modified from the readme that comes with the driver):
 
 tar --extract --file libftd2xx-arm-v6-hf-1.4.6.tgz
